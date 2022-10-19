@@ -1,0 +1,11 @@
+[package]
+name = "converter"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+abstio = { git = "https://github.com/a-b-street/abstreet" }
+abstutil = { git = "https://github.com/a-b-street/abstreet" }
+geom = { git = "https://github.com/a-b-street/abstreet" }
+map_model = { git = "https://github.com/a-b-street/abstreet" }
+serde_json = "1.0.61"
