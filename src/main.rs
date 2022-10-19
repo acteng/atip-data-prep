@@ -1,6 +1,6 @@
 use abstutil::Timer;
 use map_model::osm::RoadRank;
-use map_model::{Map, Perimeter};
+use map_model::{Block, Map, Perimeter};
 
 fn main() {
     let map_filename = std::env::args().nth(1).expect("no map filename provided");
@@ -12,9 +12,30 @@ fn main() {
     map_to_areas(&map, area_filename, &mut timer);
 }
 
-// Logic adapted from LTN partition.rs and the test crate
 fn map_to_areas(map: &Map, out_filename: String, timer: &mut Timer) {
-    timer.start(format!("map_to_areas for {}", map.get_name().describe()));
+    let mut blocks = map_to_blocks(map, timer);
+
+    // Filter out tiny blocks by area. They're artifacts from osm2streets not handling dual
+    // carriageways. We really don't care about them for ATIP.
+    blocks.retain(|b| {
+        // Smaller than 100m^2
+        b.polygon.area() >= 100.0
+    });
+
+    let mut pairs = Vec::new();
+    for block in blocks {
+        let props = serde_json::Map::new();
+        pairs.push((block.polygon.to_geojson(Some(map.get_gps_bounds())), props));
+    }
+    abstio::write_json(
+        out_filename,
+        &geom::geometries_with_properties_to_geojson(pairs),
+    );
+}
+
+// Logic adapted from LTN partition.rs and the test crate
+fn map_to_blocks(map: &Map, timer: &mut Timer) -> Vec<Block> {
+    timer.start(format!("map_to_blocks for {}", map.get_name().describe()));
 
     timer.start("find_all_single_blocks and partition");
     let mut single_block_perims = Vec::new();
@@ -54,15 +75,6 @@ fn map_to_areas(map: &Map, out_filename: String, timer: &mut Timer) {
         }
     }
 
-    let mut pairs = Vec::new();
-    for block in blocks {
-        let props = serde_json::Map::new();
-        pairs.push((block.polygon.to_geojson(Some(map.get_gps_bounds())), props));
-    }
-    abstio::write_json(
-        out_filename,
-        &geom::geometries_with_properties_to_geojson(pairs),
-    );
-
-    timer.stop(format!("map_to_areas for {}", map.get_name().describe()));
+    timer.stop(format!("map_to_blocks for {}", map.get_name().describe()));
+    blocks
 }
