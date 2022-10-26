@@ -40,36 +40,8 @@ def main():
             x += step_size
 
     gj = {"type": "FeatureCollection", "features": features}
-    geojsonToOsmiumExtracts(gj)
-
-
-# See https://osmcode.org/osmium-tool/manual.html#creating-geographic-extracts
-#
-# Tune batch_size carefully. Too big, and one pass of osmium runs out of memory.
-def geojsonToOsmiumExtracts(gj, batch_size=50, directory="/tmp/osmium_extract/"):
-    num_batches = 0
-    config = {"directory": directory, "extracts": []}
-
-    for feature in gj["features"]:
-        with open(feature["properties"]["id"] + ".geojson", "w") as f:
-            f.write(json.dumps(feature))
-        config["extracts"].append(
-            {
-                "output": feature["properties"]["id"] + ".osm",
-                "polygon": {
-                    "file_name": feature["properties"]["id"] + ".geojson",
-                    "file_type": "geojson",
-                },
-            }
-        )
-        if len(config["extracts"]) == batch_size:
-            with open("uk_tiles_" + str(num_batches) + ".json", "w") as f:
-                f.write(json.dumps(config))
-            config["extracts"] = []
-            num_batches += 1
-
-    with open("uk_tiles_" + str(num_batches) + ".json", "w") as f:
-        f.write(json.dumps(config))
+    with open("uk_tiles.geojson", "w") as f:
+        f.write(json.dumps(gj))
 
 
 if __name__ == "__main__":
