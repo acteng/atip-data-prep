@@ -14,7 +14,7 @@ dependencies = [
 [[package]]
 name = "abstio"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#157231d61c7f408b78367d37e5b05535b32ef034"
+source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
 dependencies = [
  "abstutil",
  "anyhow",
@@ -38,7 +38,7 @@ dependencies = [
 [[package]]
 name = "abstutil"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#157231d61c7f408b78367d37e5b05535b32ef034"
+source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
 dependencies = [
  "anyhow",
  "bincode",
@@ -253,7 +253,9 @@ dependencies = [
  "abstutil",
  "geom",
  "map_model",
+ "osm2streets",
  "serde_json",
+ "streets_reader",
 ]
 
 [[package]]
@@ -548,7 +550,7 @@ dependencies = [
 [[package]]
 name = "geom"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#157231d61c7f408b78367d37e5b05535b32ef034"
+source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
 dependencies = [
  "aabb-quadtree",
  "abstutil",
@@ -832,7 +834,7 @@ dependencies = [
 [[package]]
 name = "kml"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#157231d61c7f408b78367d37e5b05535b32ef034"
+source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
 dependencies = [
  "abstio",
  "abstutil",
@@ -956,7 +958,7 @@ dependencies = [
 [[package]]
 name = "map_model"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#157231d61c7f408b78367d37e5b05535b32ef034"
+source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
 dependencies = [
  "abstio",
  "abstutil",
@@ -1100,7 +1102,7 @@ dependencies = [
 [[package]]
 name = "osm2streets"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/osm2streets#8c01821c787c8988e2201f0e03fc230185cc71ad"
+source = "git+https://github.com/a-b-street/osm2streets#b04a6d4ce4cc317deb053451c45db3dd0f17680d"
 dependencies = [
  "aabb-quadtree",
  "abstutil",
@@ -1263,7 +1265,7 @@ dependencies = [
 [[package]]
 name = "raw_map"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#157231d61c7f408b78367d37e5b05535b32ef034"
+source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
 dependencies = [
  "abstio",
  "abstutil",
@@ -1606,6 +1608,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
+name = "streets_reader"
+version = "0.1.0"
+source = "git+https://github.com/a-b-street/osm2streets#b04a6d4ce4cc317deb053451c45db3dd0f17680d"
+dependencies = [
+ "abstutil",
+ "anyhow",
+ "geom",
+ "log",
+ "osm2streets",
+ "roxmltree",
+]
+
+[[package]]
 name = "strsim"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1830,7 +1845,7 @@ dependencies = [
 [[package]]
 name = "traffic_signal_data"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#157231d61c7f408b78367d37e5b05535b32ef034"
+source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
 dependencies = [
  "include_dir",
  "serde",

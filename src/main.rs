@@ -1,15 +1,38 @@
 use abstutil::Timer;
+use geom::LonLat;
 use map_model::osm::RoadRank;
 use map_model::{Block, Map, Perimeter};
 
 fn main() {
-    let map_filename = std::env::args().nth(1).expect("no map filename provided");
-    let area_filename = std::env::args().nth(2).expect("no area filename provided");
     let mut timer = Timer::new("convert");
 
-    // TODO Map::load_synchronously expects the data/ directory to exist
-    let map: Map = abstio::maybe_read_binary(map_filename, &mut timer).unwrap();
-    map_to_areas(&map, area_filename, &mut timer);
+    // osm.xml to StreetNetwork, for route-snapping
+    if true {
+        let osm_filename = std::env::args().nth(1).expect("no osm filename provided");
+        let geojson_filename = std::env::args()
+            .nth(2)
+            .expect("no geojson filename provided");
+        let street_network = streets_reader::osm_to_street_network(
+            &std::fs::read_to_string(osm_filename).unwrap(),
+            Some(LonLat::read_geojson_polygon(&geojson_filename).unwrap()),
+            streets_reader::Options::default_for_side(osm2streets::DrivingSide::Left),
+            &mut timer,
+        )
+        .unwrap();
+        timer.start("save");
+        abstio::write_binary("street_network.bin".to_string(), &street_network);
+        timer.stop("save");
+    }
+
+    // Map to LTN areas
+    if false {
+        let map_filename = std::env::args().nth(1).expect("no map filename provided");
+        let area_filename = std::env::args().nth(2).expect("no area filename provided");
+
+        // TODO Map::load_synchronously expects the data/ directory to exist
+        let map: Map = abstio::maybe_read_binary(map_filename, &mut timer).unwrap();
+        map_to_areas(&map, area_filename, &mut timer);
+    }
 }
 
 fn map_to_areas(map: &Map, out_filename: String, timer: &mut Timer) {
