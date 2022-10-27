@@ -11,9 +11,14 @@ for batch in osmium_cfg_*; do
 	time osmium extract -v -c $batch ~/Downloads/england-latest.osm.pbf
 done
 
+# Generate route snapper files
 cd ..
 IFS=$'\n'
 for x in uk_osm/out/*; do
 	geojson=$(basename $x .osm).geojson
 	cargo run --release $x uk_osm/$geojson
 done
+# Put in S3
+mkdir route-snappers
+mv *.bin route-snappers
+aws s3 sync --dry route-snappers s3://abstreet/route-snappers/
