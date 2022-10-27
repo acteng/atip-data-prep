@@ -10,3 +10,10 @@ mkdir out
 for batch in osmium_cfg_*; do
 	time osmium extract -v -c $batch ~/Downloads/england-latest.osm.pbf
 done
+
+cd ..
+IFS=$'\n'
+for x in uk_osm/out/*; do
+	geojson=$(basename $x .osm).geojson
+	cargo run --release $x uk_osm/$geojson
+done

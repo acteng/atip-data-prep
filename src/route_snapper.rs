@@ -50,7 +50,7 @@ impl RouteSnapperMap {
                 i1,
                 i2,
                 length: center_pts.length(),
-                center_line,
+                center_pts,
             });
         }
 
