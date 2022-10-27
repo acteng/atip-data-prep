@@ -1,3 +1,5 @@
+mod route_snapper;
+
 use abstutil::Timer;
 use geom::LonLat;
 use map_model::osm::RoadRank;
@@ -12,16 +14,15 @@ fn main() {
         let geojson_filename = std::env::args()
             .nth(2)
             .expect("no geojson filename provided");
-        let street_network = streets_reader::osm_to_street_network(
+        let streets = streets_reader::osm_to_street_network(
             &std::fs::read_to_string(osm_filename).unwrap(),
             Some(LonLat::read_geojson_polygon(&geojson_filename).unwrap()),
             streets_reader::Options::default_for_side(osm2streets::DrivingSide::Left),
             &mut timer,
         )
         .unwrap();
-        timer.start("save");
-        abstio::write_binary("street_network.bin".to_string(), &street_network);
-        timer.stop("save");
+        let routes = route_snapper::RouteSnapperMap::new(&streets);
+        abstio::write_binary("route_snapper.bin".to_string(), &routes);
     }
 
     // Map to LTN areas

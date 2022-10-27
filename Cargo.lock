@@ -254,6 +254,7 @@ dependencies = [
  "geom",
  "map_model",
  "osm2streets",
+ "serde",
  "serde_json",
  "streets_reader",
 ]
