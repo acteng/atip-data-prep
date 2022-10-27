@@ -254,6 +254,7 @@ dependencies = [
  "geom",
  "map_model",
  "osm2streets",
+ "petgraph",
  "serde",
  "serde_json",
  "streets_reader",
