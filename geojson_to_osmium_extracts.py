@@ -49,6 +49,7 @@ def main():
             config["extracts"].append(
                 {
                     "output": f"{name}.osm",
+                    "output_format": "osm,add_metadata=false",
                     "polygon": {"file_name": f"{name}.geojson", "file_type": "geojson"},
                 }
             )
