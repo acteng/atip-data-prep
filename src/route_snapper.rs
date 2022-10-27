@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
-use geom::{Distance, GPSBounds, Pt2D};
+use geom::{Distance, GPSBounds, PolyLine, Pt2D};
 use osm2streets::StreetNetwork;
-use petgraph::graphmap::UnGraphMap;
 use serde::{Deserialize, Serialize};
 
 // The minimal state needed for a web route-snapping tool. Just a graph of roads and intersections,
@@ -12,13 +11,14 @@ pub struct RouteSnapperMap {
     pub gps_bounds: GPSBounds,
     pub intersections: Vec<Pt2D>,
     pub roads: Vec<Road>,
+    pub road_lookup: HashMap<(IntersectionID, IntersectionID), RoadID>,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct Road {
     pub i1: IntersectionID,
     pub i2: IntersectionID,
-    pub pts: Vec<Pt2D>,
+    pub center_pts: PolyLine,
     pub length: Distance,
 }
 
@@ -33,6 +33,7 @@ impl RouteSnapperMap {
             gps_bounds: streets.gps_bounds.clone(),
             intersections: Vec::new(),
             roads: Vec::new(),
+            road_lookup: HashMap::new(),
         };
 
         let mut id_lookup = HashMap::new();
@@ -41,37 +42,18 @@ impl RouteSnapperMap {
             id_lookup.insert(*id, IntersectionID(id_lookup.len()));
         }
         for (id, r) in &streets.roads {
+            let i1 = id_lookup[&id.i1];
+            let i2 = id_lookup[&id.i2];
+            map.road_lookup.insert((i1, i2), RoadID(map.roads.len()));
+            let center_pts = PolyLine::unchecked_new(r.osm_center_points.clone());
             map.roads.push(Road {
-                i1: id_lookup[&id.i1],
-                i2: id_lookup[&id.i2],
-                pts: r.osm_center_points.clone(),
-                length: r.length(),
+                i1,
+                i2,
+                length: center_pts.length(),
+                center_line,
             });
         }
 
         map
-    }
-
-    pub fn pathfind(
-        &self,
-        i1: IntersectionID,
-        i2: IntersectionID,
-    ) -> Option<(Vec<RoadID>, Vec<IntersectionID>)> {
-        let mut graph: UnGraphMap<IntersectionID, RoadID> = UnGraphMap::new();
-        for (idx, r) in self.roads.iter().enumerate() {
-            graph.add_edge(r.i1, r.i2, RoadID(idx));
-        }
-        let (_, path) = petgraph::algo::astar(
-            &graph,
-            i1,
-            |i| i == i2,
-            |(_, _, r)| self.roads[r.0].length,
-            |_| Distance::ZERO,
-        )?;
-        let roads: Vec<RoadID> = path
-            .windows(2)
-            .map(|pair| *graph.edge_weight(pair[0], pair[1]).unwrap())
-            .collect();
-        Some((roads, path))
     }
 }

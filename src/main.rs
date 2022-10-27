@@ -22,7 +22,10 @@ fn main() {
         )
         .unwrap();
         let routes = route_snapper::RouteSnapperMap::new(&streets);
-        abstio::write_binary("route_snapper.bin".to_string(), &routes);
+        abstio::write_binary(
+            format!("{}.bin", abstutil::basename(geojson_filename)),
+            &routes,
+        );
     }
 
     // Map to LTN areas
