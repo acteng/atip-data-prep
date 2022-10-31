@@ -17,3 +17,7 @@ done
 
 # Put in S3
 aws s3 sync --dry route-snappers s3://abstreet/route-snappers/
+
+# Have to invalidate the CDN
+# Go to https://console.aws.amazon.com/cloudfront/v3/home?region=us-east-2#/distributions
+# TODO Or fix IAM permissions and just: aws cloudfront create-invalidation --distribution-id ER5B3SJO4ND9D --paths '/route-snappers/*
