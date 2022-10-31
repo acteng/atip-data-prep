@@ -14,7 +14,7 @@ dependencies = [
 [[package]]
 name = "abstio"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
+source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
 dependencies = [
  "abstutil",
  "anyhow",
@@ -38,7 +38,7 @@ dependencies = [
 [[package]]
 name = "abstutil"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
+source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
 dependencies = [
  "anyhow",
  "bincode",
@@ -551,7 +551,7 @@ dependencies = [
 [[package]]
 name = "geom"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
+source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
 dependencies = [
  "aabb-quadtree",
  "abstutil",
@@ -835,7 +835,7 @@ dependencies = [
 [[package]]
 name = "kml"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
+source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
 dependencies = [
  "abstio",
  "abstutil",
@@ -959,7 +959,7 @@ dependencies = [
 [[package]]
 name = "map_model"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
+source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
 dependencies = [
  "abstio",
  "abstutil",
@@ -1103,7 +1103,7 @@ dependencies = [
 [[package]]
 name = "osm2streets"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/osm2streets#b04a6d4ce4cc317deb053451c45db3dd0f17680d"
+source = "git+https://github.com/a-b-street/osm2streets#670bd72acd6d82ef43f325b8f64b12f6700ba68e"
 dependencies = [
  "aabb-quadtree",
  "abstutil",
@@ -1266,7 +1266,7 @@ dependencies = [
 [[package]]
 name = "raw_map"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
+source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
 dependencies = [
  "abstio",
  "abstutil",
@@ -1611,14 +1611,14 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "streets_reader"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/osm2streets#b04a6d4ce4cc317deb053451c45db3dd0f17680d"
+source = "git+https://github.com/a-b-street/osm2streets#670bd72acd6d82ef43f325b8f64b12f6700ba68e"
 dependencies = [
  "abstutil",
  "anyhow",
  "geom",
  "log",
  "osm2streets",
- "roxmltree",
+ "xmlparser",
 ]
 
 [[package]]
@@ -1846,7 +1846,7 @@ dependencies = [
 [[package]]
 name = "traffic_signal_data"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#01f72771272c5c685339ea20ee365c8f4988f94d"
+source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
 dependencies = [
  "include_dir",
  "serde",
