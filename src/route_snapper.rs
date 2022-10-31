@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use geom::{Distance, GPSBounds, PolyLine, Pt2D};
+use abstutil::{deserialize_usize, serialize_usize};
+use geom::{GPSBounds, PolyLine, Pt2D};
 use osm2streets::StreetNetwork;
 use serde::{Deserialize, Serialize};
 
@@ -11,7 +12,6 @@ pub struct RouteSnapperMap {
     pub gps_bounds: GPSBounds,
     pub intersections: Vec<Pt2D>,
     pub roads: Vec<Road>,
-    pub road_lookup: HashMap<(IntersectionID, IntersectionID), RoadID>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -19,13 +19,24 @@ pub struct Road {
     pub i1: IntersectionID,
     pub i2: IntersectionID,
     pub center_pts: PolyLine,
-    pub length: Distance,
 }
 
 #[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct RoadID(usize);
+pub struct RoadID(
+    #[serde(
+        serialize_with = "serialize_usize",
+        deserialize_with = "deserialize_usize"
+    )]
+    usize,
+);
 #[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct IntersectionID(usize);
+pub struct IntersectionID(
+    #[serde(
+        serialize_with = "serialize_usize",
+        deserialize_with = "deserialize_usize"
+    )]
+    usize,
+);
 
 impl RouteSnapperMap {
     pub fn new(streets: &StreetNetwork) -> Self {
@@ -33,7 +44,6 @@ impl RouteSnapperMap {
             gps_bounds: streets.gps_bounds.clone(),
             intersections: Vec::new(),
             roads: Vec::new(),
-            road_lookup: HashMap::new(),
         };
 
         let mut id_lookup = HashMap::new();
@@ -44,14 +54,8 @@ impl RouteSnapperMap {
         for (id, r) in &streets.roads {
             let i1 = id_lookup[&id.i1];
             let i2 = id_lookup[&id.i2];
-            map.road_lookup.insert((i1, i2), RoadID(map.roads.len()));
             let center_pts = PolyLine::unchecked_new(r.osm_center_points.clone());
-            map.roads.push(Road {
-                i1,
-                i2,
-                length: center_pts.length(),
-                center_pts,
-            });
+            map.roads.push(Road { i1, i2, center_pts });
         }
 
         map
