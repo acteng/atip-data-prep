@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use abstutil::{deserialize_usize, serialize_usize};
 use geom::{GPSBounds, PolyLine, Pt2D};
 use osm2streets::StreetNetwork;
 use serde::{Deserialize, Serialize};
@@ -22,21 +21,9 @@ pub struct Road {
 }
 
 #[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct RoadID(
-    #[serde(
-        serialize_with = "serialize_usize",
-        deserialize_with = "deserialize_usize"
-    )]
-    usize,
-);
+pub struct RoadID(u32);
 #[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct IntersectionID(
-    #[serde(
-        serialize_with = "serialize_usize",
-        deserialize_with = "deserialize_usize"
-    )]
-    usize,
-);
+pub struct IntersectionID(u32);
 
 impl RouteSnapperMap {
     pub fn new(streets: &StreetNetwork) -> Self {
@@ -49,13 +36,16 @@ impl RouteSnapperMap {
         let mut id_lookup = HashMap::new();
         for (id, i) in &streets.intersections {
             map.intersections.push(i.point);
-            id_lookup.insert(*id, IntersectionID(id_lookup.len()));
+            id_lookup.insert(*id, IntersectionID(id_lookup.len() as u32));
         }
         for (id, r) in &streets.roads {
             let i1 = id_lookup[&id.i1];
             let i2 = id_lookup[&id.i2];
-            let center_pts = PolyLine::unchecked_new(r.osm_center_points.clone());
-            map.roads.push(Road { i1, i2, center_pts });
+            map.roads.push(Road {
+                i1,
+                i2,
+                center_pts: r.untrimmed_center_line.clone(),
+            });
         }
 
         map

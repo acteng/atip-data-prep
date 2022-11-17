@@ -17,7 +17,7 @@ fn main() {
         let streets = streets_reader::osm_to_street_network(
             &std::fs::read_to_string(osm_filename).unwrap(),
             Some(LonLat::read_geojson_polygon(&geojson_filename).unwrap()),
-            streets_reader::Options::default_for_side(osm2streets::DrivingSide::Left),
+            streets_reader::Options::default(),
             &mut timer,
         )
         .unwrap();

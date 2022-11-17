@@ -14,7 +14,7 @@ dependencies = [
 [[package]]
 name = "abstio"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
+source = "git+https://github.com/a-b-street/abstreet#6b8a54d031603c3eb668105840e85b9ceed74c33"
 dependencies = [
  "abstutil",
  "anyhow",
@@ -38,7 +38,7 @@ dependencies = [
 [[package]]
 name = "abstutil"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
+source = "git+https://github.com/a-b-street/abstreet#6b8a54d031603c3eb668105840e85b9ceed74c33"
 dependencies = [
  "anyhow",
  "bincode",
@@ -340,6 +340,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "driving-side"
+version = "0.1.0"
+source = "git+https://github.com/a-b-street/osm2lanes#e97599d62a45d63c12708a6ac53967fdf43d64b9"
+dependencies = [
+ "geo",
+ "geojson",
+]
+
+[[package]]
 name = "earcutr"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -551,10 +560,9 @@ dependencies = [
 [[package]]
 name = "geom"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
+source = "git+https://github.com/a-b-street/abstreet#6b8a54d031603c3eb668105840e85b9ceed74c33"
 dependencies = [
  "aabb-quadtree",
- "abstutil",
  "anyhow",
  "earcutr",
  "fs-err",
@@ -835,7 +843,7 @@ dependencies = [
 [[package]]
 name = "kml"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
+source = "git+https://github.com/a-b-street/abstreet#6b8a54d031603c3eb668105840e85b9ceed74c33"
 dependencies = [
  "abstio",
  "abstutil",
@@ -959,7 +967,7 @@ dependencies = [
 [[package]]
 name = "map_model"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
+source = "git+https://github.com/a-b-street/abstreet#6b8a54d031603c3eb668105840e85b9ceed74c33"
 dependencies = [
  "abstio",
  "abstutil",
@@ -1074,7 +1082,7 @@ dependencies = [
 [[package]]
 name = "osm-tag-schemes"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/osm2lanes#25ac3ccdc862d82293de05c0c3973047d214ea49"
+source = "git+https://github.com/a-b-street/osm2lanes#e97599d62a45d63c12708a6ac53967fdf43d64b9"
 dependencies = [
  "osm-tags",
  "strum 0.24.1",
@@ -1083,7 +1091,7 @@ dependencies = [
 [[package]]
 name = "osm-tags"
 version = "0.1.1"
-source = "git+https://github.com/a-b-street/osm2lanes#25ac3ccdc862d82293de05c0c3973047d214ea49"
+source = "git+https://github.com/a-b-street/osm2lanes#e97599d62a45d63c12708a6ac53967fdf43d64b9"
 dependencies = [
  "kstring",
 ]
@@ -1091,7 +1099,7 @@ dependencies = [
 [[package]]
 name = "osm2lanes"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/osm2lanes#25ac3ccdc862d82293de05c0c3973047d214ea49"
+source = "git+https://github.com/a-b-street/osm2lanes#e97599d62a45d63c12708a6ac53967fdf43d64b9"
 dependencies = [
  "celes",
  "locale-codes",
@@ -1103,7 +1111,7 @@ dependencies = [
 [[package]]
 name = "osm2streets"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/osm2streets#670bd72acd6d82ef43f325b8f64b12f6700ba68e"
+source = "git+https://github.com/a-b-street/osm2streets#4b529b38a4a5f9695039eff886ace1a9eedd4fd9"
 dependencies = [
  "aabb-quadtree",
  "abstutil",
@@ -1266,7 +1274,7 @@ dependencies = [
 [[package]]
 name = "raw_map"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
+source = "git+https://github.com/a-b-street/abstreet#6b8a54d031603c3eb668105840e85b9ceed74c33"
 dependencies = [
  "abstio",
  "abstutil",
@@ -1611,10 +1619,11 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "streets_reader"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/osm2streets#670bd72acd6d82ef43f325b8f64b12f6700ba68e"
+source = "git+https://github.com/a-b-street/osm2streets#4b529b38a4a5f9695039eff886ace1a9eedd4fd9"
 dependencies = [
  "abstutil",
  "anyhow",
+ "driving-side",
  "geom",
  "log",
  "osm2streets",
@@ -1846,7 +1855,7 @@ dependencies = [
 [[package]]
 name = "traffic_signal_data"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/abstreet#5273bad023eca870e9291e7847de7f0707f46de7"
+source = "git+https://github.com/a-b-street/abstreet#6b8a54d031603c3eb668105840e85b9ceed74c33"
 dependencies = [
  "include_dir",
  "serde",
