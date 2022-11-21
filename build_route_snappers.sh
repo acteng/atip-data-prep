@@ -6,7 +6,7 @@
 #set -e
 
 cargo build --release
-mkdir route-snappers
+mkdir -p route-snappers
 
 IFS=$'\n'
 for x in uk_osm/out/*; do
@@ -19,5 +19,5 @@ done
 aws s3 sync --dry route-snappers s3://abstreet/route-snappers/
 
 # Have to invalidate the CDN
-# Go to https://console.aws.amazon.com/cloudfront/v3/home?region=us-east-2#/distributions
+# Go to https://us-east-1.console.aws.amazon.com/cloudfront/v3/home?region=us-east-2#/distributions/ER5B3SJO4ND9D/invalidations/create
 # TODO Or fix IAM permissions and just: aws cloudfront create-invalidation --distribution-id ER5B3SJO4ND9D --paths '/route-snappers/*
