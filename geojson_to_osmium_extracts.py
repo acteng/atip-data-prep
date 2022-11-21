@@ -44,6 +44,12 @@ def main():
 
         for feature in gj["features"]:
             name = feature["properties"][args.name_key]
+
+            # Hack: if this is a multipolygon, reorder so that the polygon with
+            # most number of points is first. Only that one will be used.
+            if feature["geometry"]["type"] == "MultiPolygon":
+                feature["geometry"]["coordinates"].sort(reverse=True, key=lambda x: len(x[0]))
+
             with open(f"{name}.geojson", "w") as f:
                 f.write(json.dumps(feature))
             config["extracts"].append(
