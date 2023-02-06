@@ -1,32 +1,9 @@
-mod route_snapper;
-
 use abstutil::Timer;
-use geom::LonLat;
 use map_model::osm::RoadRank;
 use map_model::{Block, Map, Perimeter};
 
 fn main() {
     let mut timer = Timer::new("convert");
-
-    // osm.xml to StreetNetwork, for route-snapping
-    if true {
-        let osm_filename = std::env::args().nth(1).expect("no osm filename provided");
-        let geojson_filename = std::env::args()
-            .nth(2)
-            .expect("no geojson filename provided");
-        let streets = streets_reader::osm_to_street_network(
-            &std::fs::read_to_string(osm_filename).unwrap(),
-            Some(LonLat::read_geojson_polygon(&geojson_filename).unwrap()),
-            streets_reader::Options::default(),
-            &mut timer,
-        )
-        .unwrap();
-        let routes = route_snapper::RouteSnapperMap::new(&streets);
-        abstio::write_binary(
-            format!("{}.bin", abstutil::basename(geojson_filename)),
-            &routes,
-        );
-    }
 
     // Map to LTN areas
     if false {
