@@ -1,0 +1,15 @@
+{
+  "name": "fix_boundaries",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "run": "npx node index.js"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "type": "module",
+  "dependencies": {
+    "@turf/convex": "^6.5.0"
+  }
+}
