@@ -45,10 +45,8 @@ def main():
         for feature in gj["features"]:
             name = feature["properties"][args.name_key]
 
-            # Hack: if this is a multipolygon, reorder so that the polygon with
-            # most number of points is first. Only that one will be used.
-            if feature["geometry"]["type"] == "MultiPolygon":
-                feature["geometry"]["coordinates"].sort(reverse=True, key=lambda x: len(x[0]))
+            if feature["geometry"]["type"] != "Polygon":
+                print(f"{name} isn't a Polygon. MultiPolygon boundaries will only use the first arbitrary Polygon")
 
             with open(f"{name}.geojson", "w") as f:
                 f.write(json.dumps(feature))
