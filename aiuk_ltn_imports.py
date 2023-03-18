@@ -9,6 +9,6 @@ with open("authorities.geojson") as f:
 
     for feature in gj["features"]:
         if feature["properties"]["level"] == "LAD":
-            name = feature["properties"]["name"]
+            name = feature["properties"]["name"].replace(" ", "_").replace("-", "_").replace("'", "")
             with open(f"aiuk_boundaries/{name}.geojson", "w") as f:
                 f.write(json.dumps(feature))
