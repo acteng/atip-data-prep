@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# Writes a GeoJSON file, with one feature per square tile covering the UK. The output has problems.
 
 import json
 from shapely.geometry import Point, Polygon, shape
