@@ -2,10 +2,9 @@
 
 # Assumes split_uk_osm.sh is done
 
-# Note each pueue command runs independently, and you have to manually wait for
-# them and check status
 set -e
 
+# Build the import tool
 cd route_snapper/osm-to-route-snapper
 cargo build --release
 cd ../../
