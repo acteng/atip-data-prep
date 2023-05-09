@@ -7,4 +7,4 @@ it'll happen client-side dynamically as needed, maybe it'll evolve into a very
 elaborate two-way conflation and sync between upstream OSM data and ATIP.
 
 Note on submodules: after cloning this repo, you have to `git submodule init;
-git submodule update` before the `route_snapper` stuff works
+git submodule update` before the `route_snapper` code works
