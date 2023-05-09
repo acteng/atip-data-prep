@@ -22,5 +22,6 @@ done
 # Put in S3
 # prod: aws s3 sync --dry abstreet/data/system/zz/oneshot/maps/ s3://atip.uk/route-info/
 # dev: aws s3 sync --dry abstreet/data/system/zz/oneshot/maps/ s3://atip.uk/route-info-dev/
+# If the same files are going in dev and prod, this saves bandwidth: aws s3 sync --dry s3://atip.uk/route-info/ s3://atip.uk/route-info-dev/
 
 # Have to invalidate the CDN manually! Use the S3 console

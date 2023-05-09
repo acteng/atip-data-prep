@@ -33,13 +33,14 @@ ATIP's route snapper tool loads a binary file per authority area.
 
 To regenerate them:
 
-1.  Install [pueue](https://github.com/Nukesor/pueue)
-2.  Set up the submodules in this repo: `git submodule init && git submodule update`
-3.  Complete the section above to split OSM files
-4.  Make sure the pueue daemon is started, and tasks cleared out. (`pueued -d; pueue status; pueue clean`
-5.  Run `./build_route_snappers.sh`
-6.  Wait for all pueue commands to succeed (`pueue status`)
-7.  Manually upload to S3, following instructions in that script
+1.  Make sure you have about 25GB of disk free
+2.  Install [pueue](https://github.com/Nukesor/pueue)
+3.  Set up the submodules in this repo: `git submodule init && git submodule update`
+4.  Complete the section above to split OSM files
+5.  Make sure the pueue daemon is started, and tasks cleared out. (`pueued -d; pueue status; pueue clean`)
+6.  Run `./build_route_snappers.sh`
+7.  Wait for all pueue commands to succeed (`pueue status`)
+8.  Manually upload to S3, following instructions in that script
 
 ## Route info
 
