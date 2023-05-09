@@ -1,3 +1,6 @@
 [submodule "route_snapper"]
 	path = route_snapper
 	url = https://github.com/dabreegster/route_snapper
+[submodule "abstreet"]
+	path = abstreet
+	url = https://github.com/a-b-street/abstreet
