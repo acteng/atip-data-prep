@@ -1,4 +1,4 @@
-#!/bin/bash
+t!/bin/bash
 
 # Assumes split_uk_osm.sh is done
 
@@ -17,7 +17,8 @@ IFS=$'\n'
 for osm in uk_osm/out/*; do
 	geojson=$(basename $osm .osm).geojson
 	out=$(basename $osm .osm).bin
-	pueue add -w importer --escape cargo run --release -- "../$osm" "../uk_osm/$geojson" "../route_info_files/$out"
+	task=$(pueue add --print-task-id --working-directory importer --escape cargo run --release -- "../$osm" "../uk_osm/$geojson" "../route_info_files/$out")
+	pueue add --after $task --escape gzip "route_info_files/$out"
 done
 
 # Manually wait for pueue to finish
