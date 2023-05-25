@@ -1,4 +1,4 @@
-t!/bin/bash
+#!/bin/bash
 
 # Assumes split_uk_osm.sh is done
 
