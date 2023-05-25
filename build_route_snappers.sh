@@ -25,5 +25,6 @@ done
 # Put in S3
 # prod: aws s3 sync --dry route-snappers s3://atip.uk/route-snappers/
 # dev: aws s3 sync --dry route-snappers s3://atip.uk/route-snappers-dev/
+# If the same files are going in dev and prod, this saves bandwidth: aws s3 sync --dry s3://atip.uk/route-snappers/ s3://atip.uk/route-snappers-dev/
 
 # Have to invalidate the CDN manually! Use the S3 console
