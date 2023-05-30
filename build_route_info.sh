@@ -24,24 +24,11 @@ done
 # Manually wait for pueue to finish
 
 # Put in S3
-# prod: aws s3 sync --dry route_info_files/ s3://atip.uk/route-info/
-# dev: aws s3 sync --dry route_info_files/ s3://atip.uk/route-info-dev/
-# If the same files are going in dev and prod, this saves bandwidth: aws s3 sync --dry s3://atip.uk/route-info/ s3://atip.uk/route-info-dev/
+# prod: aws s3 sync --dry --content-encoding="gzip" route_info_files/ s3://atip.uk/route-info/
+# dev: aws s3 sync --dry --content-encoding="gzip" route_info_files/ s3://atip.uk/route-info-dev/
+# If the same files are going in dev and prod, this saves bandwidth: aws s3 sync --dry --content-encoding="gzip" s3://atip.uk/route-info/ s3://atip.uk/route-info-dev/
 
 # Make sure content-encoding is set to gzip for all the bin.gz files.
-# TODO On the next big upload, try adding the flag to the sync command above directly
-# To fix it after the fact:
-#
-# aws s3 cp \
-#        s3://atip.uk/route-info/ \       # or -dev
-#        s3://atip.uk/route-info/ \       # or -dev
-#        --exclude '*' \
-#        --include '*.gz' \
-#        --no-guess-mime-type \
-#        --content-encoding="gzip" \
-#        --metadata-directive="REPLACE" \
-#        --recursive
-#
 # You can test if this works: curl --head https://atip.uk/route-info/Derby.bin.gz | grep encoding
 
 # Have to invalidate the CDN manually! Use the S3 console
