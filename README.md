@@ -42,6 +42,10 @@ To regenerate them:
 7.  Wait for all pueue commands to succeed (`pueue status`)
 8.  Manually upload to S3, following instructions in that script
 
+To update to a newer commit in the [route-snapper
+repo](https://github.com/dabreegster/route_snapper), run `git submodule update
+--remote`.
+
 ## Route info
 
 ATIP also loads a binary A/B Street map model file per area, using it to answer things about routes.
