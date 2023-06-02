@@ -24,11 +24,16 @@ done
 # Manually wait for pueue to finish
 
 # Put in S3
-# prod: aws s3 sync --dry --content-encoding="gzip" route_info_files/ s3://atip.uk/route-info/
-# dev: aws s3 sync --dry --content-encoding="gzip" route_info_files/ s3://atip.uk/route-info-dev/
-# If the same files are going in dev and prod, this saves bandwidth: aws s3 sync --dry --content-encoding="gzip" s3://atip.uk/route-info/ s3://atip.uk/route-info-dev/
+#
+# Update "v2" as needed, and change the ATIP code to point to the new version.
+# The versioning scheme itself is MAJOR.MINOR, but not too critical, as there
+# are usually just 2 or 3 different deployed versions of ATIP at a time.
+#
+
+# aws s3 sync --dry --content-encoding="gzip" route_info_files/ s3://atip.uk/route-info/v2/
 
 # Make sure content-encoding is set to gzip for all the bin.gz files.
-# You can test if this works: curl --head https://atip.uk/route-info/Derby.bin.gz | grep encoding
+# You can test if this works: curl --head https://atip.uk/route-info/v2/Derby.bin.gz | grep encoding
 
-# Have to invalidate the CDN manually! Use the S3 console
+# If you've created a new version, you're done. If you overwrote existing
+# files, you have to invalidate the CDN manually! Use the S3 console
