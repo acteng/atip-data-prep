@@ -1,4 +1,4 @@
-# A/B Street to ATIP import
+# ATIP data prep
 
 This repo has some scripts to import data required by ATIP.
 
@@ -10,7 +10,7 @@ This repo has some scripts to import data required by ATIP.
 
 ## Splitting huge OSM files
 
-The pipelines in this repo need two files as input: an OSM XML file and a
+Some pipelines in this repo need two files as input: an OSM XML file and a
 GeoJSON file with a single polygon, representing the area clipped in that OSM
 file. For ATIP, we want to repeat this for every LAD and TA in the UK.
 
@@ -48,7 +48,8 @@ repo](https://github.com/dabreegster/route_snapper), run `git submodule update
 
 ## Route info
 
-ATIP also loads a binary A/B Street map model file per area, using it to answer things about routes.
+ATIP also loads a binary osm2streets file per area, using it to answer things
+about routes.
 
 To regenerate them, follow the same procedure as above, running
 `./build_route_info.sh` instead of `build_route_snappers.sh`. You will need to
