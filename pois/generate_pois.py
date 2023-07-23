@@ -14,28 +14,35 @@ def main():
     parser.add_argument("input", help="Path to england-latest.osm.pbf file", type=str)
     args = parser.parse_args()
 
-    generateSchools()
+    # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
+    # primary and secondary schools
+    generatePolygonAmenity(args, "school", "schools")
+
+    # Note https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dhospital doesn't
+    # cover all types of medical facility
+    generatePolygonAmenity(args, "hospital", "hospitals")
 
 
-def generateSchools():
+# Extract `amenity={amenity}` polygons from OSM, and only keep a name attribute.
+def generatePolygonAmenity(args, amenity, filename):
     # Remove files from any previous run
     try:
-        os.remove("schools.osm.pbf")
-        os.remove("schools.geojson")
+        os.remove(f"{filename}.osm.pbf")
+        os.remove(f"{filename}.geojson")
+        os.remove(f"{filename}.pmtiles")
     except:
         pass
 
-    # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
-    # primary and secondary schools. First extract a .osm.pbf with these
+    # First extract a .osm.pbf with all amenity={name} features
     # TODO Do we need nwr? We don't want points further on
     run(
         [
             "osmium",
             "tags-filter",
             args.input,
-            "nwr/amenity=school",
+            f"nwr/amenity={amenity}",
             "-o",
-            "schools.osm.pbf",
+            f"{filename}.osm.pbf",
         ]
     )
 
@@ -44,18 +51,18 @@ def generateSchools():
         [
             "osmium",
             "export",
-            "schools.osm.pbf",
+            f"{filename}.osm.pbf",
             "--geometry-type=polygon",
             "-o",
-            "schools.geojson",
+            f"{filename}.geojson",
         ]
     )
 
     # Only keep one property
-    remove_extra_properties("schools.geojson")
+    remove_extra_properties(f"{filename}.geojson")
 
     # Convert to pmtiles. Default options are fine.
-    run(["tippecanoe", "schools.geojson", "-o", "schools.pmtiles"])
+    run(["tippecanoe", f"{filename}.geojson", "-o", f"{filename}.pmtiles"])
 
 
 def run(args):

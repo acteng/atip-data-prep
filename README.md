@@ -62,7 +62,7 @@ the binary file format may be incompatible. Use `cargo update -p osm2streets`.
 
 ## POIs (points of interest)
 
-ATIP loads extra layers showing key destinations. These layers are
+ATIP loads extra layers showing key trip generators. These layers are
 England-wide, rather than being split into a file per area, because they're
 being used on the country-wide scheme browse page. Each layer is a single
 [PMTiles](https://protomaps.com/docs/pmtiles/) file.
@@ -73,7 +73,7 @@ To run this:
 2.  Install [osmium](https://osmcode.org/osmium-tool)
 3.  Install [tippecanoe](https://github.com/felt/tippecanoe) for transforming GeoJSON to PMTiles
 4.  Run `cd pois; generate_pois.py ../england-latest.osm.pbf`
-5.  Pick an arbitrary version number, and upload the file: `aws s3 cp --dry schools.pmtiles s3://atip.uk/layers/v1/`
+5.  Pick an arbitrary version number, and upload the file: `aws s3 cp --dry *.pmtiles s3://atip.uk/layers/v1/`
 
 You can debug a PMTiles file using <https://protomaps.github.io/PMTiles>.
 
