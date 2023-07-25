@@ -22,6 +22,7 @@ the future if needed.
 - [osmium](https://osmcode.org/osmium-tool)
 - [pueue](https://github.com/Nukesor/pueue)
 - [tippecanoe](https://github.com/felt/tippecanoe)
+- [GDAL](https://gdal.org/download.html)
 - The [aws CLI](https://aws.amazon.com/cli/)
   - Currently only Dustin has permission to push to the S3 bucket. This will
     transition to GCS in the future.
