@@ -2,11 +2,29 @@
 
 This repo has some scripts to import data required by ATIP.
 
+The sections below describe different portions of the repo. Files/directories not covered below include:
+
 - `authorities.geojson` has a Polygon boundary for every Local Authority District and Transport Authority
   - The data comes from https://github.com/acteng/boundaries, and then
     `fix_boundaries` is used to turn MultiPolygons into a single Polygon with
     convex hull.
 - Ignore the `experimental` directory; nothing is actively used there
+
+## Setup
+
+To run all of the scripts in this repo, you'll need a number of dependencies.
+Currently these are all run by Dustin on a local machine, with no
+performance/scaling problems at all. We can bundle dependencies in Docker in
+the future if needed.
+
+- Standard Unix tools: `unzip`, `wget`, `python3` (without any dependencies yet)
+- [Rust](https://www.rust-lang.org/tools/install)
+- [osmium](https://osmcode.org/osmium-tool)
+- [pueue](https://github.com/Nukesor/pueue)
+- [tippecanoe](https://github.com/felt/tippecanoe)
+- The [aws CLI](https://aws.amazon.com/cli/)
+  - Currently only Dustin has permission to push to the S3 bucket. This will
+    transition to GCS in the future.
 
 ## Splitting huge OSM files
 
@@ -17,9 +35,8 @@ file. For ATIP, we want to repeat this for every LAD and TA in the UK.
 To run this:
 
 1.  Make sure you have about 35GB of disk free
-2.  Install [osmium](https://osmcode.org/osmium-tool)
-3.  Manually adjust scripts if needed, based on your own computer's resources
-4.  Run `./split_uk_osm.sh`
+2.  Manually adjust scripts if needed, based on your own computer's resources
+3.  Run `./split_uk_osm.sh`
 
 This will download England-wide osm.pbf from Geofabrik, produce a bunch of
 GeoJSON files and Osmium extract configs (`geojson_to_osmium_extracts.py`), and
@@ -34,13 +51,12 @@ ATIP's route snapper tool loads a binary file per authority area.
 To regenerate them:
 
 1.  Make sure you have about 25GB of disk free
-2.  Install [pueue](https://github.com/Nukesor/pueue)
-3.  Set up the submodules in this repo: `git submodule init && git submodule update`
-4.  Complete the section above to split OSM files
-5.  Make sure the pueue daemon is started, and tasks cleared out. (`pueued -d; pueue status; pueue clean`)
-6.  Run `./build_route_snappers.sh`
-7.  Wait for all pueue commands to succeed (`pueue status`)
-8.  Manually upload to S3, following instructions in that script
+2.  Set up the submodules in this repo: `git submodule init && git submodule update`
+3.  Complete the section above to split OSM files
+4.  Make sure the pueue daemon is started, and tasks cleared out. (`pueued -d; pueue status; pueue clean`)
+5.  Run `./build_route_snappers.sh`
+6.  Wait for all pueue commands to succeed (`pueue status`)
+7.  Manually upload to S3, following instructions in that script
 
 To update to a newer commit in the [route-snapper
 repo](https://github.com/dabreegster/route_snapper), run `git submodule update
@@ -60,20 +76,23 @@ sync with the git version used by ATIP's [route info
 crate](https://github.com/acteng/atip/tree/map_model/route_info). Otherwise,
 the binary file format may be incompatible. Use `cargo update -p osm2streets`.
 
-## POIs (points of interest)
+## Extra contextual layers
 
-ATIP loads extra layers showing key trip generators. These layers are
-England-wide, rather than being split into a file per area, because they're
-being used on the country-wide scheme browse page. Each layer is a single
-[PMTiles](https://protomaps.com/docs/pmtiles/) file.
+ATIP can display extra contextual layers:
+
+- POIs (points of interest) from OpenStreetMap, like schools and hospitals
+- the [Major Road Network](https://www.data.gov.uk/dataset/95f58bfa-13d6-4657-9d6f-020589498cfd/major-road-network)
+
+These layers are England-wide, rather than being split into a file per area,
+because they're being used on the country-wide scheme browse page. Each layer
+is a single GeoJSON file if it's small enough, or
+[PMTiles](https://protomaps.com/docs/pmtiles/) for larger ones.
 
 To run this:
 
 1.  Get `england-latest.osm.pbf` from Geofabrik. The `split_uk_osm.sh` script above does this.
-2.  Install [osmium](https://osmcode.org/osmium-tool)
-3.  Install [tippecanoe](https://github.com/felt/tippecanoe) for transforming GeoJSON to PMTiles
-4.  Run `cd pois; generate_pois.py ../england-latest.osm.pbf`
-5.  Pick an arbitrary version number, and upload the file: `aws s3 cp --dry *.pmtiles s3://atip.uk/layers/v1/`
+2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf`
+3.  Pick an arbitrary version number, and upload the files: `aws s3 cp --dry *.pmtiles s3://atip.uk/layers/v1/`
 
 You can debug a PMTiles file using <https://protomaps.github.io/PMTiles>.
 
