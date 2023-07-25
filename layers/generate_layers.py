@@ -6,12 +6,18 @@ import os
 import subprocess
 
 
-# This tool takes an England-wide osm.pbf (from
-# http://download.geofabrik.de/europe/great-britain/england-latest.osm.pbf) and
-# generates files with point-of-interest layers for ATIP.
+# This tool generates multiple outputs:
+# - schools.pmtiles
+# - hospitals.pmtiles
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("input", help="Path to england-latest.osm.pbf file", type=str)
+    parser.add_argument(
+        "-i",
+        "--osm_input",
+        help="Path to england-latest.osm.pbf file",
+        type=str,
+        required=True,
+    )
     args = parser.parse_args()
 
     # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
@@ -39,7 +45,7 @@ def generatePolygonAmenity(args, amenity, filename):
         [
             "osmium",
             "tags-filter",
-            args.input,
+            args.osm_input,
             f"nwr/amenity={amenity}",
             "-o",
             f"{filename}.osm.pbf",
