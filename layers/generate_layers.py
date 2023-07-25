@@ -3,12 +3,14 @@
 import argparse
 import json
 import os
+import shutil
 import subprocess
 
 
 # This tool generates multiple outputs:
 # - schools.pmtiles
 # - hospitals.pmtiles
+# - mrn.pmtiles
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -27,6 +29,8 @@ def main():
     # Note https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dhospital doesn't
     # cover all types of medical facility
     generatePolygonAmenity(args, "hospital", "hospitals")
+
+    makeMRN()
 
 
 # Extract `amenity={amenity}` polygons from OSM, and only keep a name attribute.
@@ -71,6 +75,64 @@ def generatePolygonAmenity(args, amenity, filename):
     run(["tippecanoe", f"{filename}.geojson", "-o", f"{filename}.pmtiles"])
 
 
+def makeMRN():
+    # Remove files from any previous run
+    try:
+        os.remove("Major_Road_Network_2018_Open_Roads.zip")
+        os.remove("mrn.pmtiles")
+        shutil.rmtree("mrn")
+    except:
+        pass
+
+    # Get the shapefile
+    run(
+        [
+            "wget",
+            "https://maps.dft.gov.uk/major-road-network-shapefile/Major_Road_Network_2018_Open_Roads.zip",
+        ]
+    )
+    run(["unzip", "Major_Road_Network_2018_Open_Roads.zip", "-d", "mrn"])
+
+    # Convert to GeoJSON, projecting to WGS84
+    run(
+        [
+            "ogr2ogr",
+            "-f",
+            "GeoJSON",
+            "mrn/mrn.geojson",
+            "-t_srs",
+            "EPSG:4326",
+            "mrn/Major_Road_Network_2018_Open_Roads.shp",
+        ]
+    )
+
+    # Clean up the file
+    path = "mrn/mrn.geojson"
+    print(f"Cleaning up {path}")
+    gj = {}
+    with open(path) as f:
+        gj = json.load(f)
+        # Remove unnecessary attributes
+        del gj["name"]
+        del gj["crs"]
+        for feature in gj["features"]:
+            # Remove all properties except for "name1", and rename it
+            props = {}
+            name = feature["properties"].get("name1")
+            if name:
+                props["name"] = name
+            feature["properties"] = props
+
+            feature["geometry"]["coordinates"] = trim_precision(
+                feature["geometry"]["coordinates"]
+            )
+    with open(path, "w") as f:
+        f.write(json.dumps(gj))
+
+    # Convert to pmtiles
+    run(["tippecanoe", f"mrn/mrn.geojson", "-o", f"mrn.pmtiles"])
+
+
 def run(args):
     print(">", " ".join(args))
     subprocess.run(args, check=True)
@@ -92,6 +154,17 @@ def remove_extra_properties(path):
 
     with open(path, "w") as f:
         f.write(json.dumps(gj))
+
+
+# Round coordinates to 6 decimal places. Takes feature.geometry.coordinates,
+# handling any type.
+def trim_precision(data):
+    if isinstance(data, list):
+        return [trim_precision(x) for x in data]
+    elif isinstance(data, float):
+        return round(data, 6)
+    else:
+        raise Exception(f"Unexpected data within coordinates: {data}")
 
 
 if __name__ == "__main__":
