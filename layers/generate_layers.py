@@ -32,6 +32,8 @@ def main():
 
     makeMRN()
 
+    makeWards()
+
 
 # Extract `amenity={amenity}` polygons from OSM, and only keep a name attribute.
 def generatePolygonAmenity(args, amenity, filename):
@@ -79,8 +81,8 @@ def makeMRN():
     # Remove files from any previous run
     try:
         os.remove("Major_Road_Network_2018_Open_Roads.zip")
-        os.remove("mrn.pmtiles")
         shutil.rmtree("mrn")
+        os.remove("mrn.pmtiles")
     except:
         pass
 
@@ -131,6 +133,47 @@ def makeMRN():
 
     # Convert to pmtiles
     run(["tippecanoe", f"mrn/mrn.geojson", "-o", f"mrn.pmtiles"])
+
+
+def makeWards():
+    # Remove files from any previous run
+    try:
+        os.remove("boundary_lines.zip")
+        shutil.rmtree("boundary_lines")
+        os.remove("wards.pmtiles")
+    except:
+        pass
+
+    # Get the geopackage
+    run(
+        [
+            "wget",
+            # From https://osdatahub.os.uk/downloads/open/BoundaryLine
+            "https://api.os.uk/downloads/v1/products/BoundaryLine/downloads?area=GB&format=GeoPackage&redirect",
+            "-O",
+            "boundary_lines.zip",
+        ]
+    )
+    run(["unzip", "boundary_lines.zip", "-d", "boundary_lines"])
+
+    # Convert to GeoJSON, projecting to WGS84. Only grab one layer.
+    run(
+        [
+            "ogr2ogr",
+            "-f",
+            "GeoJSON",
+            "boundary_lines/wards.geojson",
+            "-t_srs",
+            "EPSG:4326",
+            "boundary_lines/Data/bdline_gb.gpkg",
+            "-sql",
+            # Just get a few fields from one layer, and filter for England
+            "SELECT Name, Census_Code, geometry FROM westminster_const WHERE Census_Code LIKE 'E%'",
+        ]
+    )
+
+    # Convert to pmtiles
+    run(["tippecanoe", f"boundary_lines/wards.geojson", "-o", f"wards.pmtiles"])
 
 
 def run(args):

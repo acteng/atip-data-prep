@@ -83,6 +83,7 @@ ATIP can display extra contextual layers:
 
 - POIs (points of interest) from OpenStreetMap, like schools and hospitals
 - the [Major Road Network](https://www.data.gov.uk/dataset/95f58bfa-13d6-4657-9d6f-020589498cfd/major-road-network)
+- Parliament constituency boundaries, from [OS Boundary-Line](https://www.ordnancesurvey.co.uk/products/boundary-line)
 
 These layers are England-wide, rather than being split into a file per area,
 because they're being used on the country-wide scheme browse page. Each layer
