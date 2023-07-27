@@ -70,7 +70,6 @@ def download_from_arcgis_online(serviceItemId, output_file, force=False):
 #Code from https://github.com/dabreegster/popgetter/tree/main
 def download_vehicle_ownership(census_url, working_dir):
     print("Retrieving Vehicle Ownership Census Data")
-    # TODO This doesn't give programmatic access to the name of the downloaded file. This is a problem if/when the url's slug contains many parameters (where the parameter order is not guaranteed or if the parameter string is not a valid filename for all OSes) 
     result = subprocess.check_call(["wget", "-N", census_url], cwd=working_dir)
     print(f"result = {result}")
 
@@ -98,6 +97,8 @@ carOwnerFile = 'TS045-2021-3-filtered-2023-03-13T16 49 47Z.csv'
 
 #OAs shapefile as geopandas dataframe
 oas = gpd.read_file(output_areas_geojson_path)
+print(oas.crs)
+
 #Car ownership data
 carsRaw = pd.read_csv('{}/{}'.format(WORKING_DIR,carOwnerFile))
 
@@ -148,6 +149,6 @@ cars['Avg Cars per HH Bands'] = np.select(conditionsNumCars, choicesNumCars, def
 print(cars['Avg Cars per HH Bands'].value_counts())
 
 #%% Output data
-output_file = 'car-ownership-layer.csv'
-cars = cars.merge(oas[['OA21CD','geometry']],left_index = True, right_on = 'OA21CD')
-cars.to_csv('{}/{}'.format(WORKING_DIR,output_file))
+output_file = 'car-ownership-layer.geojson'
+output_data = oas[['OA21CD','geometry']].merge(cars, left_on = 'OA21CD', right_index = True)
+output_data.to_file('{}/{}'.format(WORKING_DIR,output_file), driver="GeoJSON")
