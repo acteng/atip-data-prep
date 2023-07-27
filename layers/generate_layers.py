@@ -32,7 +32,7 @@ def main():
 
     makeMRN()
 
-    makeWards()
+    makeParliamentaryConstituencies()
 
 
 # Extract `amenity={amenity}` polygons from OSM, and only keep a name attribute.
@@ -135,12 +135,12 @@ def makeMRN():
     run(["tippecanoe", f"mrn/mrn.geojson", "-o", f"mrn.pmtiles"])
 
 
-def makeWards():
+def makeParliamentaryConstituencies():
     # Remove files from any previous run
     try:
         os.remove("boundary_lines.zip")
         shutil.rmtree("boundary_lines")
-        os.remove("wards.pmtiles")
+        os.remove("parliamentary_constituencies.pmtiles")
     except:
         pass
 
@@ -162,7 +162,7 @@ def makeWards():
             "ogr2ogr",
             "-f",
             "GeoJSON",
-            "boundary_lines/wards.geojson",
+            "boundary_lines/parliamentary_constituencies.geojson",
             "-t_srs",
             "EPSG:4326",
             "boundary_lines/Data/bdline_gb.gpkg",
@@ -173,7 +173,14 @@ def makeWards():
     )
 
     # Convert to pmtiles
-    run(["tippecanoe", f"boundary_lines/wards.geojson", "-o", f"wards.pmtiles"])
+    run(
+        [
+            "tippecanoe",
+            f"boundary_lines/parliamentary_constituencies.geojson",
+            "-o",
+            f"parliamentary_constituencies.pmtiles",
+        ]
+    )
 
 
 def run(args):
