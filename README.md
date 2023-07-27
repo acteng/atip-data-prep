@@ -94,7 +94,7 @@ To run this:
 
 1.  Get `england-latest.osm.pbf` from Geofabrik. The `split_uk_osm.sh` script above does this.
 2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf`
-3.  Pick an arbitrary version number, and upload the files: `aws s3 cp --dry *.pmtiles s3://atip.uk/layers/v1/`
+3.  Pick an arbitrary version number, and upload the files: `for x in *.pmtiles; do aws s3 cp --dry $x s3://atip.uk/layers/v1/; done`
 
 You can debug a PMTiles file using <https://protomaps.github.io/PMTiles>.
 

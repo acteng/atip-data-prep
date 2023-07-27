@@ -73,8 +73,16 @@ def generatePolygonAmenity(args, amenity, filename):
     # Only keep one property
     remove_extra_properties(f"{filename}.geojson")
 
-    # Convert to pmtiles. Default options are fine.
-    run(["tippecanoe", f"{filename}.geojson", "-o", f"{filename}.pmtiles"])
+    # Convert to pmtiles
+    run(
+        [
+            "tippecanoe",
+            f"{filename}.geojson",
+            "--generate-ids",
+            "-o",
+            f"{filename}.pmtiles",
+        ]
+    )
 
 
 def makeMRN():
@@ -132,7 +140,7 @@ def makeMRN():
         f.write(json.dumps(gj))
 
     # Convert to pmtiles
-    run(["tippecanoe", f"mrn/mrn.geojson", "-o", f"mrn.pmtiles"])
+    run(["tippecanoe", "mrn/mrn.geojson", "--generate-ids", "-o", "mrn.pmtiles"])
 
 
 def makeParliamentaryConstituencies():
@@ -176,9 +184,10 @@ def makeParliamentaryConstituencies():
     run(
         [
             "tippecanoe",
-            f"boundary_lines/parliamentary_constituencies.geojson",
+            "boundary_lines/parliamentary_constituencies.geojson",
+            "--generate-ids",
             "-o",
-            f"parliamentary_constituencies.pmtiles",
+            "parliamentary_constituencies.pmtiles",
         ]
     )
 
