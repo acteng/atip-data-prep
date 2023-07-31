@@ -221,7 +221,6 @@ def makeLocalAndCombinedAuthorities():
             "tippecanoe",
             "../data/Local_Authority_Districts_Reprojected.geojson",
             "--generate-ids",
-            "-zg",
             "-o",
             "../data/local_authorities.pmtiles",
         ]
@@ -233,7 +232,6 @@ def makeLocalAndCombinedAuthorities():
             "tippecanoe",
             "../data/Combined_Authorities_Reprojected.geojson",
             "--generate-ids",
-            "-zg",
             "-o",
             "../data/combined_authorities.pmtiles",
         ]
