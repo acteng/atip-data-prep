@@ -199,41 +199,43 @@ def makeLocalAndCombinedAuthorities():
     run(
         [
             "ogr2ogr",
+            "../data/Local_Authority_Districts_Reprojected.geojson",
             "-t_srs",
-            "urn:ogc:def:crs:OGC:1.3:CRS84",
-            "Local_Authority_Districts_Reprojected.geojson",
-            "Local_Authority_Districts_December_2022_UK_BUC_V2_-5963189729337928393.geojson",
+            "EPSG:4326",
+            "../data/Local_Authority_Districts_December_2022_UK_BUC_V2_-5963189729337928393.geojson",
         ]
     )
     run(
         [
             "ogr2ogr",
-            "-t_srs urn:ogc:def:crs:OGC:1.3:CRS84",
-            "Combined_Authorities_Reprojected.geojson",
-            "Combined_Authorities_December_2022_EN_BUC_1154653457304546671.geojson",
+            "../data/Combined_Authorities_Reprojected.geojson",
+            "-t_srs",
+            "EPSG:4326",
+            "../data/Combined_Authorities_December_2022_EN_BUC_1154653457304546671.geojson",
         ]
     )
 
+    run(["rm", "../data/local_authorities.pmtiles"])
     run(
         [
             "tippecanoe",
-            "-s EPSG:27700",
             "../data/Local_Authority_Districts_Reprojected.geojson",
             "--generate-ids",
             "-zg",
             "-o",
-            "local_authorities.pmtiles",
+            "../data/local_authorities.pmtiles",
         ]
     )
 
+    run(["rm", "../data/combined_authorities.pmtiles"])
     run(
         [
             "tippecanoe",
-            "../data/Combined_Authorities_Reporojected.geojson",
+            "../data/Combined_Authorities_Reprojected.geojson",
             "--generate-ids",
             "-zg",
             "-o",
-            "combined_authorities.pmtiles",
+            "../data/combined_authorities.pmtiles",
         ]
     )
 
