@@ -3,7 +3,6 @@
 import argparse
 import json
 import os
-import shutil
 import subprocess
 
 
@@ -21,6 +20,7 @@ def main():
     args = parser.parse_args()
 
     made_any = False
+    os.makedirs("output", exist_ok=True)
 
     if args.schools:
         made_any = True
@@ -53,13 +53,8 @@ def generatePolygonAmenity(osm_input, amenity, filename):
     if not osm_input:
         raise Exception("You must specify --osm_input")
 
-    # Remove files from any previous run
-    try:
-        os.remove(f"{filename}.osm.pbf")
-        os.remove(f"{filename}.geojson")
-        os.remove(f"{filename}.pmtiles")
-    except:
-        pass
+    tmp = f"tmp_{filename}"
+    os.makedirs(tmp, exist_ok=True)
 
     # First extract a .osm.pbf with all amenity={name} features
     # TODO Do we need nwr? We don't want points further on
@@ -67,10 +62,10 @@ def generatePolygonAmenity(osm_input, amenity, filename):
         [
             "osmium",
             "tags-filter",
-            args.osm_input,
+            osm_input,
             f"nwr/amenity={amenity}",
             "-o",
-            f"{filename}.osm.pbf",
+            f"{tmp}/extract.osm.pbf",
         ]
     )
 
@@ -79,45 +74,42 @@ def generatePolygonAmenity(osm_input, amenity, filename):
         [
             "osmium",
             "export",
-            f"{filename}.osm.pbf",
+            f"{tmp}/extract.osm.pbf",
             "--geometry-type=polygon",
             "-o",
-            f"{filename}.geojson",
+            f"{tmp}/extract.geojson",
         ]
     )
 
     # Only keep one property
-    remove_extra_properties(f"{filename}.geojson")
+    remove_extra_properties(f"{tmp}/extract.geojson")
 
     # Convert to pmtiles
     run(
         [
             "tippecanoe",
-            f"{filename}.geojson",
+            f"{tmp}/extract.geojson",
             "--generate-ids",
             "-o",
-            f"{filename}.pmtiles",
+            f"output/{filename}.pmtiles",
         ]
     )
 
 
 def makeMRN():
-    # Remove files from any previous run
-    try:
-        os.remove("Major_Road_Network_2018_Open_Roads.zip")
-        shutil.rmtree("mrn")
-        os.remove("mrn.pmtiles")
-    except:
-        pass
+    tmp = "tmp_mrn"
+    os.makedirs(tmp, exist_ok=True)
 
     # Get the shapefile
     run(
         [
             "wget",
             "https://maps.dft.gov.uk/major-road-network-shapefile/Major_Road_Network_2018_Open_Roads.zip",
+            "-O",
+            f"{tmp}/Major_Road_Network_2018_Open_Roads.zip",
         ]
     )
-    run(["unzip", "Major_Road_Network_2018_Open_Roads.zip", "-d", "mrn"])
+    run(["unzip", f"{tmp}/Major_Road_Network_2018_Open_Roads.zip", "-d", tmp])
 
     # Convert to GeoJSON, projecting to WGS84
     run(
@@ -125,15 +117,15 @@ def makeMRN():
             "ogr2ogr",
             "-f",
             "GeoJSON",
-            "mrn/mrn.geojson",
+            f"{tmp}/mrn.geojson",
             "-t_srs",
             "EPSG:4326",
-            "mrn/Major_Road_Network_2018_Open_Roads.shp",
+            f"{tmp}/Major_Road_Network_2018_Open_Roads.shp",
         ]
     )
 
     # Clean up the file
-    path = "mrn/mrn.geojson"
+    path = f"{tmp}/mrn.geojson"
     print(f"Cleaning up {path}")
     gj = {}
     with open(path) as f:
@@ -156,17 +148,12 @@ def makeMRN():
         f.write(json.dumps(gj))
 
     # Convert to pmtiles
-    run(["tippecanoe", "mrn/mrn.geojson", "--generate-ids", "-o", "mrn.pmtiles"])
+    run(["tippecanoe", path, "--generate-ids", "-o", "output/mrn.pmtiles"])
 
 
 def makeParliamentaryConstituencies():
-    # Remove files from any previous run
-    try:
-        os.remove("boundary_lines.zip")
-        shutil.rmtree("boundary_lines")
-        os.remove("parliamentary_constituencies.pmtiles")
-    except:
-        pass
+    tmp = "tmp_parliamentary_constituencies"
+    os.makedirs(tmp, exist_ok=True)
 
     # Get the geopackage
     run(
@@ -175,10 +162,10 @@ def makeParliamentaryConstituencies():
             # From https://osdatahub.os.uk/downloads/open/BoundaryLine
             "https://api.os.uk/downloads/v1/products/BoundaryLine/downloads?area=GB&format=GeoPackage&redirect",
             "-O",
-            "boundary_lines.zip",
+            f"{tmp}/boundary_lines.zip",
         ]
     )
-    run(["unzip", "boundary_lines.zip", "-d", "boundary_lines"])
+    run(["unzip", f"{tmp}/boundary_lines.zip", "-d", tmp])
 
     # Convert to GeoJSON, projecting to WGS84. Only grab one layer.
     run(
@@ -186,10 +173,10 @@ def makeParliamentaryConstituencies():
             "ogr2ogr",
             "-f",
             "GeoJSON",
-            "boundary_lines/parliamentary_constituencies.geojson",
+            f"{tmp}/parliamentary_constituencies.geojson",
             "-t_srs",
             "EPSG:4326",
-            "boundary_lines/Data/bdline_gb.gpkg",
+            f"{tmp}/Data/bdline_gb.gpkg",
             "-sql",
             # Just get a few fields from one layer, and filter for England
             "SELECT Name, Census_Code, geometry FROM westminster_const WHERE Census_Code LIKE 'E%'",
@@ -200,10 +187,10 @@ def makeParliamentaryConstituencies():
     run(
         [
             "tippecanoe",
-            "boundary_lines/parliamentary_constituencies.geojson",
+            f"{tmp}/parliamentary_constituencies.geojson",
             "--generate-ids",
             "-o",
-            "parliamentary_constituencies.pmtiles",
+            "output/parliamentary_constituencies.pmtiles",
         ]
     )
 
