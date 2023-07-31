@@ -18,6 +18,8 @@ def main():
         help="Path to the manually downloaded Wards_(May_2023)_Boundaries_UK_BGC.geojson",
         type=str,
     )
+    parser.add_argument("--combined_authorities", action="store_true")
+    parser.add_argument("--local_authority_districts", action="store_true")
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -50,6 +52,14 @@ def main():
     if args.wards:
         made_any = True
         makeWards(args.wards)
+
+    if args.combined_authorities:
+        made_any = True
+        makeCombinedAuthorities()
+
+    if args.local_authority_districts:
+        made_any = True
+        makeLocalAuthorityDistricts()
 
     if not made_any:
         print(
@@ -246,6 +256,93 @@ def makeWards(path):
             f"output/wards.pmtiles",
         ]
     )
+
+
+def makeCombinedAuthorities():
+    tmp = "tmp_combined_authorities"
+    os.makedirs(tmp, exist_ok=True)
+
+    # Reproject to WGS84
+    run(
+        [
+            "ogr2ogr",
+            "-f",
+            "GeoJSON",
+            f"{tmp}/boundary.geojson",
+            "-t_srs",
+            "EPSG:4326",
+            "input/Combined_Authorities_December_2022_EN_BUC_1154653457304546671.geojson",
+        ]
+    )
+
+    # Clean up the file. Note the features already have IDs.
+    print(f"Cleaning up {tmp}/boundary.geojson")
+    gj = {}
+    with open(f"{tmp}/boundary.geojson") as f:
+        gj = json.load(f)
+        # Remove unnecessary attributes
+        del gj["name"]
+        del gj["crs"]
+
+        for feature in gj["features"]:
+            # Remove most properties, and rename a few
+            props = {}
+            props["CAUTH22CD"] = feature["properties"]["CAUTH22CD"]
+            props["name"] = feature["properties"]["CAUTH22NM"]
+            feature["properties"] = props
+
+            feature["geometry"]["coordinates"] = trim_precision(
+                feature["geometry"]["coordinates"]
+            )
+    # The final file is tiny; don't bother with pmtiles
+    with open("output/combined_authorities.geojson", "w") as f:
+        f.write(json.dumps(gj))
+
+
+def makeLocalAuthorityDistricts():
+    tmp = "tmp_local_authority_districts"
+    os.makedirs(tmp, exist_ok=True)
+
+    # Reproject to WGS84
+    run(
+        [
+            "ogr2ogr",
+            "-f",
+            "GeoJSON",
+            f"{tmp}/boundary.geojson",
+            "-t_srs",
+            "EPSG:4326",
+            "input/Local_Authority_Districts_May_2023_UK_BUC_V2_-7390714061867823479.geojson",
+        ]
+    )
+
+    # Clean up the file. Note the features already have IDs.
+    print(f"Cleaning up {tmp}/boundary.geojson")
+    gj = {}
+    with open(f"{tmp}/boundary.geojson") as f:
+        gj = json.load(f)
+        # Remove unnecessary attributes
+        del gj["name"]
+        del gj["crs"]
+
+        # Only keep England
+        gj["features"] = list(
+            filter(lambda f: f["properties"]["LAD23CD"][0] == "E", gj["features"])
+        )
+
+        for feature in gj["features"]:
+            # Remove most properties, and rename a few
+            props = {}
+            props["LAD23CD"] = feature["properties"]["LAD23CD"]
+            props["name"] = feature["properties"]["LAD23NM"]
+            feature["properties"] = props
+
+            feature["geometry"]["coordinates"] = trim_precision(
+                feature["geometry"]["coordinates"]
+            )
+    # The final file is tiny; don't bother with pmtiles
+    with open("output/local_authority_districts.geojson", "w") as f:
+        f.write(json.dumps(gj))
 
 
 def run(args):
