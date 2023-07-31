@@ -13,6 +13,11 @@ def main():
     parser.add_argument("--hospitals", action="store_true")
     parser.add_argument("--mrn", action="store_true")
     parser.add_argument("--parliamentary_constituencies", action="store_true")
+    parser.add_argument(
+        "--wards",
+        help="Path to the manually downloaded Wards_(May_2023)_Boundaries_UK_BGC.geojson",
+        type=str,
+    )
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -41,6 +46,10 @@ def main():
     if args.parliamentary_constituencies:
         made_any = True
         makeParliamentaryConstituencies()
+
+    if args.wards:
+        made_any = True
+        makeWards(args.wards)
 
     if not made_any:
         print(
@@ -191,6 +200,50 @@ def makeParliamentaryConstituencies():
             "--generate-ids",
             "-o",
             "output/parliamentary_constituencies.pmtiles",
+        ]
+    )
+
+
+# You have to manually download the GeoJSON file from https://geoportal.statistics.gov.uk/datasets/ons::wards-may-2023-boundaries-uk-bgc/explore and pass in the path here (until we can automate this)
+def makeWards(path):
+    tmp = "tmp_wards"
+    os.makedirs(tmp, exist_ok=True)
+
+    # Clean up the file
+    print(f"Cleaning up {path}")
+    gj = {}
+    with open(path) as f:
+        gj = json.load(f)
+        # Remove unnecessary attributes
+        del gj["name"]
+        del gj["crs"]
+
+        # Only keep England
+        gj["features"] = list(
+            filter(lambda f: f["properties"]["WD23CD"][0] == "E", gj["features"])
+        )
+
+        for feature in gj["features"]:
+            # Remove most properties, and rename a few
+            props = {}
+            props["WD23CD"] = feature["properties"]["WD23CD"]
+            props["name"] = feature["properties"]["WD23NM"]
+            feature["properties"] = props
+
+            feature["geometry"]["coordinates"] = trim_precision(
+                feature["geometry"]["coordinates"]
+            )
+    with open(f"{tmp}/wards.geojson", "w") as f:
+        f.write(json.dumps(gj))
+
+    # Convert to pmtiles
+    run(
+        [
+            "tippecanoe",
+            f"{tmp}/wards.geojson",
+            "--generate-ids",
+            "-o",
+            f"output/wards.pmtiles",
         ]
     )
 
