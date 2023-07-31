@@ -7,36 +7,52 @@ import shutil
 import subprocess
 
 
-# This tool generates multiple outputs:
-# - schools.pmtiles
-# - hospitals.pmtiles
-# - mrn.pmtiles
 def main():
     parser = argparse.ArgumentParser()
+    # Possible outputs to generate
+    parser.add_argument("--schools", action="store_true")
+    parser.add_argument("--hospitals", action="store_true")
+    parser.add_argument("--mrn", action="store_true")
+    parser.add_argument("--parliamentary_constituencies", action="store_true")
+    # Inputs required for some outputs
     parser.add_argument(
-        "-i",
-        "--osm_input",
-        help="Path to england-latest.osm.pbf file",
-        type=str,
-        required=True,
+        "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
     )
     args = parser.parse_args()
 
-    # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
-    # primary and secondary schools
-    generatePolygonAmenity(args, "school", "schools")
+    made_any = False
 
-    # Note https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dhospital doesn't
-    # cover all types of medical facility
-    generatePolygonAmenity(args, "hospital", "hospitals")
+    if args.schools:
+        made_any = True
+        # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
+        # primary and secondary schools
+        generatePolygonAmenity(args.osm_input, "school", "schools")
 
-    makeMRN()
+    if args.hospitals:
+        made_any = True
+        # Note https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dhospital doesn't
+        # cover all types of medical facility
+        generatePolygonAmenity(args.osm_input, "hospital", "hospitals")
 
-    makeParliamentaryConstituencies()
+    if args.mrn:
+        made_any = True
+        makeMRN()
+
+    if args.parliamentary_constituencies:
+        made_any = True
+        makeParliamentaryConstituencies()
+
+    if not made_any:
+        print(
+            "Didn't create anything. Call with --help to see possible layers that can be created"
+        )
 
 
 # Extract `amenity={amenity}` polygons from OSM, and only keep a name attribute.
-def generatePolygonAmenity(args, amenity, filename):
+def generatePolygonAmenity(osm_input, amenity, filename):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+
     # Remove files from any previous run
     try:
         os.remove(f"{filename}.osm.pbf")
