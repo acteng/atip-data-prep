@@ -202,7 +202,7 @@ def makeLocalAndCombinedAuthorities():
             "../data/Local_Authority_Districts_Reprojected.geojson",
             "-t_srs",
             "EPSG:4326",
-            "../data/Local_Authority_Districts_December_2022_UK_BUC_V2_-5963189729337928393.geojson",
+            "../data/Local_Authority_Districts_May_2023_UK_BUC_V2_-7390714061867823479.geojson",
         ]
     )
     run(

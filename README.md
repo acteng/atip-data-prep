@@ -90,7 +90,7 @@ because they're being used on the country-wide scheme browse page. Each layer
 is a single GeoJSON file if it's small enough, or
 [PMTiles](https://protomaps.com/docs/pmtiles/) for larger ones.
 
-NB `./generate_layers.p` relies on two files in teh data directory, `Combined_Authorities_December_2022_EN_BUC_1154653457304546671.geojson` and `Local_Authority_Districts_December_2022_UK_BUC_V2_-5963189729337928393.geojson`. These are downloaded from [here](https://geoportal.statistics.gov.uk/datasets/ons::combined-authorities-december-2022-boundaries-en-buc/explore?location=51.948179%2C-2.780558%2C8.22) and [here](https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-december-2022-boundaries-uk-buc-2/explore?location=-0.433805%2C-48.044675%2C1.94) respectively, in case they need updating.
+NB `./generate_layers.p` relies on two files in teh data directory, `Combined_Authorities_December_2022_EN_BUC_1154653457304546671.geojson` and `Local_Authority_Districts_May_2023_UK_BUC_V2_-7390714061867823479.geojson`. These are downloaded from [here](https://geoportal.statistics.gov.uk/datasets/ons::combined-authorities-december-2022-boundaries-en-buc/explore?location=51.948179%2C-2.780558%2C8.22) and [here](https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-may-2023-boundaries-uk-buc/explore) respectively, in case they need updating.
 
 To run this:
 
