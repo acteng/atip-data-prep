@@ -1,2 +1,4 @@
 *.swp
 target/
+layers/tmp_*
+layers/output
