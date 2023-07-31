@@ -94,7 +94,7 @@ To run this:
 
 1.  Get `england-latest.osm.pbf` from Geofabrik. The `split_uk_osm.sh` script above does this.
 2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies`
-3.  Pick an arbitrary version number, and upload the files: `for x in *.pmtiles; do aws s3 cp --dry $x s3://atip.uk/layers/v1/; done`
+3.  Pick an arbitrary version number, and upload the files: `for x in output/*.pmtiles; do aws s3 cp --dry $x s3://atip.uk/layers/v1/; done`
 
 If you're rerunning the script for the same output, you may need to manually delete the temporary files from the previous run.
 
