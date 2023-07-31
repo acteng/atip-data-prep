@@ -24,15 +24,17 @@ def main():
 
     # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
     # primary and secondary schools
-    generatePolygonAmenity(args, "school", "schools")
+    # generatePolygonAmenity(args, "school", "schools")
 
-    # Note https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dhospital doesn't
-    # cover all types of medical facility
-    generatePolygonAmenity(args, "hospital", "hospitals")
+    # # Note https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dhospital doesn't
+    # # cover all types of medical facility
+    # generatePolygonAmenity(args, "hospital", "hospitals")
 
-    makeMRN()
+    # makeMRN()
 
-    makeParliamentaryConstituencies()
+    # makeParliamentaryConstituencies()
+
+    makeLocalAndCombinedAuthorities()
 
 
 # Extract `amenity={amenity}` polygons from OSM, and only keep a name attribute.
@@ -188,6 +190,50 @@ def makeParliamentaryConstituencies():
             "--generate-ids",
             "-o",
             "parliamentary_constituencies.pmtiles",
+        ]
+    )
+
+
+def makeLocalAndCombinedAuthorities():
+    # Convert to pmtiles
+    run(
+        [
+            "ogr2ogr",
+            "-t_srs",
+            "urn:ogc:def:crs:OGC:1.3:CRS84",
+            "Local_Authority_Districts_Reprojected.geojson",
+            "Local_Authority_Districts_December_2022_UK_BUC_V2_-5963189729337928393.geojson",
+        ]
+    )
+    run(
+        [
+            "ogr2ogr",
+            "-t_srs urn:ogc:def:crs:OGC:1.3:CRS84",
+            "Combined_Authorities_Reprojected.geojson",
+            "Combined_Authorities_December_2022_EN_BUC_1154653457304546671.geojson",
+        ]
+    )
+
+    run(
+        [
+            "tippecanoe",
+            "-s EPSG:27700",
+            "../data/Local_Authority_Districts_Reprojected.geojson",
+            "--generate-ids",
+            "-zg",
+            "-o",
+            "local_authorities.pmtiles",
+        ]
+    )
+
+    run(
+        [
+            "tippecanoe",
+            "../data/Combined_Authorities_Reporojected.geojson",
+            "--generate-ids",
+            "-zg",
+            "-o",
+            "combined_authorities.pmtiles",
         ]
     )
 
