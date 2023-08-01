@@ -391,9 +391,7 @@ def makeCensusOutputAreas(raw_boundaries_path):
     with open(f"{tmp}/census2021-ts006-oa.csv") as f:
         for row in csv.DictReader(f):
             key = row["geography code"]
-            if key not in oa_to_data:
-                print(f"Warning: Car ownership data missing for {key}")
-                oa_to_data[key] = {}
+            # The set of OAs in both datasets match. Let a KeyError happen if not.
             oa_to_data[key]["pop_density"] = round(
                 float(
                     row[
