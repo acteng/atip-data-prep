@@ -87,6 +87,10 @@ ATIP can display extra contextual layers:
 - Wards, from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::wards-may-2023-boundaries-uk-bgc/explore)
 - Combined authorities from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::combined-authorities-december-2022-boundaries-en-buc/explore)
 - Local authority districts from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-may-2023-boundaries-uk-buc/explore)
+- Output-area level 2021 census data
+	- Output area boundaries from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::output-areas-2021-boundaries-ew-bgc/explore)
+	- Population density comes from [NOMIS TS006](https://www.nomisweb.co.uk/sources/census_2021_bulk)
+	- Car/van availability comes from [NOMIS TS004](https://www.nomisweb.co.uk/output/census/2021/census2021-ts045.zip)
 
 These layers are England-wide, rather than being split into a file per area,
 because they're being used on the country-wide scheme browse page. Each layer
@@ -103,7 +107,7 @@ If you're rerunning the script for the same output, you may need to manually del
 
 You can debug a PMTiles file using <https://protomaps.github.io/PMTiles>.
 
-There's a manual step required to generate `--wards`. See the comment in the code.
+There's a manual step required to generate `--wards` and `--census_output_areas`. See the comment in the code.
 
 ### One-time cloud setup for PMTiles
 
