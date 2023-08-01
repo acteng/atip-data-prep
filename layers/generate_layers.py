@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import csv
 import json
 import os
 import subprocess
@@ -20,6 +21,11 @@ def main():
     )
     parser.add_argument("--combined_authorities", action="store_true")
     parser.add_argument("--local_authority_districts", action="store_true")
+    parser.add_argument(
+        "--census_output_areas",
+        help="Path to the manually downloaded Output_Areas_2021_EW_BGC_V2_-3080813486471056666.geojson",
+        type=str,
+    )
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -60,6 +66,10 @@ def main():
     if args.local_authority_districts:
         made_any = True
         makeLocalAuthorityDistricts()
+
+    if args.census_output_areas:
+        made_any = True
+        makeCensusOutputAreas(args.census_output_areas)
 
     if not made_any:
         print(
@@ -343,6 +353,120 @@ def makeLocalAuthorityDistricts():
     # The final file is tiny; don't bother with pmtiles
     with open("output/local_authority_districts.geojson", "w") as f:
         f.write(json.dumps(gj))
+
+
+# You have to manually download the GeoJSON file from https://geoportal.statistics.gov.uk/datasets/ons::output-areas-2021-boundaries-ew-bgc/explore and pass in the path here (until we can automate this)
+def makeCensusOutputAreas(raw_boundaries_path):
+    tmp = "tmp_census_output_areas"
+    os.makedirs(tmp, exist_ok=True)
+
+    # Build up a dictionary from OA code to properties we want
+    oa_to_data = {}
+
+    # Grab car availability data
+    run(
+        [
+            "wget",
+            "https://www.nomisweb.co.uk/output/census/2021/census2021-ts045.zip",
+            "-O",
+            f"{tmp}/census2021-ts045.zip",
+        ]
+    )
+    # Only get one file from the .zip
+    run(["unzip", f"{tmp}/census2021-ts045.zip", "census2021-ts045-oa.csv", "-d", tmp])
+    with open(f"{tmp}/census2021-ts045-oa.csv") as f:
+        for row in csv.DictReader(f):
+            oa_to_data[row["geography code"]] = summarizeCarAvailability(row)
+
+    # Grab population density
+    run(
+        [
+            "wget",
+            "https://www.nomisweb.co.uk/output/census/2021/census2021-ts006.zip",
+            "-O",
+            f"{tmp}/census2021-ts006.zip",
+        ]
+    )
+    run(["unzip", f"{tmp}/census2021-ts006.zip", "census2021-ts006-oa.csv", "-d", tmp])
+    with open(f"{tmp}/census2021-ts006-oa.csv") as f:
+        for row in csv.DictReader(f):
+            key = row["geography code"]
+            if key not in oa_to_data:
+                print(f"Warning: Car ownership data missing for {key}")
+                oa_to_data[key] = {}
+            oa_to_data[key]["pop_density"] = round(
+                float(
+                    row[
+                        "Population Density: Persons per square kilometre; measures: Value"
+                    ]
+                )
+            )
+
+    # Now work on the GeoJSON boundaries. First reproject to WGS84
+    path = f"{tmp}/census_output_areas.geojson"
+    run(
+        [
+            "ogr2ogr",
+            "-f",
+            "GeoJSON",
+            path,
+            "-t_srs",
+            "EPSG:4326",
+            raw_boundaries_path,
+        ]
+    )
+
+    # Clean up the GeoJSON file, and add in the per-OA data above
+    print(f"Cleaning up {path}")
+    gj = {}
+    with open(path) as f:
+        gj = json.load(f)
+        # Remove unnecessary attributes
+        del gj["name"]
+        del gj["crs"]
+        for feature in gj["features"]:
+            key = feature["properties"]["OA21CD"]
+            props = oa_to_data[key]
+            props["OA21CD"] = key
+            feature["properties"] = props
+
+            feature["geometry"]["coordinates"] = trim_precision(
+                feature["geometry"]["coordinates"]
+            )
+    with open(path, "w") as f:
+        f.write(json.dumps(gj))
+
+    # Convert to pmtiles
+    run(
+        [
+            "tippecanoe",
+            path,
+            "--generate-ids",
+            "-o",
+            "output/census_output_areas.pmtiles",
+        ]
+    )
+
+
+def summarizeCarAvailability(row):
+    # hh = household
+    hh_with_0 = int(row["Number of cars or vans: No cars or vans in household"])
+    hh_with_1 = int(row["Number of cars or vans: 1 car or van in household"])
+    hh_with_2 = int(row["Number of cars or vans: 2 cars or vans in household"])
+    hh_with_more = int(
+        row["Number of cars or vans: 3 or more cars or vans in household"]
+    )
+    # There's also a column for this
+    total_households = hh_with_0 + hh_with_1 + hh_with_2 + hh_with_more
+    # Assume 3 cars for "3 or more"
+    total_cars = hh_with_1 + 2 * hh_with_2 + 3 * hh_with_more
+
+    return {
+        # 0-100, rounded for space efficiency
+        "percent_households_without_car": round(hh_with_0 / total_households * 100),
+        # Round to 1 decimal place
+        "average_cars_per_household": round(total_cars / total_households, 1),
+    }
 
 
 def run(args):
