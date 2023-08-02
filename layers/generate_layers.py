@@ -392,7 +392,7 @@ def makeCensusOutputAreas(raw_boundaries_path):
         for row in csv.DictReader(f):
             key = row["geography code"]
             # The set of OAs in both datasets match. Let a KeyError happen if not.
-            oa_to_data[key]["pop_density"] = round(
+            oa_to_data[key]["population_density"] = round(
                 float(
                     row[
                         "Population Density: Persons per square kilometre; measures: Value"
@@ -461,7 +461,7 @@ def summarizeCarAvailability(row):
 
     return {
         # 0-100, rounded for space efficiency
-        "percent_households_without_car": round(hh_with_0 / total_households * 100),
+        "percent_households_with_car": 100 - round(hh_with_0 / total_households * 100),
         # Round to 1 decimal place
         "average_cars_per_household": round(total_cars / total_households, 1),
     }
