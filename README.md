@@ -90,7 +90,7 @@ ATIP can display extra contextual layers:
 - Output-area level 2021 census data
 	- Output area boundaries from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::output-areas-2021-boundaries-ew-bgc/explore)
 	- Population density comes from [NOMIS TS006](https://www.nomisweb.co.uk/sources/census_2021_bulk)
-	- Car/van availability comes from [NOMIS TS004](https://www.nomisweb.co.uk/sources/census_2021_bulk)
+	- Car/van availability comes from [NOMIS TS045](https://www.nomisweb.co.uk/sources/census_2021_bulk)
 
 These layers are England-wide, rather than being split into a file per area,
 because they're being used on the country-wide scheme browse page. Each layer
