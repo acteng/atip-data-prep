@@ -14,6 +14,7 @@ def main():
     parser.add_argument("--hospitals", action="store_true")
     parser.add_argument("--mrn", action="store_true")
     parser.add_argument("--parliamentary_constituencies", action="store_true")
+    parser.add_argument("--railway_stations", action="store_true")
     parser.add_argument(
         "--wards",
         help="Path to the manually downloaded Wards_(May_2023)_Boundaries_UK_BGC.geojson",
@@ -71,6 +72,10 @@ def main():
         made_any = True
         makeCensusOutputAreas(args.census_output_areas)
 
+    if args.railway_stations:
+        made_any = True
+        generateLayerBasedOnTwoPartTag(args.osm_input, "railway", "station", "railway_stations")
+
     if not made_any:
         print(
             "Didn't create anything. Call with --help to see possible layers that can be created"
@@ -124,6 +129,36 @@ def generatePolygonAmenity(osm_input, amenity, filename):
         ]
     )
 
+def generateLayerBasedOnTwoPartTag(osm_input, tag_part_one, tag_part_two, filename):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+
+    tmp = f"tmp_{filename}"
+    os.makedirs(tmp, exist_ok=True)
+
+    # First extract a .osm.pbf with all amenity={name} features
+    # TODO Do we need nwr? We don't want points further on
+    run(
+        [
+            "osmium",
+            "tags-filter",
+            osm_input,
+            f"nwr/{tag_part_one}={tag_part_two}",
+            "-o",
+            f"{tmp}/extract.osm.pbf",
+        ]
+    )
+
+    # Transform osm.pbf to GeoJSON, only keeping polygons. (Everything will be expressed as a MultiPolygon)
+    run(
+        [
+            "osmium",
+            "export",
+            f"{tmp}/extract.osm.pbf",
+            "-o",
+            f"output/{filename}.geojson",
+        ]
+    )
 
 def makeMRN():
     tmp = "tmp_mrn"
