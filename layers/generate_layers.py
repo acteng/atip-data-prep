@@ -15,6 +15,8 @@ def main():
     parser.add_argument("--mrn", action="store_true")
     parser.add_argument("--parliamentary_constituencies", action="store_true")
     parser.add_argument("--railway_stations", action="store_true")
+    parser.add_argument("--green_spaces", action="store_true")
+    parser.add_argument("--sports_spaces", action="store_true")
     parser.add_argument(
         "--wards",
         help="Path to the manually downloaded Wards_(May_2023)_Boundaries_UK_BGC.geojson",
@@ -74,7 +76,17 @@ def main():
 
     if args.railway_stations:
         made_any = True
-        generateLayerBasedOnTwoPartTag(args.osm_input, "railway", "station", "railway_stations")
+        generateLayerBasedOnTwoPartTag(
+            args.osm_input, "railway", "station", "railway_stations"
+        )
+
+    if args.green_spaces:
+        made_any = True
+        generateGreenSpacesLayer(args.osm_input)
+
+    if args.sports_spaces:
+        made_any = True
+        generateLayerBasedOnTwoPartTag(args.osm_input, "leisure", "pitch,sports_centre", "sports_spaces")
 
     if not made_any:
         print(
@@ -88,7 +100,7 @@ def generatePolygonAmenity(osm_input, amenity, filename):
         raise Exception("You must specify --osm_input")
 
     tmp = f"tmp_{filename}"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # First extract a .osm.pbf with all amenity={name} features
     # TODO Do we need nwr? We don't want points further on
@@ -129,15 +141,15 @@ def generatePolygonAmenity(osm_input, amenity, filename):
         ]
     )
 
+
 def generateLayerBasedOnTwoPartTag(osm_input, tag_part_one, tag_part_two, filename):
     if not osm_input:
         raise Exception("You must specify --osm_input")
 
     tmp = f"tmp_{filename}"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
-    # First extract a .osm.pbf with all amenity={name} features
-    # TODO Do we need nwr? We don't want points further on
+    # First extract a .osm.pbf with all {tag_part_one}={tag_part_two} features
     run(
         [
             "osmium",
@@ -149,20 +161,57 @@ def generateLayerBasedOnTwoPartTag(osm_input, tag_part_one, tag_part_two, filena
         ]
     )
 
-    # Transform osm.pbf to GeoJSON, only keeping polygons. (Everything will be expressed as a MultiPolygon)
+    generateGeojsonAndPmTiilesFromOSMFile(f"{tmp}/extract.osm.pbf", filename)
+
+
+def generateGreenSpacesLayer(osm_input):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+
+    filename = "green_spaces"
+    tmp = f"tmp_{filename}"
+    ensureEmptyTempDirectoryExists(tmp)
+
     run(
         [
             "osmium",
-            "export",
-            f"{tmp}/extract.osm.pbf",
+            "tags-filter",
+            osm_input,
+            "nwr/leisure=park,nature_reserve",
             "-o",
-            f"output/{filename}.geojson",
+            f"{tmp}/leisure_extract.osm.pbf",
         ]
     )
 
+    run(
+        [
+            "osmium",
+            "tags-filter",
+            osm_input,
+            "nwr/designation=national_park,area_of_outstanding_natural_beauty",
+            "boundary:protected_area",
+            "-o",
+            f"{tmp}/protected_extract.osm.pbf",
+        ]
+    )
+
+    run(
+        [
+            "osmium",
+            "merge",
+            f"{tmp}/leisure_extract.osm.pbf",
+            f"{tmp}/protected_extract.osm.pbf",
+            "-o",
+            f"{tmp}/extract.osm.pbf",
+        ]
+    )
+
+    generateGeojsonAndPmTiilesFromOSMFile(f"{tmp}/extract.osm.pbf", filename)
+
+
 def makeMRN():
     tmp = "tmp_mrn"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Get the shapefile
     run(
@@ -217,7 +266,7 @@ def makeMRN():
 
 def makeParliamentaryConstituencies():
     tmp = "tmp_parliamentary_constituencies"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Get the geopackage
     run(
@@ -262,7 +311,7 @@ def makeParliamentaryConstituencies():
 # You have to manually download the GeoJSON file from https://geoportal.statistics.gov.uk/datasets/ons::wards-may-2023-boundaries-uk-bgc/explore and pass in the path here (until we can automate this)
 def makeWards(path):
     tmp = "tmp_wards"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Clean up the file
     print(f"Cleaning up {path}")
@@ -305,7 +354,7 @@ def makeWards(path):
 
 def makeCombinedAuthorities():
     tmp = "tmp_combined_authorities"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Reproject to WGS84
     run(
@@ -346,7 +395,7 @@ def makeCombinedAuthorities():
 
 def makeLocalAuthorityDistricts():
     tmp = "tmp_local_authority_districts"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Reproject to WGS84
     run(
@@ -393,7 +442,7 @@ def makeLocalAuthorityDistricts():
 # You have to manually download the GeoJSON file from https://geoportal.statistics.gov.uk/datasets/ons::output-areas-2021-boundaries-ew-bgc/explore and pass in the path here (until we can automate this)
 def makeCensusOutputAreas(raw_boundaries_path):
     tmp = "tmp_census_output_areas"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Build up a dictionary from OA code to properties we want
     oa_to_data = {}
@@ -500,6 +549,32 @@ def summarizeCarAvailability(row):
         # Round to 1 decimal place
         "average_cars_per_household": round(total_cars / total_households, 1),
     }
+
+def generateGeojsonAndPmTiilesFromOSMFile(osmFilePath, finalOutputFilename):
+    run(
+        [
+            "osmium",
+            "export",
+            osmFilePath,
+            "-o",
+            f"output/{finalOutputFilename}.geojson",
+        ]
+    )
+
+    run(
+        [
+            "tippecanoe",
+            f"output/{finalOutputFilename}.geojson",
+            "--generate-ids",
+            "-o",
+            f"output/{finalOutputFilename}.pmtiles",
+        ]
+    )
+
+def ensureEmptyTempDirectoryExists(directoryName):
+    if os.path.isdir(directoryName):
+        run(["rm", "-r", directoryName])
+    os.makedirs(directoryName, exist_ok=True)
 
 
 def run(args):
