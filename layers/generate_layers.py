@@ -21,6 +21,7 @@ def main():
     )
     parser.add_argument("--combined_authorities", action="store_true")
     parser.add_argument("--local_authority_districts", action="store_true")
+    parser.add_argument("--local_planning_authorities", action="store_true")
     parser.add_argument(
         "--census_output_areas",
         help="Path to the manually downloaded Output_Areas_2021_EW_BGC_V2_-3080813486471056666.geojson",
@@ -66,6 +67,10 @@ def main():
     if args.local_authority_districts:
         made_any = True
         makeLocalAuthorityDistricts()
+
+    if args.local_planning_authorities:
+        made_any = True
+        makeLocalPlanningAuthorities()
 
     if args.census_output_areas:
         made_any = True
@@ -281,6 +286,7 @@ def makeCombinedAuthorities():
             f"{tmp}/boundary.geojson",
             "-t_srs",
             "EPSG:4326",
+            # Manually downloaded and stored in git
             "input/Combined_Authorities_December_2022_EN_BUC_1154653457304546671.geojson",
         ]
     )
@@ -322,6 +328,7 @@ def makeLocalAuthorityDistricts():
             f"{tmp}/boundary.geojson",
             "-t_srs",
             "EPSG:4326",
+            # Manually downloaded and stored in git
             "input/Local_Authority_Districts_May_2023_UK_BUC_V2_-7390714061867823479.geojson",
         ]
     )
@@ -353,6 +360,51 @@ def makeLocalAuthorityDistricts():
     # The final file is tiny; don't bother with pmtiles
     with open("output/local_authority_districts.geojson", "w") as f:
         f.write(json.dumps(gj))
+
+
+def makeLocalPlanningAuthorities():
+    tmp = "tmp_local_planning_authorities"
+    os.makedirs(tmp, exist_ok=True)
+
+    # Alternatively, the original source here seems to be
+    # https://geoportal.statistics.gov.uk/datasets/ons::local-planning-authorities-april-2022-uk-bgc-3/explore
+    run(
+        [
+            "wget",
+            "https://files.planning.data.gov.uk/dataset/local-planning-authority.geojson",
+            "-O",
+            f"{tmp}/boundaries.geojson",
+        ]
+    )
+
+    # Clean up the file
+    print(f"Cleaning up {tmp}/boundaries.geojson")
+    gj = {}
+    with open(f"{tmp}/boundaries.geojson") as f:
+        gj = json.load(f)
+        # Remove unnecessary attributes
+        del gj["name"]
+
+        for feature in gj["features"]:
+            # Remove most properties, and rename a few
+            props = {}
+            props["LPA22CD"] = feature["properties"]["reference"]
+            props["name"] = feature["properties"]["name"]
+            feature["properties"] = props
+            # The precision is already trimmed
+    with open(f"{tmp}/boundaries.geojson", "w") as f:
+        f.write(json.dumps(gj))
+
+    # Convert to pmtiles
+    run(
+        [
+            "tippecanoe",
+            f"{tmp}/boundaries.geojson",
+            "--generate-ids",
+            "-o",
+            f"output/local_planning_authorities.pmtiles",
+        ]
+    )
 
 
 # You have to manually download the GeoJSON file from https://geoportal.statistics.gov.uk/datasets/ons::output-areas-2021-boundaries-ew-bgc/explore and pass in the path here (until we can automate this)
