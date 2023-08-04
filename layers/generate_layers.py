@@ -368,19 +368,20 @@ def makeLocalPlanningAuthorities():
 
     # Alternatively, the original source here seems to be
     # https://geoportal.statistics.gov.uk/datasets/ons::local-planning-authorities-april-2022-uk-bgc-3/explore
+    path = f"{tmp}/local_planning_authorities.geojson"
     run(
         [
             "wget",
             "https://files.planning.data.gov.uk/dataset/local-planning-authority.geojson",
             "-O",
-            f"{tmp}/boundaries.geojson",
+            path,
         ]
     )
 
     # Clean up the file
-    print(f"Cleaning up {tmp}/boundaries.geojson")
+    print(f"Cleaning up {path}")
     gj = {}
-    with open(f"{tmp}/boundaries.geojson") as f:
+    with open(path) as f:
         gj = json.load(f)
         # Remove unnecessary attributes
         del gj["name"]
@@ -392,14 +393,14 @@ def makeLocalPlanningAuthorities():
             props["name"] = feature["properties"]["name"]
             feature["properties"] = props
             # The precision is already trimmed
-    with open(f"{tmp}/boundaries.geojson", "w") as f:
+    with open(path, "w") as f:
         f.write(json.dumps(gj))
 
     # Convert to pmtiles
     run(
         [
             "tippecanoe",
-            f"{tmp}/boundaries.geojson",
+            path,
             "--generate-ids",
             "-o",
             f"output/local_planning_authorities.pmtiles",
