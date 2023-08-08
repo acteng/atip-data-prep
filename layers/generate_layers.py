@@ -41,13 +41,13 @@ def main():
         made_any = True
         # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
         # primary and secondary schools
-        generatePolygonAmenity(args.osm_input, "school", "schools")
+        generatePolygonLayer(args.osm_input, "amenity", "school", "schools")
 
     if args.hospitals:
         made_any = True
         # Note https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dhospital doesn't
         # cover all types of medical facility
-        generatePolygonAmenity(args.osm_input, "hospital", "hospitals")
+        generatePolygonLayer(args.osm_input, "amenity", "hospital", "hospitals")
 
     if args.mrn:
         made_any = True
@@ -75,14 +75,12 @@ def main():
 
     if args.railway_stations:
         made_any = True
-        generateLayerBasedOnTwoPartTag(
-            args.osm_input, "n", "railway", "station", "railway_stations"
-        )
+        makeRailwayStations()
 
     if args.sports_spaces:
         made_any = True
-        generateLayerBasedOnTwoPartTag(
-            args.osm_input, "nwr", "leisure", "pitch,sports_centre", "sports_spaces"
+        generatePolygonLayer(
+            args.osm_input, "lesiure", "pitch,sports_centre", "sports_spaces"
         )
 
     if not made_any:
@@ -92,7 +90,7 @@ def main():
 
 
 # Extract `amenity={amenity}` polygons from OSM, and only keep a name attribute.
-def generatePolygonAmenity(osm_input, amenity, filename):
+def generatePolygonLayer(osm_input, tagPartOne, tagPartTwo, filename):
     if not osm_input:
         raise Exception("You must specify --osm_input")
 
@@ -106,7 +104,7 @@ def generatePolygonAmenity(osm_input, amenity, filename):
             "osmium",
             "tags-filter",
             osm_input,
-            f"nwr/amenity={amenity}",
+            f"nwr/{tagPartOne}={tagPartTwo}",
             "-o",
             f"{tmp}/extract.osm.pbf",
         ]
@@ -124,8 +122,7 @@ def generatePolygonAmenity(osm_input, amenity, filename):
         ]
     )
 
-    # Only keep one property
-    remove_extra_properties(f"{tmp}/extract.geojson")
+    removeNonNameProperties(f"{tmp}/extract.geojson")
 
     # Convert to pmtiles
     run(
@@ -139,13 +136,9 @@ def generatePolygonAmenity(osm_input, amenity, filename):
     )
 
 
-def generateLayerBasedOnTwoPartTag(
+def makeRailwayStations(
     osm_input,
-    nodeWayRelationFilterString,
-    tag_part_one,
-    tag_part_two,
     filename,
-    outputAsPmtiles,
 ):
     if not osm_input:
         raise Exception("You must specify --osm_input")
@@ -159,16 +152,16 @@ def generateLayerBasedOnTwoPartTag(
             "osmium",
             "tags-filter",
             osm_input,
-            f"{nodeWayRelationFilterString}/{tag_part_one}={tag_part_two}",
+            "n/railway=station",
             "-o",
             osmFilePath,
         ]
     )
+    outputFilepath = f"output/{filename}.geojson"
+    generateGeojsonFromOSMFile(osmFilePath, outputFilepath)
 
-    if outputAsPmtiles:
-        generatePmTilesFromOSMFile(osmFilePath, filename)
-    else:
-        generateGeojsonFromOSMFile(osmFilePath, f"output/{filename}.geojson")
+    cleanUpGeojson(["name"])
+    removeNonNameProperties(outputFilepath)
 
 
 def makeMRN():
@@ -513,21 +506,6 @@ def summarizeCarAvailability(row):
     }
 
 
-def generatePmTilesFromOSMFile(osmFilePath, finalOutputFilename):
-    tempGeojsonPath = f"tmp/{finalOutputFilename}.geojson"
-    generateGeojsonFromOSMFile(osmFilePath, tempGeojsonPath)
-
-    run(
-        [
-            "tippecanoe",
-            f"tmp/{finalOutputFilename}.geojson",
-            "--generate-ids",
-            "-o",
-            f"output/{finalOutputFilename}.pmtiles",
-        ]
-    )
-
-
 def generateGeojsonFromOSMFile(osmFilePath, outputFilepath):
     run(
         [
@@ -538,7 +516,6 @@ def generateGeojsonFromOSMFile(osmFilePath, outputFilepath):
             outputFilepath,
         ]
     )
-    remove_extra_properties(outputFilepath)
 
 
 def ensureEmptyTempDirectoryExists(directoryName):
@@ -553,7 +530,7 @@ def run(args):
 
 
 # For each GeoJSON feature, keep only the name attribute. Overwrites the given file.
-def remove_extra_properties(path):
+def removeNonNameProperties(path):
     print(f"Removing extra properties from {path}")
     gj = {}
     with open(path) as f:
@@ -566,6 +543,32 @@ def remove_extra_properties(path):
                 props["name"] = name
             feature["properties"] = props
 
+    with open(path, "w") as f:
+        f.write(json.dumps(gj))
+
+
+def cleanUpGeojson(path, propertiesToKeep, addIds=False):
+    print(f"Cleaning up {path}")
+    gj = {}
+    with open(f"{tmp}/extract.geojson") as f:
+        gj = json.load(f)
+
+        counter = 1
+        for feature in gj["features"]:
+            # Only keep one property
+            keptProperties = {}
+            for property in propertiesToKeep:
+                keptProperties[property] = feature["properties"][property]
+            feature["properties"] = keptProperties
+
+            feature["geometry"]["coordinates"] = trim_precision(
+                feature["geometry"]["coordinates"]
+            )
+
+            # The frontend needs IDs for hovering
+            if addIds:
+                feature["id"] = counter
+                counter += 1
     with open(path, "w") as f:
         f.write(json.dumps(gj))
 
