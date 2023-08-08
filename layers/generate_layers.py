@@ -530,20 +530,7 @@ def run(args):
 
 # For each GeoJSON feature, keep only the name attribute. Overwrites the given file.
 def removeNonNameProperties(path):
-    print(f"Removing extra properties from {path}")
-    gj = {}
-    with open(path) as f:
-        gj = json.load(f)
-        for feature in gj["features"]:
-            # Remove all properties except for "name"
-            props = {}
-            name = feature["properties"].get("name")
-            if name:
-                props["name"] = name
-            feature["properties"] = props
-
-    with open(path, "w") as f:
-        f.write(json.dumps(gj))
+    cleanUpGeojson(path, ["name"])
 
 def cleanUpGeojson(path, propertiesToKeep, addIds=False):
     print(f"Cleaning up {path}")
