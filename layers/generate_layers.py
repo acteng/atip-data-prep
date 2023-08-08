@@ -102,7 +102,7 @@ def generatePolygonLayer(osm_input, tagPartOne, tagPartTwo, filename):
     tmp = f"tmp_{filename}"
     ensureEmptyTempDirectoryExists(tmp)
 
-    # First extract a .osm.pbf with all amenity={name} features
+    # First extract a .osm.pbf with all {tagPartOne}={tagPartTwo} features
     # TODO Do we need nwr? We don't want points further on
     run(
         [
@@ -402,7 +402,7 @@ def makeLocalAuthorityDistricts():
 
 def makeLocalPlanningAuthorities():
     tmp = "tmp_local_planning_authorities"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Alternatively, the original source here seems to be
     # https://geoportal.statistics.gov.uk/datasets/ons::local-planning-authorities-april-2022-uk-bgc-3/explore
@@ -593,7 +593,6 @@ def cleanUpGeojson(path, propertiesToKeep, addIds=False):
 
         counter = 1
         for feature in gj["features"]:
-            # Only keep one property
             keptProperties = {}
             for property in propertiesToKeep:
                 valueToKeep =  feature["properties"].get(property) 
