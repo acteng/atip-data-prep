@@ -15,7 +15,6 @@ def main():
     parser.add_argument("--mrn", action="store_true")
     parser.add_argument("--parliamentary_constituencies", action="store_true")
     parser.add_argument("--railway_stations", action="store_true")
-    parser.add_argument("--green_spaces", action="store_true")
     parser.add_argument("--sports_spaces", action="store_true")
     parser.add_argument(
         "--wards",
@@ -77,16 +76,14 @@ def main():
     if args.railway_stations:
         made_any = True
         generateLayerBasedOnTwoPartTag(
-            args.osm_input, "railway", "station", "railway_stations"
+            args.osm_input, "n", "railway", "station", "railway_stations"
         )
-
-    if args.green_spaces:
-        made_any = True
-        generateGreenSpacesLayer(args.osm_input)
 
     if args.sports_spaces:
         made_any = True
-        generateLayerBasedOnTwoPartTag(args.osm_input, "leisure", "pitch,sports_centre", "sports_spaces")
+        generateLayerBasedOnTwoPartTag(
+            args.osm_input, "nwr", "leisure", "pitch,sports_centre", "sports_spaces"
+        )
 
     if not made_any:
         print(
@@ -142,71 +139,36 @@ def generatePolygonAmenity(osm_input, amenity, filename):
     )
 
 
-def generateLayerBasedOnTwoPartTag(osm_input, tag_part_one, tag_part_two, filename):
+def generateLayerBasedOnTwoPartTag(
+    osm_input,
+    nodeWayRelationFilterString,
+    tag_part_one,
+    tag_part_two,
+    filename,
+    outputAsPmtiles,
+):
     if not osm_input:
         raise Exception("You must specify --osm_input")
 
     tmp = f"tmp_{filename}"
     ensureEmptyTempDirectoryExists(tmp)
-
+    osmFilePath = f"{tmp}/extract.osm.pbf"
     # First extract a .osm.pbf with all {tag_part_one}={tag_part_two} features
     run(
         [
             "osmium",
             "tags-filter",
             osm_input,
-            f"nwr/{tag_part_one}={tag_part_two}",
+            f"{nodeWayRelationFilterString}/{tag_part_one}={tag_part_two}",
             "-o",
-            f"{tmp}/extract.osm.pbf",
+            osmFilePath,
         ]
     )
 
-    generateGeojsonAndPmTiilesFromOSMFile(f"{tmp}/extract.osm.pbf", filename)
-
-
-def generateGreenSpacesLayer(osm_input):
-    if not osm_input:
-        raise Exception("You must specify --osm_input")
-
-    filename = "green_spaces"
-    tmp = f"tmp_{filename}"
-    ensureEmptyTempDirectoryExists(tmp)
-
-    run(
-        [
-            "osmium",
-            "tags-filter",
-            osm_input,
-            "nwr/leisure=park,nature_reserve",
-            "-o",
-            f"{tmp}/leisure_extract.osm.pbf",
-        ]
-    )
-
-    run(
-        [
-            "osmium",
-            "tags-filter",
-            osm_input,
-            "nwr/designation=national_park,area_of_outstanding_natural_beauty",
-            "boundary:protected_area",
-            "-o",
-            f"{tmp}/protected_extract.osm.pbf",
-        ]
-    )
-
-    run(
-        [
-            "osmium",
-            "merge",
-            f"{tmp}/leisure_extract.osm.pbf",
-            f"{tmp}/protected_extract.osm.pbf",
-            "-o",
-            f"{tmp}/extract.osm.pbf",
-        ]
-    )
-
-    generateGeojsonAndPmTiilesFromOSMFile(f"{tmp}/extract.osm.pbf", filename)
+    if outputAsPmtiles:
+        generatePmTilesFromOSMFile(osmFilePath, filename)
+    else:
+        generateGeojsonFromOSMFile(osmFilePath, f"output/{filename}.geojson")
 
 
 def makeMRN():
@@ -550,26 +512,34 @@ def summarizeCarAvailability(row):
         "average_cars_per_household": round(total_cars / total_households, 1),
     }
 
-def generateGeojsonAndPmTiilesFromOSMFile(osmFilePath, finalOutputFilename):
+
+def generatePmTilesFromOSMFile(osmFilePath, finalOutputFilename):
+    tempGeojsonPath = f"tmp/{finalOutputFilename}.geojson"
+    generateGeojsonFromOSMFile(osmFilePath, tempGeojsonPath)
+
+    run(
+        [
+            "tippecanoe",
+            f"tmp/{finalOutputFilename}.geojson",
+            "--generate-ids",
+            "-o",
+            f"output/{finalOutputFilename}.pmtiles",
+        ]
+    )
+
+
+def generateGeojsonFromOSMFile(osmFilePath, outputFilepath):
     run(
         [
             "osmium",
             "export",
             osmFilePath,
             "-o",
-            f"output/{finalOutputFilename}.geojson",
+            outputFilepath,
         ]
     )
+    remove_extra_properties(outputFilepath)
 
-    run(
-        [
-            "tippecanoe",
-            f"output/{finalOutputFilename}.geojson",
-            "--generate-ids",
-            "-o",
-            f"output/{finalOutputFilename}.pmtiles",
-        ]
-    )
 
 def ensureEmptyTempDirectoryExists(directoryName):
     if os.path.isdir(directoryName):
