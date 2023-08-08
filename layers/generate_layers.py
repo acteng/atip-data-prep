@@ -75,12 +75,12 @@ def main():
 
     if args.railway_stations:
         made_any = True
-        makeRailwayStations()
+        makeRailwayStations(args.osm_input)
 
     if args.sports_spaces:
         made_any = True
         generatePolygonLayer(
-            args.osm_input, "lesiure", "pitch,sports_centre", "sports_spaces"
+            args.osm_input, "leisure", "pitch,sports_centre", "sports_spaces"
         )
 
     if not made_any:
@@ -89,7 +89,7 @@ def main():
         )
 
 
-# Extract `amenity={amenity}` polygons from OSM, and only keep a name attribute.
+# Extract `{tagPartOne}={tagPartTwo}` polygons from OSM, and only keep a name attribute.
 def generatePolygonLayer(osm_input, tagPartOne, tagPartTwo, filename):
     if not osm_input:
         raise Exception("You must specify --osm_input")
@@ -138,11 +138,11 @@ def generatePolygonLayer(osm_input, tagPartOne, tagPartTwo, filename):
 
 def makeRailwayStations(
     osm_input,
-    filename,
 ):
     if not osm_input:
         raise Exception("You must specify --osm_input")
 
+    filename = "railway_stations"
     tmp = f"tmp_{filename}"
     ensureEmptyTempDirectoryExists(tmp)
     osmFilePath = f"{tmp}/extract.osm.pbf"
@@ -160,8 +160,7 @@ def makeRailwayStations(
     outputFilepath = f"output/{filename}.geojson"
     generateGeojsonFromOSMFile(osmFilePath, outputFilepath)
 
-    cleanUpGeojson(["name"])
-    removeNonNameProperties(outputFilepath)
+    cleanUpGeojson(outputFilepath, ["name"], True)
 
 
 def makeMRN():
@@ -546,11 +545,10 @@ def removeNonNameProperties(path):
     with open(path, "w") as f:
         f.write(json.dumps(gj))
 
-
 def cleanUpGeojson(path, propertiesToKeep, addIds=False):
     print(f"Cleaning up {path}")
     gj = {}
-    with open(f"{tmp}/extract.geojson") as f:
+    with open(path) as f:
         gj = json.load(f)
 
         counter = 1
@@ -558,7 +556,9 @@ def cleanUpGeojson(path, propertiesToKeep, addIds=False):
             # Only keep one property
             keptProperties = {}
             for property in propertiesToKeep:
-                keptProperties[property] = feature["properties"][property]
+                valueToKeep =  feature["properties"].get(property) 
+                if(valueToKeep):
+                    keptProperties[property] = valueToKeep
             feature["properties"] = keptProperties
 
             feature["geometry"]["coordinates"] = trim_precision(
@@ -566,12 +566,11 @@ def cleanUpGeojson(path, propertiesToKeep, addIds=False):
             )
 
             # The frontend needs IDs for hovering
-            if addIds:
+            if(addIds):
                 feature["id"] = counter
                 counter += 1
     with open(path, "w") as f:
         f.write(json.dumps(gj))
-
 
 # Round coordinates to 6 decimal places. Takes feature.geometry.coordinates,
 # handling any type.
