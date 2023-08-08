@@ -14,6 +14,8 @@ def main():
     parser.add_argument("--hospitals", action="store_true")
     parser.add_argument("--mrn", action="store_true")
     parser.add_argument("--parliamentary_constituencies", action="store_true")
+    parser.add_argument("--railway_stations", action="store_true")
+    parser.add_argument("--sports_spaces", action="store_true")
     parser.add_argument(
         "--wards",
         help="Path to the manually downloaded Wards_(May_2023)_Boundaries_UK_BGC.geojson",
@@ -40,13 +42,13 @@ def main():
         made_any = True
         # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
         # primary and secondary schools
-        generatePolygonAmenity(args.osm_input, "school", "schools")
+        generatePolygonLayer(args.osm_input, "amenity", "school", "schools")
 
     if args.hospitals:
         made_any = True
         # Note https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dhospital doesn't
         # cover all types of medical facility
-        generatePolygonAmenity(args.osm_input, "hospital", "hospitals")
+        generatePolygonLayer(args.osm_input, "amenity", "hospital", "hospitals")
 
     if args.mrn:
         made_any = True
@@ -76,19 +78,29 @@ def main():
         made_any = True
         makeCensusOutputAreas(args.census_output_areas)
 
+    if args.railway_stations:
+        made_any = True
+        makeRailwayStations(args.osm_input)
+
+    if args.sports_spaces:
+        made_any = True
+        generatePolygonLayer(
+            args.osm_input, "leisure", "pitch,sports_centre", "sports_spaces"
+        )
+
     if not made_any:
         print(
             "Didn't create anything. Call with --help to see possible layers that can be created"
         )
 
 
-# Extract `amenity={amenity}` polygons from OSM, and only keep a name attribute.
-def generatePolygonAmenity(osm_input, amenity, filename):
+# Extract `{tagPartOne}={tagPartTwo}` polygons from OSM, and only keep a name attribute.
+def generatePolygonLayer(osm_input, tagPartOne, tagPartTwo, filename):
     if not osm_input:
         raise Exception("You must specify --osm_input")
 
     tmp = f"tmp_{filename}"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # First extract a .osm.pbf with all amenity={name} features
     # TODO Do we need nwr? We don't want points further on
@@ -97,7 +109,7 @@ def generatePolygonAmenity(osm_input, amenity, filename):
             "osmium",
             "tags-filter",
             osm_input,
-            f"nwr/amenity={amenity}",
+            f"nwr/{tagPartOne}={tagPartTwo}",
             "-o",
             f"{tmp}/extract.osm.pbf",
         ]
@@ -115,8 +127,7 @@ def generatePolygonAmenity(osm_input, amenity, filename):
         ]
     )
 
-    # Only keep one property
-    remove_extra_properties(f"{tmp}/extract.geojson")
+    removeNonNameProperties(f"{tmp}/extract.geojson")
 
     # Convert to pmtiles
     run(
@@ -130,9 +141,36 @@ def generatePolygonAmenity(osm_input, amenity, filename):
     )
 
 
+def makeRailwayStations(
+    osm_input,
+):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+
+    filename = "railway_stations"
+    tmp = f"tmp_{filename}"
+    ensureEmptyTempDirectoryExists(tmp)
+    osmFilePath = f"{tmp}/extract.osm.pbf"
+    # First extract a .osm.pbf with all {tag_part_one}={tag_part_two} features
+    run(
+        [
+            "osmium",
+            "tags-filter",
+            osm_input,
+            "n/railway=station",
+            "-o",
+            osmFilePath,
+        ]
+    )
+    outputFilepath = f"output/{filename}.geojson"
+    generateGeojsonFromOSMFile(osmFilePath, outputFilepath)
+
+    cleanUpGeojson(outputFilepath, ["name"], True)
+
+
 def makeMRN():
     tmp = "tmp_mrn"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Get the shapefile
     run(
@@ -187,7 +225,7 @@ def makeMRN():
 
 def makeParliamentaryConstituencies():
     tmp = "tmp_parliamentary_constituencies"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Get the geopackage
     run(
@@ -232,7 +270,7 @@ def makeParliamentaryConstituencies():
 # You have to manually download the GeoJSON file from https://geoportal.statistics.gov.uk/datasets/ons::wards-may-2023-boundaries-uk-bgc/explore and pass in the path here (until we can automate this)
 def makeWards(path):
     tmp = "tmp_wards"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Clean up the file
     print(f"Cleaning up {path}")
@@ -275,7 +313,7 @@ def makeWards(path):
 
 def makeCombinedAuthorities():
     tmp = "tmp_combined_authorities"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Reproject to WGS84
     run(
@@ -317,7 +355,7 @@ def makeCombinedAuthorities():
 
 def makeLocalAuthorityDistricts():
     tmp = "tmp_local_authority_districts"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Reproject to WGS84
     run(
@@ -411,7 +449,7 @@ def makeLocalPlanningAuthorities():
 # You have to manually download the GeoJSON file from https://geoportal.statistics.gov.uk/datasets/ons::output-areas-2021-boundaries-ew-bgc/explore and pass in the path here (until we can automate this)
 def makeCensusOutputAreas(raw_boundaries_path):
     tmp = "tmp_census_output_areas"
-    os.makedirs(tmp, exist_ok=True)
+    ensureEmptyTempDirectoryExists(tmp)
 
     # Build up a dictionary from OA code to properties we want
     oa_to_data = {}
@@ -520,28 +558,59 @@ def summarizeCarAvailability(row):
     }
 
 
+def generateGeojsonFromOSMFile(osmFilePath, outputFilepath):
+    run(
+        [
+            "osmium",
+            "export",
+            osmFilePath,
+            "-o",
+            outputFilepath,
+        ]
+    )
+
+
+def ensureEmptyTempDirectoryExists(directoryName):
+    if os.path.isdir(directoryName):
+        run(["rm", "-r", directoryName])
+    os.makedirs(directoryName, exist_ok=True)
+
+
 def run(args):
     print(">", " ".join(args))
     subprocess.run(args, check=True)
 
 
 # For each GeoJSON feature, keep only the name attribute. Overwrites the given file.
-def remove_extra_properties(path):
-    print(f"Removing extra properties from {path}")
+def removeNonNameProperties(path):
+    cleanUpGeojson(path, ["name"])
+
+def cleanUpGeojson(path, propertiesToKeep, addIds=False):
+    print(f"Cleaning up {path}")
     gj = {}
     with open(path) as f:
         gj = json.load(f)
-        for feature in gj["features"]:
-            # Remove all properties except for "name"
-            props = {}
-            name = feature["properties"].get("name")
-            if name:
-                props["name"] = name
-            feature["properties"] = props
 
+        counter = 1
+        for feature in gj["features"]:
+            # Only keep one property
+            keptProperties = {}
+            for property in propertiesToKeep:
+                valueToKeep =  feature["properties"].get(property) 
+                if(valueToKeep):
+                    keptProperties[property] = valueToKeep
+            feature["properties"] = keptProperties
+
+            feature["geometry"]["coordinates"] = trim_precision(
+                feature["geometry"]["coordinates"]
+            )
+
+            # The frontend needs IDs for hovering
+            if(addIds):
+                feature["id"] = counter
+                counter += 1
     with open(path, "w") as f:
         f.write(json.dumps(gj))
-
 
 # Round coordinates to 6 decimal places. Takes feature.geometry.coordinates,
 # handling any type.
