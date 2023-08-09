@@ -48,8 +48,7 @@ def main():
         made_any = True
         # Note https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dhospital doesn't
         # cover all types of medical facility
-        generatePolygonLayer(args.osm_input, "amenity",
-                             "hospital", "hospitals")
+        generatePolygonLayer(args.osm_input, "amenity", "hospital", "hospitals")
 
     if args.mrn:
         made_any = True
@@ -284,8 +283,7 @@ def makeWards(path):
 
         # Only keep England
         gj["features"] = list(
-            filter(lambda f: f["properties"]["WD23CD"]
-                   [0] == "E", gj["features"])
+            filter(lambda f: f["properties"]["WD23CD"][0] == "E", gj["features"])
         )
 
         for feature in gj["features"]:
@@ -384,8 +382,7 @@ def makeLocalAuthorityDistricts():
 
         # Only keep England
         gj["features"] = list(
-            filter(lambda f: f["properties"]["LAD23CD"]
-                   [0] == "E", gj["features"])
+            filter(lambda f: f["properties"]["LAD23CD"][0] == "E", gj["features"])
         )
 
         for feature in gj["features"]:
@@ -467,8 +464,7 @@ def makeCensusOutputAreas(raw_boundaries_path):
         ]
     )
     # Only get one file from the .zip
-    run(["unzip", f"{tmp}/census2021-ts045.zip",
-        "census2021-ts045-oa.csv", "-d", tmp])
+    run(["unzip", f"{tmp}/census2021-ts045.zip", "census2021-ts045-oa.csv", "-d", tmp])
     with open(f"{tmp}/census2021-ts045-oa.csv") as f:
         for row in csv.DictReader(f):
             oa_to_data[row["geography code"]] = summarizeCarAvailability(row)
@@ -482,8 +478,7 @@ def makeCensusOutputAreas(raw_boundaries_path):
             f"{tmp}/census2021-ts006.zip",
         ]
     )
-    run(["unzip", f"{tmp}/census2021-ts006.zip",
-        "census2021-ts006-oa.csv", "-d", tmp])
+    run(["unzip", f"{tmp}/census2021-ts006.zip", "census2021-ts006-oa.csv", "-d", tmp])
     with open(f"{tmp}/census2021-ts006-oa.csv") as f:
         for row in csv.DictReader(f):
             key = row["geography code"]
@@ -544,8 +539,7 @@ def makeCensusOutputAreas(raw_boundaries_path):
 
 def summarizeCarAvailability(row):
     # hh = household
-    hh_with_0 = int(
-        row["Number of cars or vans: No cars or vans in household"])
+    hh_with_0 = int(row["Number of cars or vans: No cars or vans in household"])
     hh_with_1 = int(row["Number of cars or vans: 1 car or van in household"])
     hh_with_2 = int(row["Number of cars or vans: 2 cars or vans in household"])
     hh_with_more = int(
@@ -603,7 +597,7 @@ def cleanUpGeojson(path, propertiesToKeep, addIds=False):
             keptProperties = {}
             for property in propertiesToKeep:
                 valueToKeep = feature["properties"].get(property)
-                if (valueToKeep):
+                if valueToKeep:
                     keptProperties[property] = valueToKeep
             feature["properties"] = keptProperties
 
@@ -612,7 +606,7 @@ def cleanUpGeojson(path, propertiesToKeep, addIds=False):
             )
 
             # The frontend needs IDs for hovering
-            if (addIds):
+            if addIds:
                 feature["id"] = counter
                 counter += 1
     with open(path, "w") as f:
