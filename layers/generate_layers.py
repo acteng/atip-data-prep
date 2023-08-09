@@ -102,7 +102,7 @@ def generatePolygonLayer(osm_input, tagPartOne, tagPartTwo, filename):
     tmp = f"tmp_{filename}"
     ensureEmptyTempDirectoryExists(tmp)
 
-    # First extract a .osm.pbf with all amenity={name} features
+    # First extract a .osm.pbf with all {tagPartOne}={tagPartTwo} features
     # TODO Do we need nwr? We don't want points further on
     run(
         [
@@ -585,6 +585,7 @@ def run(args):
 def removeNonNameProperties(path):
     cleanUpGeojson(path, ["name"])
 
+
 def cleanUpGeojson(path, propertiesToKeep, addIds=False):
     print(f"Cleaning up {path}")
     gj = {}
@@ -593,11 +594,10 @@ def cleanUpGeojson(path, propertiesToKeep, addIds=False):
 
         counter = 1
         for feature in gj["features"]:
-            # Only keep one property
             keptProperties = {}
             for property in propertiesToKeep:
-                valueToKeep =  feature["properties"].get(property) 
-                if(valueToKeep):
+                valueToKeep = feature["properties"].get(property)
+                if valueToKeep:
                     keptProperties[property] = valueToKeep
             feature["properties"] = keptProperties
 
@@ -606,11 +606,12 @@ def cleanUpGeojson(path, propertiesToKeep, addIds=False):
             )
 
             # The frontend needs IDs for hovering
-            if(addIds):
+            if addIds:
                 feature["id"] = counter
                 counter += 1
     with open(path, "w") as f:
         f.write(json.dumps(gj))
+
 
 # Round coordinates to 6 decimal places. Takes feature.geometry.coordinates,
 # handling any type.
