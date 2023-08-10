@@ -43,13 +43,13 @@ def main():
         made_any = True
         # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
         # primary and secondary schools
-        generatePolygonLayer(args.osm_input, "amenity", "school", "schools")
+        generatePolygonLayer(args.osm_input, "amenity=school", "schools")
 
     if args.hospitals:
         made_any = True
         # Note https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dhospital doesn't
         # cover all types of medical facility
-        generatePolygonLayer(args.osm_input, "amenity", "hospital", "hospitals")
+        generatePolygonLayer(args.osm_input, "amenity=hospital", "hospitals")
 
     if args.mrn:
         made_any = True
@@ -86,7 +86,7 @@ def main():
     if args.sports_spaces:
         made_any = True
         generatePolygonLayer(
-            args.osm_input, "leisure", "pitch,sports_centre", "sports_spaces"
+            args.osm_input, "leisure=pitch,sports_centre", "sports_spaces"
         )
 
     if args.bus_routes:
@@ -99,8 +99,8 @@ def main():
         )
 
 
-# Extract `{tagPartOne}={tagPartTwo}` polygons from OSM, and only keep a name attribute.
-def generatePolygonLayer(osm_input, tagPartOne, tagPartTwo, filename):
+# Extract polygons from OSM using a tag filter, and only keep a name attribute.
+def generatePolygonLayer(osm_input, tagFilter, filename):
     if not osm_input:
         raise Exception("You must specify --osm_input")
 
@@ -114,36 +114,19 @@ def generatePolygonLayer(osm_input, tagPartOne, tagPartTwo, filename):
             "osmium",
             "tags-filter",
             osm_input,
-            f"nwr/{tagPartOne}={tagPartTwo}",
+            f"nwr/{tagFilter}",
             "-o",
             f"{tmp}/extract.osm.pbf",
         ]
     )
 
-    # Transform osm.pbf to GeoJSON, only keeping polygons. (Everything will be expressed as a MultiPolygon)
-    run(
-        [
-            "osmium",
-            "export",
-            f"{tmp}/extract.osm.pbf",
-            "--geometry-type=polygon",
-            "-o",
-            f"{tmp}/extract.geojson",
-        ]
+    convertPbfToGeoJson(
+        f"{tmp}/extract.osm.pbf", f"{tmp}/{filename}.geojson", "polygon"
     )
 
-    removeNonNameProperties(f"{tmp}/extract.geojson")
+    cleanUpGeojson(f"{tmp}/{filename}.geojson", ["name"])
 
-    # Convert to pmtiles
-    run(
-        [
-            "tippecanoe",
-            f"{tmp}/extract.geojson",
-            "--generate-ids",
-            "-o",
-            f"output/{filename}.pmtiles",
-        ]
-    )
+    convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
 
 
 def makeRailwayStations(
@@ -156,7 +139,6 @@ def makeRailwayStations(
     tmp = f"tmp_{filename}"
     ensureEmptyTempDirectoryExists(tmp)
     osmFilePath = f"{tmp}/extract.osm.pbf"
-    # First extract a .osm.pbf with all {tag_part_one}={tag_part_two} features
     run(
         [
             "osmium",
@@ -168,9 +150,9 @@ def makeRailwayStations(
         ]
     )
     outputFilepath = f"output/{filename}.geojson"
-    generateGeojsonFromOSMFile(osmFilePath, outputFilepath)
+    convertPbfToGeoJson(osmFilePath, outputFilepath, "point")
 
-    cleanUpGeojson(outputFilepath, ["name"], True)
+    cleanUpGeojson(outputFilepath, ["name"])
 
 
 def makeMRN():
@@ -224,8 +206,7 @@ def makeMRN():
     with open(path, "w") as f:
         f.write(json.dumps(gj))
 
-    # Convert to pmtiles
-    run(["tippecanoe", path, "--generate-ids", "-o", "output/mrn.pmtiles"])
+    convertGeoJsonToPmtiles(path, "output/mrn.pmtiles")
 
 
 def makeParliamentaryConstituencies():
@@ -260,15 +241,9 @@ def makeParliamentaryConstituencies():
         ]
     )
 
-    # Convert to pmtiles
-    run(
-        [
-            "tippecanoe",
-            f"{tmp}/parliamentary_constituencies.geojson",
-            "--generate-ids",
-            "-o",
-            "output/parliamentary_constituencies.pmtiles",
-        ]
+    convertGeoJsonToPmtiles(
+        f"{tmp}/parliamentary_constituencies.geojson",
+        "output/parliamentary_constituencies.pmtiles",
     )
 
 
@@ -304,16 +279,7 @@ def makeWards(path):
     with open(f"{tmp}/wards.geojson", "w") as f:
         f.write(json.dumps(gj))
 
-    # Convert to pmtiles
-    run(
-        [
-            "tippecanoe",
-            f"{tmp}/wards.geojson",
-            "--generate-ids",
-            "-o",
-            f"output/wards.pmtiles",
-        ]
-    )
+    convertGeoJsonToPmtiles(f"{tmp}/wards.geojson", "output/wards.pmtiles")
 
 
 def makeCombinedAuthorities():
@@ -439,16 +405,7 @@ def makeLocalPlanningAuthorities():
     with open(path, "w") as f:
         f.write(json.dumps(gj))
 
-    # Convert to pmtiles
-    run(
-        [
-            "tippecanoe",
-            path,
-            "--generate-ids",
-            "-o",
-            f"output/local_planning_authorities.pmtiles",
-        ]
-    )
+    convertGeoJsonToPmtiles(path, "output/local_planning_authorities.pmtiles")
 
 
 # You have to manually download the GeoJSON file from https://geoportal.statistics.gov.uk/datasets/ons::output-areas-2021-boundaries-ew-bgc/explore and pass in the path here (until we can automate this)
@@ -530,16 +487,7 @@ def makeCensusOutputAreas(raw_boundaries_path):
     with open(path, "w") as f:
         f.write(json.dumps(gj))
 
-    # Convert to pmtiles
-    run(
-        [
-            "tippecanoe",
-            path,
-            "--generate-ids",
-            "-o",
-            "output/census_output_areas.pmtiles",
-        ]
-    )
+    convertGeoJsonToPmtiles(path, "output/census_output_areas.pmtiles")
 
 
 def summarizeCarAvailability(row):
@@ -578,23 +526,15 @@ def makeBusRoutes(osm_input):
             "osmium",
             "tags-filter",
             osm_input,
-            f"r/route=bus",
+            "r/route=bus",
             "-o",
             f"{tmp}/extract.osm.pbf",
         ]
     )
-
     # The relations also include stop positions as points. Only keep
     # LineStrings, representing roads.
-    run(
-        [
-            "osmium",
-            "export",
-            f"{tmp}/extract.osm.pbf",
-            "--geometry-type=linestring",
-            "-o",
-            f"{tmp}/{filename}.geojson",
-        ]
+    convertPbfToGeoJson(
+        f"{tmp}/extract.osm.pbf", f"{tmp}/{filename}.geojson", "linestring"
     )
 
     print(f"Cleaning up {tmp}/{filename}.geojson")
@@ -617,16 +557,7 @@ def makeBusRoutes(osm_input):
     with open(f"{tmp}/{filename}.geojson", "w") as f:
         f.write(json.dumps(gj))
 
-    # Convert to pmtiles
-    run(
-        [
-            "tippecanoe",
-            f"{tmp}/{filename}.geojson",
-            "--generate-ids",
-            "-o",
-            f"output/{filename}.pmtiles",
-        ]
-    )
+    convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
 
 
 # Using the tags from an OSM way, determine if this road has bus lanes in any direction.
@@ -666,12 +597,13 @@ def roadHasBusLane(tags):
     return False
 
 
-def generateGeojsonFromOSMFile(osmFilePath, outputFilepath):
+def convertPbfToGeoJson(pbfPath, geojsonPath, geometryType):
     run(
         [
             "osmium",
             "export",
             osmFilePath,
+            f"--geometry-type={geometryType}",
             "-o",
             outputFilepath,
         ]
@@ -689,12 +621,9 @@ def run(args):
     subprocess.run(args, check=True)
 
 
-# For each GeoJSON feature, keep only the name attribute. Overwrites the given file.
-def removeNonNameProperties(path):
-    cleanUpGeojson(path, ["name"])
-
-
-def cleanUpGeojson(path, propertiesToKeep, addIds=False):
+# Adds numeric IDs to every feature, trims coordinate precision, and only keeps
+# the specified properties. Overwrites the file.
+def cleanUpGeojson(path, propertiesToKeep):
     print(f"Cleaning up {path}")
     gj = {}
     with open(path) as f:
@@ -714,11 +643,16 @@ def cleanUpGeojson(path, propertiesToKeep, addIds=False):
             )
 
             # The frontend needs IDs for hovering
-            if addIds:
-                feature["id"] = counter
-                counter += 1
+            feature["id"] = counter
+            counter += 1
     with open(path, "w") as f:
         f.write(json.dumps(gj))
+
+
+# Note the layer name is based on the input filename. This always generates
+# numeric feature IDs.
+def convertGeoJsonToPmtiles(geojsonPath, pmtilesPath):
+    run(["tippecanoe", geojsonPath, "--generate-ids", "-o", pmtilesPath])
 
 
 # Round coordinates to 6 decimal places. Takes feature.geometry.coordinates,
