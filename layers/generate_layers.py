@@ -590,6 +590,13 @@ def roadHasBusLane(tags):
             if value and "designated" in value:
                 return True
 
+    # Handle https://wiki.openstreetmap.org/wiki/Tag:access=no
+    if tags.get("access") == "no":
+        for key in ["bus", "psv"]:
+            value = tags.get(key)
+            if value == "yes" or value == "designated":
+                return True
+
     # We're not handling highway=busway or other cases for service roads
     # designed exclusively for buses, because they're not intended for cyclists
     # or any other users.
@@ -602,10 +609,10 @@ def convertPbfToGeoJson(pbfPath, geojsonPath, geometryType):
         [
             "osmium",
             "export",
-            osmFilePath,
+            pbfPath,
             f"--geometry-type={geometryType}",
             "-o",
-            outputFilepath,
+            geojsonPath,
         ]
     )
 
