@@ -81,13 +81,16 @@ the binary file format may be incompatible. Use `cargo update -p osm2streets`.
 
 ATIP can display extra contextual layers:
 
-- POIs (points of interest) from OpenStreetMap, like schools and hospitals
+- Data from OpenStreetMap
+  - Points of interest, like schools, hospitals, sports centres, etc
+  - Roads with bus lanes and bus routes
 - the [Major Road Network](https://www.data.gov.uk/dataset/95f58bfa-13d6-4657-9d6f-020589498cfd/major-road-network)
-- Parliament constituency boundaries, from [OS Boundary-Line](https://www.ordnancesurvey.co.uk/products/boundary-line)
-- Wards, from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::wards-may-2023-boundaries-uk-bgc/explore)
-- Combined authorities from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::combined-authorities-december-2022-boundaries-en-buc/explore)
-- Local authority districts from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-may-2023-boundaries-uk-buc/explore)
-- Local planning authorities from [planning.data.gov.uk](https://www.planning.data.gov.uk/dataset/local-planning-authority)
+- Boundaries
+  - Parliament constituency boundaries, from [OS Boundary-Line](https://www.ordnancesurvey.co.uk/products/boundary-line)
+  - Wards, from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::wards-may-2023-boundaries-uk-bgc/explore)
+  - Combined authorities from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::combined-authorities-december-2022-boundaries-en-buc/explore)
+  - Local authority districts from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-may-2023-boundaries-uk-buc/explore)
+  - Local planning authorities from [planning.data.gov.uk](https://www.planning.data.gov.uk/dataset/local-planning-authority)
 - Output-area level 2021 census data
 	- Output area boundaries from [OS and ONS](https://geoportal.statistics.gov.uk/datasets/ons::output-areas-2021-boundaries-ew-bgc/explore)
 	- Population density comes from [NOMIS TS006](https://www.nomisweb.co.uk/sources/census_2021_bulk)
@@ -101,7 +104,7 @@ is a single GeoJSON file if it's small enough, or
 To run this:
 
 1.  Get `england-latest.osm.pbf` from Geofabrik. The `split_uk_osm.sh` script above does this.
-2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations`
+2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes`
 3.  Pick an arbitrary version number, and upload the files: `for x in output/*; do aws s3 cp --dry $x s3://atip.uk/layers/v1/; done`
 
 If you're rerunning the script for the same output, you may need to manually delete the output files from the previous run.
