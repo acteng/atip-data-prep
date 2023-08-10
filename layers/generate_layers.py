@@ -29,6 +29,7 @@ def main():
         help="Path to the manually downloaded Output_Areas_2021_EW_BGC_V2_-3080813486471056666.geojson",
         type=str,
     )
+    parser.add_argument("--bus_routes", action="store_true")
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -87,6 +88,10 @@ def main():
         generatePolygonLayer(
             args.osm_input, "leisure", "pitch,sports_centre", "sports_spaces"
         )
+
+    if args.bus_routes:
+        made_any = True
+        makeBusRoutes(args.osm_input)
 
     if not made_any:
         print(
@@ -213,7 +218,7 @@ def makeMRN():
                 props["name"] = name
             feature["properties"] = props
 
-            feature["geometry"]["coordinates"] = trim_precision(
+            feature["geometry"]["coordinates"] = trimPrecision(
                 feature["geometry"]["coordinates"]
             )
     with open(path, "w") as f:
@@ -293,7 +298,7 @@ def makeWards(path):
             props["name"] = feature["properties"]["WD23NM"]
             feature["properties"] = props
 
-            feature["geometry"]["coordinates"] = trim_precision(
+            feature["geometry"]["coordinates"] = trimPrecision(
                 feature["geometry"]["coordinates"]
             )
     with open(f"{tmp}/wards.geojson", "w") as f:
@@ -345,7 +350,7 @@ def makeCombinedAuthorities():
             props["name"] = feature["properties"]["CAUTH22NM"]
             feature["properties"] = props
 
-            feature["geometry"]["coordinates"] = trim_precision(
+            feature["geometry"]["coordinates"] = trimPrecision(
                 feature["geometry"]["coordinates"]
             )
     # The final file is tiny; don't bother with pmtiles
@@ -392,7 +397,7 @@ def makeLocalAuthorityDistricts():
             props["name"] = feature["properties"]["LAD23NM"]
             feature["properties"] = props
 
-            feature["geometry"]["coordinates"] = trim_precision(
+            feature["geometry"]["coordinates"] = trimPrecision(
                 feature["geometry"]["coordinates"]
             )
     # The final file is tiny; don't bother with pmtiles
@@ -519,7 +524,7 @@ def makeCensusOutputAreas(raw_boundaries_path):
             props["OA21CD"] = key
             feature["properties"] = props
 
-            feature["geometry"]["coordinates"] = trim_precision(
+            feature["geometry"]["coordinates"] = trimPrecision(
                 feature["geometry"]["coordinates"]
             )
     with open(path, "w") as f:
@@ -556,6 +561,109 @@ def summarizeCarAvailability(row):
         # Round to 1 decimal place
         "average_cars_per_household": round(total_cars / total_households, 1),
     }
+
+
+def makeBusRoutes(osm_input):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+
+    filename = "bus_routes"
+    tmp = f"tmp_{filename}"
+    ensureEmptyTempDirectoryExists(tmp)
+
+    # Bus routes are represented as relations. Note many routes cross the same
+    # way, but osmium only outputs the way once when we export to GeoJSON
+    run(
+        [
+            "osmium",
+            "tags-filter",
+            osm_input,
+            f"r/route=bus",
+            "-o",
+            f"{tmp}/extract.osm.pbf",
+        ]
+    )
+
+    # The relations also include stop positions as points. Only keep
+    # LineStrings, representing roads.
+    run(
+        [
+            "osmium",
+            "export",
+            f"{tmp}/extract.osm.pbf",
+            "--geometry-type=linestring",
+            "-o",
+            f"{tmp}/{filename}.geojson",
+        ]
+    )
+
+    print(f"Cleaning up {tmp}/{filename}.geojson")
+    gj = {}
+    with open(f"{tmp}/{filename}.geojson") as f:
+        gj = json.load(f)
+
+        for feature in gj["features"]:
+            # The GeoJSON has OSM ways representing roads on a bus route.
+            # Remove all attributes from them, replacing with a boolean
+            # has_bus_lane.
+            properties = {}
+            if roadHasBusLane(feature["properties"]):
+                properties["has_bus_lane"] = True
+            feature["properties"] = properties
+
+            feature["geometry"]["coordinates"] = trimPrecision(
+                feature["geometry"]["coordinates"]
+            )
+    with open(f"{tmp}/{filename}.geojson", "w") as f:
+        f.write(json.dumps(gj))
+
+    # Convert to pmtiles
+    run(
+        [
+            "tippecanoe",
+            f"{tmp}/{filename}.geojson",
+            "--generate-ids",
+            "-o",
+            f"output/{filename}.pmtiles",
+        ]
+    )
+
+
+# Using the tags from an OSM way, determine if this road has bus lanes in any direction.
+def roadHasBusLane(tags):
+    # Per https://wiki.openstreetmap.org/wiki/Bus_lanes, there are many
+    # different ways to indicate bus lanes in OSM. Return true if any match.
+
+    # Handle https://wiki.openstreetmap.org/wiki/Key:busway
+    for key in ["busway", "busway:both", "busway:right", "busway:left"]:
+        value = tags.get(key)
+        if value == "lane" or value == "opposite_lane":
+            return True
+
+    # Handle https://wiki.openstreetmap.org/wiki/Key:lanes:psv and
+    # https://wiki.openstreetmap.org/wiki/Key:*:lanes
+    for prefix in ["lanes:psv", "lanes:bus"]:
+        for direction in ["", ":forward", ":backward"]:
+            value = tags.get(prefix + direction)
+            if value and value != "0":
+                return True
+
+    # Handle the per-lane restrictions
+    for prefix in ["psv:lanes", "bus:lanes"]:
+        for direction in ["", ":forward", ":backward"]:
+            # https://wiki.openstreetmap.org/wiki/Key:access#Lane_dependent_restrictions
+            # The value specifies access per lane. We don't care about
+            # specifically where the bus lane is, just presence, so we don't
+            # need to fully parse it.
+            value = tags.get(prefix + direction)
+            if value and "designated" in value:
+                return True
+
+    # We're not handling highway=busway or other cases for service roads
+    # designed exclusively for buses, because they're not intended for cyclists
+    # or any other users.
+
+    return False
 
 
 def generateGeojsonFromOSMFile(osmFilePath, outputFilepath):
@@ -601,7 +709,7 @@ def cleanUpGeojson(path, propertiesToKeep, addIds=False):
                     keptProperties[property] = valueToKeep
             feature["properties"] = keptProperties
 
-            feature["geometry"]["coordinates"] = trim_precision(
+            feature["geometry"]["coordinates"] = trimPrecision(
                 feature["geometry"]["coordinates"]
             )
 
@@ -615,9 +723,9 @@ def cleanUpGeojson(path, propertiesToKeep, addIds=False):
 
 # Round coordinates to 6 decimal places. Takes feature.geometry.coordinates,
 # handling any type.
-def trim_precision(data):
+def trimPrecision(data):
     if isinstance(data, list):
-        return [trim_precision(x) for x in data]
+        return [trimPrecision(x) for x in data]
     elif isinstance(data, float):
         return round(data, 6)
     else:
