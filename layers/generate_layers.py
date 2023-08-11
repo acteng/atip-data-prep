@@ -33,6 +33,11 @@ def main():
     )
     parser.add_argument("--bus_routes", action="store_true")
     parser.add_argument("--cycle_parking", action="store_true")
+    parser.add_argument(
+        "--imd",
+        help="Path to the manually downloaded Indices_of_Multiple_Deprivation_(IMD)_2019.geojson",
+        type=str,
+    )
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -99,6 +104,10 @@ def main():
     if args.cycle_parking:
         made_any = True
         osm.makeCycleParking(args.osm_input)
+
+    if args.imd:
+        made_any = True
+        census.makeIMD(args.imd)
 
     if not made_any:
         print(

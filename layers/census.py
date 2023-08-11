@@ -101,3 +101,21 @@ def summarizeCarAvailability(row):
         # Round to 1 decimal place
         "average_cars_per_household": round(total_cars / total_households, 1),
     }
+
+
+# You have to manually download the GeoJSON file from https://data-communities.opendata.arcgis.com/datasets/communities::indices-of-multiple-deprivation-imd-2019-1/explore and pass in the path here (until we can automate this)
+def makeIMD(path):
+    def fixProps(inputProps):
+        # See https://data-communities.opendata.arcgis.com/datasets/communities::indices-of-multiple-deprivation-imd-2019-1/about
+        outputProps = {
+            "LSOA11CD": inputProps["lsoa11cd"],
+            "score": round(inputProps["IMDScore"], 1),
+            "rank": inputProps["IMDRank0"],
+            "decile": inputProps["IMDDec0"],
+        }
+        return outputProps
+
+    # Note the 2019 IMD data uses 2011 LSOAs. We don't have any other census
+    # data against 2011 LSOAs, so we're not combining it with anything else.
+    cleanUpGeojson(path, fixProps)
+    convertGeoJsonToPmtiles(path, f"output/imd.pmtiles")
