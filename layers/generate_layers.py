@@ -32,6 +32,7 @@ def main():
         type=str,
     )
     parser.add_argument("--bus_routes", action="store_true")
+    parser.add_argument("--cycle_parking", action="store_true")
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -94,6 +95,10 @@ def main():
     if args.bus_routes:
         made_any = True
         osm.makeBusRoutes(args.osm_input)
+
+    if args.cycle_parking:
+        made_any = True
+        osm.makeCycleParking(args.osm_input)
 
     if not made_any:
         print(
