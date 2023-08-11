@@ -27,10 +27,21 @@ def convertPbfToGeoJson(pbfPath, geojsonPath, geometryType):
     )
 
 
-# Note the layer name is based on the input filename. This always generates
+# Note the layer name is based on the output filename. This always generates
 # numeric feature IDs.
 def convertGeoJsonToPmtiles(geojsonPath, pmtilesPath):
-    run(["tippecanoe", geojsonPath, "--generate-ids", "-o", pmtilesPath])
+    layerName = os.path.basename(pmtilesPath)[: -len(".pmtiles")]
+    run(
+        [
+            "tippecanoe",
+            geojsonPath,
+            "--generate-ids",
+            "-l",
+            layerName,
+            "-o",
+            pmtilesPath,
+        ]
+    )
 
 
 # Adds numeric IDs to every feature, trims coordinate precision, and uses the
@@ -42,6 +53,11 @@ def cleanUpGeojson(path, transformProperties):
     gj = {}
     with open(path) as f:
         gj = json.load(f)
+
+        # Remove unnecessary attributes present in some files
+        for key in ["name", "crs"]:
+            if key in gj:
+                del gj[key]
 
         counter = 1
         for feature in gj["features"]:
