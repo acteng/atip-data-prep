@@ -96,6 +96,39 @@ def makeBusRoutes(osm_input):
     convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
 
 
+def makeCycleParking(osm_input):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+
+    filename = "cycle_parking"
+    tmp = f"tmp_{filename}"
+    ensureEmptyTempDirectoryExists(tmp)
+
+    # See https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dbicycle_parking
+    run(
+        [
+            "osmium",
+            "tags-filter",
+            osm_input,
+            "n/amenity=bicycle_parking",
+            "-o",
+            f"{tmp}/extract.osm.pbf",
+        ]
+    )
+    convertPbfToGeoJson(f"{tmp}/extract.osm.pbf", f"{tmp}/{filename}.geojson", "point")
+
+    def fixProps(inputProps, outputProps):
+        try:
+            outputProps["capacity"] = int(inputProps.get("capacity"))
+        except:
+            # Ignore parsing errors and missing values
+            pass
+
+    cleanUpGeojson(f"{tmp}/{filename}.geojson", fixProps)
+
+    convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
+
+
 # Using the tags from an OSM way, determine if this road has bus lanes in any direction.
 def roadHasBusLane(tags):
     # Per https://wiki.openstreetmap.org/wiki/Bus_lanes, there are many
