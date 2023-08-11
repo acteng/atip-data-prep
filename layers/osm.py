@@ -29,10 +29,12 @@ def generatePolygonLayer(osm_input, tagFilter, filename):
     convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
 
 
-def onlyKeepName(inputProps, outputProps):
+def onlyKeepName(inputProps):
+    outputProps = {}
     name = inputProps.get("name")
     if name:
         outputProps["name"] = name
+    return outputProps
 
 
 def makeRailwayStations(
@@ -87,9 +89,11 @@ def makeBusRoutes(osm_input):
         f"{tmp}/extract.osm.pbf", f"{tmp}/{filename}.geojson", "linestring"
     )
 
-    def fixProps(inputProps, outputProps):
+    def fixProps(inputProps):
+        outputProps = {}
         if roadHasBusLane(inputProps):
             outputProps["has_bus_lane"] = True
+        return outputProps
 
     cleanUpGeojson(f"{tmp}/{filename}.geojson", fixProps)
 
@@ -117,12 +121,14 @@ def makeCycleParking(osm_input):
     )
     convertPbfToGeoJson(f"{tmp}/extract.osm.pbf", f"{tmp}/{filename}.geojson", "point")
 
-    def fixProps(inputProps, outputProps):
+    def fixProps(inputProps):
+        outputProps = {}
         try:
             outputProps["capacity"] = int(inputProps.get("capacity"))
         except:
             # Ignore parsing errors and missing values
             pass
+        return outputProps
 
     cleanUpGeojson(f"{tmp}/{filename}.geojson", fixProps)
 
