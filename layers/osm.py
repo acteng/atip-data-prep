@@ -8,7 +8,6 @@ def generatePolygonLayer(osm_input, tagFilter, filename):
     tmp = f"tmp_{filename}"
     ensureEmptyTempDirectoryExists(tmp)
 
-    # First extract a .osm.pbf with all {tagPartOne}={tagPartTwo} features
     # TODO Do we need nwr? We don't want points further on
     run(
         [
@@ -25,9 +24,15 @@ def generatePolygonLayer(osm_input, tagFilter, filename):
         f"{tmp}/extract.osm.pbf", f"{tmp}/{filename}.geojson", "polygon"
     )
 
-    cleanUpGeojson(f"{tmp}/{filename}.geojson", ["name"])
+    cleanUpGeojson(f"{tmp}/{filename}.geojson", onlyKeepName)
 
     convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
+
+
+def onlyKeepName(inputProps, outputProps):
+    name = inputProps.get("name")
+    if name:
+        outputProps["name"] = name
 
 
 def makeRailwayStations(
@@ -53,7 +58,7 @@ def makeRailwayStations(
     outputFilepath = f"output/{filename}.geojson"
     convertPbfToGeoJson(osmFilePath, outputFilepath, "point")
 
-    cleanUpGeojson(outputFilepath, ["name"])
+    cleanUpGeojson(outputFilepath, onlyKeepName)
 
 
 def makeBusRoutes(osm_input):
@@ -82,25 +87,11 @@ def makeBusRoutes(osm_input):
         f"{tmp}/extract.osm.pbf", f"{tmp}/{filename}.geojson", "linestring"
     )
 
-    print(f"Cleaning up {tmp}/{filename}.geojson")
-    gj = {}
-    with open(f"{tmp}/{filename}.geojson") as f:
-        gj = json.load(f)
+    def fixProps(inputProps, outputProps):
+        if roadHasBusLane(inputProps):
+            outputProps["has_bus_lane"] = True
 
-        for feature in gj["features"]:
-            # The GeoJSON has OSM ways representing roads on a bus route.
-            # Remove all attributes from them, replacing with a boolean
-            # has_bus_lane.
-            properties = {}
-            if roadHasBusLane(feature["properties"]):
-                properties["has_bus_lane"] = True
-            feature["properties"] = properties
-
-            feature["geometry"]["coordinates"] = trimPrecision(
-                feature["geometry"]["coordinates"]
-            )
-    with open(f"{tmp}/{filename}.geojson", "w") as f:
-        f.write(json.dumps(gj))
+    cleanUpGeojson(f"{tmp}/{filename}.geojson", fixProps)
 
     convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
 
