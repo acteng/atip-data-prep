@@ -44,47 +44,30 @@ def makeWards(path):
     tmp = "tmp_wards"
     ensureEmptyTempDirectoryExists(tmp)
 
-    # Clean up the file
-    print(f"Cleaning up {path}")
-    gj = {}
-    with open(path) as f:
-        gj = json.load(f)
-        # Remove unnecessary attributes
-        del gj["name"]
-        del gj["crs"]
+    def fixProps(inputProps):
+        return {
+            "WD23CD": inputProps["WD23CD"],
+            "name": inputProps["WD23NM"],
+        }
 
-        # Only keep England
-        gj["features"] = list(
-            filter(lambda f: f["properties"]["WD23CD"][0] == "E", gj["features"])
-        )
-
-        for feature in gj["features"]:
-            # Remove most properties, and rename a few
-            props = {}
-            props["WD23CD"] = feature["properties"]["WD23CD"]
-            props["name"] = feature["properties"]["WD23NM"]
-            feature["properties"] = props
-
-            feature["geometry"]["coordinates"] = trimPrecision(
-                feature["geometry"]["coordinates"]
-            )
-    with open(f"{tmp}/wards.geojson", "w") as f:
-        f.write(json.dumps(gj))
+    # Only keep England
+    cleanUpGeojson(
+        f"{tmp}/wards.geojson",
+        fixProps,
+        filterFeatures=lambda f: f["properties"]["WD23CD"][0] == "E",
+    )
 
     convertGeoJsonToPmtiles(f"{tmp}/wards.geojson", "output/wards.pmtiles")
 
 
 def makeCombinedAuthorities():
-    tmp = "tmp_combined_authorities"
-    ensureEmptyTempDirectoryExists(tmp)
-
     # Reproject to WGS84
     run(
         [
             "ogr2ogr",
             "-f",
             "GeoJSON",
-            f"{tmp}/boundary.geojson",
+            "output/combined_authorities.geojson",
             "-t_srs",
             "EPSG:4326",
             # Manually downloaded and stored in git
@@ -92,28 +75,14 @@ def makeCombinedAuthorities():
         ]
     )
 
-    # Clean up the file. Note the features already have IDs.
-    print(f"Cleaning up {tmp}/boundary.geojson")
-    gj = {}
-    with open(f"{tmp}/boundary.geojson") as f:
-        gj = json.load(f)
-        # Remove unnecessary attributes
-        del gj["name"]
-        del gj["crs"]
+    def fixProps(inputProps):
+        return {
+            "CAUTH22CD": inputProps["CAUTH22CD"],
+            "name": inputProps["CAUTH22NM"],
+        }
 
-        for feature in gj["features"]:
-            # Remove most properties, and rename a few
-            props = {}
-            props["CAUTH22CD"] = feature["properties"]["CAUTH22CD"]
-            props["name"] = feature["properties"]["CAUTH22NM"]
-            feature["properties"] = props
-
-            feature["geometry"]["coordinates"] = trimPrecision(
-                feature["geometry"]["coordinates"]
-            )
     # The final file is tiny; don't bother with pmtiles
-    with open("output/combined_authorities.geojson", "w") as f:
-        f.write(json.dumps(gj))
+    cleanUpGeojson("output/combined_authorities.geojson", fixProps)
 
 
 def makeLocalAuthorityDistricts():
@@ -126,7 +95,7 @@ def makeLocalAuthorityDistricts():
             "ogr2ogr",
             "-f",
             "GeoJSON",
-            f"{tmp}/boundary.geojson",
+            "output/local_authority_districts.geojson",
             "-t_srs",
             "EPSG:4326",
             # Manually downloaded and stored in git
@@ -134,33 +103,19 @@ def makeLocalAuthorityDistricts():
         ]
     )
 
-    # Clean up the file. Note the features already have IDs.
-    print(f"Cleaning up {tmp}/boundary.geojson")
-    gj = {}
-    with open(f"{tmp}/boundary.geojson") as f:
-        gj = json.load(f)
-        # Remove unnecessary attributes
-        del gj["name"]
-        del gj["crs"]
+    def fixProps(inputProps):
+        return {
+            "LAD23CD": inputProps["LAD23CD"],
+            "name": inputProps["LAD23NM"],
+        }
 
-        # Only keep England
-        gj["features"] = list(
-            filter(lambda f: f["properties"]["LAD23CD"][0] == "E", gj["features"])
-        )
-
-        for feature in gj["features"]:
-            # Remove most properties, and rename a few
-            props = {}
-            props["LAD23CD"] = feature["properties"]["LAD23CD"]
-            props["name"] = feature["properties"]["LAD23NM"]
-            feature["properties"] = props
-
-            feature["geometry"]["coordinates"] = trimPrecision(
-                feature["geometry"]["coordinates"]
-            )
+    # Only keep England
     # The final file is tiny; don't bother with pmtiles
-    with open("output/local_authority_districts.geojson", "w") as f:
-        f.write(json.dumps(gj))
+    cleanUpGeojson(
+        "output/local_authority_districts.geojson",
+        fixProps,
+        filterFeatures=lambda f: f["properties"]["LAD23CD"][0] == "E",
+    )
 
 
 def makeLocalPlanningAuthorities():
@@ -179,22 +134,12 @@ def makeLocalPlanningAuthorities():
         ]
     )
 
-    # Clean up the file
-    print(f"Cleaning up {path}")
-    gj = {}
-    with open(path) as f:
-        gj = json.load(f)
-        # Remove unnecessary attributes
-        del gj["name"]
+    def fixProps(inputProps):
+        return {
+            "LPA22CD": inputProps["reference"],
+            "name": inputProps["name"],
+        }
 
-        for feature in gj["features"]:
-            # Remove most properties, and rename a few
-            props = {}
-            props["LPA22CD"] = feature["properties"]["reference"]
-            props["name"] = feature["properties"]["name"]
-            feature["properties"] = props
-            # The precision is already trimmed
-    with open(path, "w") as f:
-        f.write(json.dumps(gj))
+    cleanUpGeojson(path, fixProps)
 
     convertGeoJsonToPmtiles(path, "output/local_planning_authorities.pmtiles")

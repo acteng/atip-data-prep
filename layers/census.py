@@ -59,25 +59,14 @@ def makeCensusOutputAreas(raw_boundaries_path):
         ]
     )
 
-    # Clean up the GeoJSON file, and add in the per-OA data above
-    print(f"Cleaning up {path}")
-    gj = {}
-    with open(path) as f:
-        gj = json.load(f)
-        # Remove unnecessary attributes
-        del gj["name"]
-        del gj["crs"]
-        for feature in gj["features"]:
-            key = feature["properties"]["OA21CD"]
-            props = oa_to_data[key]
-            props["OA21CD"] = key
-            feature["properties"] = props
+    def fixProps(inputProps):
+        outputProps = {}
+        key = inputProps["OA21CD"]
+        outputProps.update(oa_to_data[key])
+        outputProps["OA21CD"] = key
+        return outputProps
 
-            feature["geometry"]["coordinates"] = trimPrecision(
-                feature["geometry"]["coordinates"]
-            )
-    with open(path, "w") as f:
-        f.write(json.dumps(gj))
+    cleanUpGeojson(path, fixProps)
 
     convertGeoJsonToPmtiles(path, "output/census_output_areas.pmtiles")
 
