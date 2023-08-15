@@ -44,6 +44,21 @@ def convertGeoJsonToPmtiles(geojsonPath, pmtilesPath):
     )
 
 
+# Produces GeoJSON output
+def reprojectToWgs84(inputPath, outputPath):
+    run(
+        [
+            "ogr2ogr",
+            "-f",
+            "GeoJSON",
+            outputPath,
+            "-t_srs",
+            "EPSG:4326",
+            inputPath,
+        ]
+    )
+
+
 # This method cleans up a GeoJSON file in a few ways, overwriting the path specified:
 #
 # - Removes redundant top-level attributes set by ogr2ogr

@@ -61,18 +61,10 @@ def makeWards(path):
 
 
 def makeCombinedAuthorities():
-    # Reproject to WGS84
-    run(
-        [
-            "ogr2ogr",
-            "-f",
-            "GeoJSON",
-            "output/combined_authorities.geojson",
-            "-t_srs",
-            "EPSG:4326",
-            # Manually downloaded and stored in git
-            "input/Combined_Authorities_December_2022_EN_BUC_1154653457304546671.geojson",
-        ]
+    reprojectToWgs84(
+        # Manually downloaded and stored in git
+        "input/Combined_Authorities_December_2022_EN_BUC_1154653457304546671.geojson",
+        "output/combined_authorities.geojson",
     )
 
     def fixProps(inputProps):
@@ -89,18 +81,10 @@ def makeLocalAuthorityDistricts():
     tmp = "tmp_local_authority_districts"
     ensureEmptyTempDirectoryExists(tmp)
 
-    # Reproject to WGS84
-    run(
-        [
-            "ogr2ogr",
-            "-f",
-            "GeoJSON",
-            "output/local_authority_districts.geojson",
-            "-t_srs",
-            "EPSG:4326",
-            # Manually downloaded and stored in git
-            "input/Local_Authority_Districts_May_2023_UK_BUC_V2_-7390714061867823479.geojson",
-        ]
+    reprojectToWgs84(
+        # Manually downloaded and stored in git
+        "input/Local_Authority_Districts_May_2023_UK_BUC_V2_-7390714061867823479.geojson",
+        "output/local_authority_districts.geojson",
     )
 
     def fixProps(inputProps):
