@@ -44,11 +44,16 @@ def convertGeoJsonToPmtiles(geojsonPath, pmtilesPath):
     )
 
 
-# Adds numeric IDs to every feature, trims coordinate precision, and uses the
-# callback to transform each feature's properties. Overwrites the file.
+# This method cleans up a GeoJSON file in a few ways, overwriting the path specified:
 #
-# The callback takes input properties and should return output properties.
-def cleanUpGeojson(path, transformProperties):
+# - Removes redundant top-level attributes set by ogr2ogr
+# - Filters features using filterFeatures
+# - Adds a numeric ID to every feature
+# - Trims coordinate precision
+# - Uses the transformProperties callback to transform each feature's
+#   properties. The callback takes input properties and should return output
+#   properties.
+def cleanUpGeojson(path, transformProperties, filterFeatures=lambda f: True):
     print(f"Cleaning up {path}")
     gj = {}
     with open(path) as f:
@@ -58,6 +63,8 @@ def cleanUpGeojson(path, transformProperties):
         for key in ["name", "crs"]:
             if key in gj:
                 del gj[key]
+
+        gj["features"] = list(filter(filterFeatures, gj["features"]))
 
         counter = 1
         for feature in gj["features"]:

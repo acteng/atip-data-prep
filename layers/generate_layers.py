@@ -143,30 +143,16 @@ def makeMRN():
         ]
     )
 
-    # Clean up the file
-    path = f"{tmp}/mrn.geojson"
-    print(f"Cleaning up {path}")
-    gj = {}
-    with open(path) as f:
-        gj = json.load(f)
-        # Remove unnecessary attributes
-        del gj["name"]
-        del gj["crs"]
-        for feature in gj["features"]:
-            # Remove all properties except for "name1", and rename it
-            props = {}
-            name = feature["properties"].get("name1")
-            if name:
-                props["name"] = name
-            feature["properties"] = props
+    def fixProps(inputProps):
+        outputProps = {}
+        name = feature["properties"].get("name1")
+        if name:
+            outputProps["name"] = name
+        return outputProps
 
-            feature["geometry"]["coordinates"] = trimPrecision(
-                feature["geometry"]["coordinates"]
-            )
-    with open(path, "w") as f:
-        f.write(json.dumps(gj))
+    cleanUpGeojson(f"{tmp}/mrn.geojson", fixProps)
 
-    convertGeoJsonToPmtiles(path, "output/mrn.pmtiles")
+    convertGeoJsonToPmtiles(f"{tmp}/mrn.geojson", "output/mrn.pmtiles")
 
 
 if __name__ == "__main__":
