@@ -50,10 +50,10 @@ def makeWards(path):
             "name": inputProps["WD23NM"],
         }
 
-    # Only keep England
     cleanUpGeojson(
         f"{tmp}/wards.geojson",
         fixProps,
+        # Only keep England
         filterFeatures=lambda f: f["properties"]["WD23CD"][0] == "E",
     )
 
@@ -93,11 +93,11 @@ def makeLocalAuthorityDistricts():
             "name": inputProps["LAD23NM"],
         }
 
-    # Only keep England
     # The final file is tiny; don't bother with pmtiles
     cleanUpGeojson(
         "output/local_authority_districts.geojson",
         fixProps,
+        # Only keep England
         filterFeatures=lambda f: f["properties"]["LAD23CD"][0] == "E",
     )
 
