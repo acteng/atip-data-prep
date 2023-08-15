@@ -130,17 +130,8 @@ def makeMRN():
     )
     run(["unzip", f"{tmp}/Major_Road_Network_2018_Open_Roads.zip", "-d", tmp])
 
-    # Convert to GeoJSON, projecting to WGS84
-    run(
-        [
-            "ogr2ogr",
-            "-f",
-            "GeoJSON",
-            f"{tmp}/mrn.geojson",
-            "-t_srs",
-            "EPSG:4326",
-            f"{tmp}/Major_Road_Network_2018_Open_Roads.shp",
-        ]
+    reprojectToWgs84(
+        f"{tmp}/Major_Road_Network_2018_Open_Roads.shp", f"{tmp}/mrn.geojson"
     )
 
     def fixProps(inputProps):

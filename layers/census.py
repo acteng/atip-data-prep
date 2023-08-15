@@ -45,19 +45,8 @@ def makeCensusOutputAreas(raw_boundaries_path):
                 )
             )
 
-    # Now work on the GeoJSON boundaries. First reproject to WGS84
     path = f"{tmp}/census_output_areas.geojson"
-    run(
-        [
-            "ogr2ogr",
-            "-f",
-            "GeoJSON",
-            path,
-            "-t_srs",
-            "EPSG:4326",
-            raw_boundaries_path,
-        ]
-    )
+    reprojectToWgs84(raw_boundaries_path, path)
 
     def fixProps(inputProps):
         outputProps = {}
