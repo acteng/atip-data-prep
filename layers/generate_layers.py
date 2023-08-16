@@ -6,6 +6,7 @@ import csv
 from utils import *
 import census
 import boundaries
+import cycle_paths
 import osm
 
 
@@ -38,6 +39,7 @@ def main():
         help="Path to the manually downloaded Indices_of_Multiple_Deprivation_(IMD)_2019.geojson",
         type=str,
     )
+    parser.add_argument("--cycle_paths", action="store_true")
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -108,6 +110,10 @@ def main():
     if args.imd:
         made_any = True
         census.makeIMD(args.imd)
+
+    if args.cycle_paths:
+        made_any = True
+        cycle_paths.makeCyclePaths(args.osm_input)
 
     if not made_any:
         print(
