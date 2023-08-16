@@ -14,7 +14,14 @@ def ensureEmptyTempDirectoryExists(directoryName):
     os.makedirs(directoryName, exist_ok=True)
 
 
-def convertPbfToGeoJson(pbfPath, geojsonPath, geometryType):
+def convertPbfToGeoJson(pbfPath, geojsonPath, geometryType, includeOsmID=False):
+    config = []
+    if includeOsmID:
+        # Created by `osmium export --print-default-config` and changing `id`
+        # TODO We can do this with a CLI flag with newer osmium, but it's not
+        # easy to install on Ubuntu 20
+        config = ["--config", "osmium_with_ids.cfg"]
+
     run(
         [
             "osmium",
@@ -24,6 +31,7 @@ def convertPbfToGeoJson(pbfPath, geojsonPath, geometryType):
             "-o",
             geojsonPath,
         ]
+        + config
     )
 
 
