@@ -39,10 +39,19 @@ def makeParliamentaryConstituencies():
     )
 
 
-# You have to manually download the GeoJSON file from https://geoportal.statistics.gov.uk/datasets/ons::wards-may-2023-boundaries-uk-bgc/explore and pass in the path here (until we can automate this)
-def makeWards(path):
+def makeWards():
     tmp = "tmp_wards"
     ensureEmptyTempDirectoryExists(tmp)
+
+    run(
+        [
+            "wget",
+            # From https://geoportal.statistics.gov.uk/datasets/ons::wards-may-2023-boundaries-uk-bgc/explore
+            "https://opendata.arcgis.com/api/v3/datasets/67c88ea8027244e3b2313c69e3fad503_0/downloads/data?format=geojson&spatialRefId=4326&where=1%3D1",
+            "-O",
+            f"{tmp}/wards.geojson",
+        ]
+    )
 
     def fixProps(inputProps):
         return {
