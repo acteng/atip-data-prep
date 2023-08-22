@@ -108,14 +108,14 @@ is a single GeoJSON file if it's small enough, or
 To run this:
 
 1.  Get `england-latest.osm.pbf` from Geofabrik. The `split_uk_osm.sh` script above does this.
-2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes --cycle_parking --cycle_paths`
+2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes --cycle_parking --cycle_paths --wards`
 3.  Pick an arbitrary version number, and upload the files: `for x in output/*; do aws s3 cp --dry $x s3://atip.uk/layers/v1/; done`
 
 If you're rerunning the script for the same output, you may need to manually delete the output files from the previous run.
 
 You can debug a PMTiles file using <https://protomaps.github.io/PMTiles>.
 
-There's a manual step required to generate `--wards`, `--census_output_areas`, and `--imd`. See the comment in the code.
+There's a manual step required to generate `--census_output_areas` and `--imd`. See the comment in the code.
 
 For `--cycle_paths`, you'll need about 20GB of RAM, until we switch to a streaming JSON parser.
 

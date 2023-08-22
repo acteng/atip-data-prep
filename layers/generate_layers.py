@@ -19,11 +19,7 @@ def main():
     parser.add_argument("--parliamentary_constituencies", action="store_true")
     parser.add_argument("--railway_stations", action="store_true")
     parser.add_argument("--sports_spaces", action="store_true")
-    parser.add_argument(
-        "--wards",
-        help="Path to the manually downloaded Wards_(May_2023)_Boundaries_UK_BGC.geojson",
-        type=str,
-    )
+    parser.add_argument("--wards", action="store_true")
     parser.add_argument("--combined_authorities", action="store_true")
     parser.add_argument("--local_authority_districts", action="store_true")
     parser.add_argument("--local_planning_authorities", action="store_true")
@@ -71,7 +67,7 @@ def main():
 
     if args.wards:
         made_any = True
-        boundaries.makeWards(args.wards)
+        boundaries.makeWards()
 
     if args.combined_authorities:
         made_any = True
