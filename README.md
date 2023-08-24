@@ -99,6 +99,7 @@ ATIP can display extra contextual layers:
 	- Car/van availability comes from [NOMIS TS045](https://www.nomisweb.co.uk/sources/census_2021_bulk)
 - LSOA level 2011 census data
 	- Indices of Multiple Deprivation comes from [DLUCH](https://data-communities.opendata.arcgis.com/datasets/communities::indices-of-multiple-deprivation-imd-2019-1/explore)
+- Traffic counts from [DfT](https://roadtraffic.dft.gov.uk/downloads)
 
 These layers are England-wide, rather than being split into a file per area,
 because they're being used on the country-wide scheme browse page. Each layer
@@ -108,7 +109,7 @@ is a single GeoJSON file if it's small enough, or
 To run this:
 
 1.  Get `england-latest.osm.pbf` from Geofabrik. The `split_uk_osm.sh` script above does this.
-2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes --cycle_parking --cycle_paths --wards`
+2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes --cycle_parking --cycle_paths --wards --vehicle_counts`
 3.  Pick an arbitrary version number, and upload the files: `for x in output/*; do aws s3 cp --dry $x s3://atip.uk/layers/v1/; done`
 
 If you're rerunning the script for the same output, you may need to manually delete the output files from the previous run.
