@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 
 import argparse
-import csv
 
 from utils import *
 import census
 import boundaries
 import cycle_paths
 import osm
+import traffic
 
 
 def main():
@@ -36,6 +36,7 @@ def main():
         type=str,
     )
     parser.add_argument("--cycle_paths", action="store_true")
+    parser.add_argument("--vehicle_counts", action="store_true")
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -110,6 +111,10 @@ def main():
     if args.cycle_paths:
         made_any = True
         cycle_paths.makeCyclePaths(args.osm_input)
+
+    if args.vehicle_counts:
+        made_any = True
+        traffic.makeDftVehicleCounts()
 
     if not made_any:
         print(
