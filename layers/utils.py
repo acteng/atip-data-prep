@@ -36,9 +36,12 @@ def convertPbfToGeoJson(pbfPath, geojsonPath, geometryType, includeOsmID=False):
 
 
 # Note the layer name is based on the output filename. This always generates
-# numeric feature IDs.
-def convertGeoJsonToPmtiles(geojsonPath, pmtilesPath):
+# numeric feature IDs. For autoZoom, see https://github.com/felt/tippecanoe docs about -zg.
+def convertGeoJsonToPmtiles(geojsonPath, pmtilesPath, autoZoom=False):
     layerName = os.path.basename(pmtilesPath)[: -len(".pmtiles")]
+    zoom = []
+    if autoZoom:
+        zoom = ["-zg"]
     run(
         [
             "tippecanoe",
@@ -49,6 +52,7 @@ def convertGeoJsonToPmtiles(geojsonPath, pmtilesPath):
             "-o",
             pmtilesPath,
         ]
+        + zoom
     )
 
 

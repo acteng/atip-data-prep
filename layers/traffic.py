@@ -24,8 +24,8 @@ def makeDftVehicleCounts():
 
     with open(f"{tmp}/dft_traffic_counts_aadf.csv") as f:
         for row in csv.DictReader(f):
-            # Only keep the latest year
-            if row["Year"] != "2022":
+            # Only keep the latest year and England
+            if row["Year"] != "2022" or row["Region_ons_code"][0] != "E":
                 continue
 
             gj["features"].append(
@@ -33,7 +33,10 @@ def makeDftVehicleCounts():
                     "type": "Feature",
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [float(row["Longitude"]), float(row["Latitude"])],
+                        "coordinates": [
+                            float(row["Longitude"]),
+                            float(row["Latitude"]),
+                        ],
                     },
                     "properties": {
                         "count_point": row["Count_point_id"],
@@ -48,5 +51,5 @@ def makeDftVehicleCounts():
     with open(f"{tmp}/vehicle_counts.geojson", "w") as f:
         f.write(json.dumps(gj))
     convertGeoJsonToPmtiles(
-        f"{tmp}/vehicle_counts.geojson", "output/vehicle_counts.pmtiles"
+        f"{tmp}/vehicle_counts.geojson", "output/vehicle_counts.pmtiles", autoZoom=True
     )

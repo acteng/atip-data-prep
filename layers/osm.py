@@ -132,7 +132,9 @@ def makeCycleParking(osm_input):
 
     cleanUpGeojson(f"{tmp}/{filename}.geojson", fixProps)
 
-    convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
+    convertGeoJsonToPmtiles(
+        f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles", autoZoom=True
+    )
 
 
 # Using the tags from an OSM way, determine if this road has bus lanes in any direction.
