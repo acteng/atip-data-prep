@@ -179,3 +179,26 @@ def roadHasBusLane(tags):
     # or any other users.
 
     return False
+
+def makeCrossings(
+    osm_input,
+):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+
+    filename = "crossings"
+    tmp = f"tmp_{filename}"
+    ensureEmptyTempDirectoryExists(tmp)
+    osmFilePath = f"{tmp}/extract.osm.pbf"
+    run(
+        [
+            "osmium",
+            "tags-filter",
+            osm_input,
+            "n/crossing",
+            "-o",
+            osmFilePath,
+        ]
+    )
+    outputFilepath = f"output/{filename}.geojson"
+    convertPbfToGeoJson(osmFilePath, outputFilepath, "point")
