@@ -7,6 +7,7 @@ import census
 import boundaries
 import cycle_paths
 import osm
+import pct
 import traffic
 
 
@@ -38,6 +39,7 @@ def main():
     )
     parser.add_argument("--cycle_paths", action="store_true")
     parser.add_argument("--vehicle_counts", action="store_true")
+    parser.add_argument("--pct", action="store_true")
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -120,6 +122,10 @@ def main():
     if args.vehicle_counts:
         made_any = True
         traffic.makeDftVehicleCounts()
+
+    if args.pct:
+        made_any = True
+        pct.makePct()
 
     if not made_any:
         print(
