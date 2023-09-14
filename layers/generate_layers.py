@@ -18,6 +18,7 @@ def main():
     parser.add_argument("--mrn", action="store_true")
     parser.add_argument("--parliamentary_constituencies", action="store_true")
     parser.add_argument("--railway_stations", action="store_true")
+    parser.add_argument("--crossings", action="store_true")
     parser.add_argument("--sports_spaces", action="store_true")
     parser.add_argument(
         "--wards",
@@ -106,6 +107,10 @@ def main():
     if args.cycle_parking:
         made_any = True
         osm.makeCycleParking(args.osm_input)
+
+    if args.crossings:
+        made_any = True
+        osm.makeCrossings(args.osm_input)
 
     if args.imd:
         made_any = True
