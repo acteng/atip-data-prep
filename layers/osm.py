@@ -200,5 +200,20 @@ def makeCrossings(
             osmFilePath,
         ]
     )
+    tmpGeojsonFilepath = f"{tmp}/{filename}.geojson"
     outputFilepath = f"output/{filename}.geojson"
-    convertPbfToGeoJson(osmFilePath, outputFilepath, "point")
+    convertPbfToGeoJson(osmFilePath, tmpGeojsonFilepath, "point", includeOsmID=True)
+
+    def fixProps(inputProps):
+        outputProps = {}
+        try:
+            outputProps["osm_id"] = inputProps["@id"]
+            outputProps["crossing"] = inputProps["crossing"]
+        except:
+            # Ignore parsing errors and missing values
+            pass
+        return outputProps
+
+    cleanUpGeojson(tmpGeojsonFilepath, fixProps)
+
+    run(["cp", tmpGeojsonFilepath, outputFilepath])
