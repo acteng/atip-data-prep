@@ -86,6 +86,7 @@ ATIP can display extra contextual layers:
   - Roads with bus lanes and bus routes
   - Cycle parking
   - Existing cycle paths
+  - Crossings
 - the [Major Road Network](https://www.data.gov.uk/dataset/95f58bfa-13d6-4657-9d6f-020589498cfd/major-road-network)
 - Boundaries
   - Parliament constituency boundaries, from [OS Boundary-Line](https://www.ordnancesurvey.co.uk/products/boundary-line)

@@ -1,5 +1,6 @@
 from utils import *
 
+
 # Extract polygons from OSM using a tag filter, and only keep a name attribute.
 def generatePolygonLayer(osm_input, tagFilter, filename):
     if not osm_input:
@@ -180,6 +181,7 @@ def roadHasBusLane(tags):
 
     return False
 
+
 def makeCrossings(
     osm_input,
 ):
@@ -215,5 +217,8 @@ def makeCrossings(
         return outputProps
 
     cleanUpGeojson(tmpGeojsonFilepath, fixProps)
+    convertGeoJsonToPmtiles(
+        tmpGeojsonFilepath, f"output/{filename}.pmtiles", autoZoom=True
+    )
 
     run(["cp", tmpGeojsonFilepath, outputFilepath])
