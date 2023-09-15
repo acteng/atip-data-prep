@@ -1,5 +1,6 @@
 from utils import *
 
+
 # Extract polygons from OSM using a tag filter, and only keep a name attribute.
 def generatePolygonLayer(osm_input, tagFilter, filename):
     if not osm_input:
@@ -179,3 +180,44 @@ def roadHasBusLane(tags):
     # or any other users.
 
     return False
+
+
+def makeCrossings(
+    osm_input,
+):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+
+    filename = "crossings"
+    tmp = f"tmp_{filename}"
+    ensureEmptyTempDirectoryExists(tmp)
+    osmFilePath = f"{tmp}/extract.osm.pbf"
+    run(
+        [
+            "osmium",
+            "tags-filter",
+            osm_input,
+            "n/crossing",
+            "-o",
+            osmFilePath,
+        ]
+    )
+    tmpGeojsonFilepath = f"{tmp}/{filename}.geojson"
+    outputFilepath = f"output/{filename}.pmtiles"
+    convertPbfToGeoJson(osmFilePath, tmpGeojsonFilepath, "point", includeOsmID=True)
+
+    def fixProps(inputProps):
+        outputProps = {}
+        try:
+            outputProps["osm_id"] = inputProps["@id"]
+            outputProps["crossing"] = inputProps["crossing"]
+        except:
+            # Ignore parsing errors and missing values
+            pass
+        return outputProps
+
+    cleanUpGeojson(tmpGeojsonFilepath, fixProps)
+    convertGeoJsonToPmtiles(
+        tmpGeojsonFilepath, outputFilepath, autoZoom=True
+    )
+
