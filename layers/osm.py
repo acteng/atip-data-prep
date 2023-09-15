@@ -203,7 +203,7 @@ def makeCrossings(
         ]
     )
     tmpGeojsonFilepath = f"{tmp}/{filename}.geojson"
-    outputFilepath = f"output/{filename}.geojson"
+    outputFilepath = f"output/{filename}.pmtiles"
     convertPbfToGeoJson(osmFilePath, tmpGeojsonFilepath, "point", includeOsmID=True)
 
     def fixProps(inputProps):
@@ -218,7 +218,6 @@ def makeCrossings(
 
     cleanUpGeojson(tmpGeojsonFilepath, fixProps)
     convertGeoJsonToPmtiles(
-        tmpGeojsonFilepath, f"output/{filename}.pmtiles", autoZoom=True
+        tmpGeojsonFilepath, outputFilepath, autoZoom=True
     )
 
-    run(["cp", tmpGeojsonFilepath, outputFilepath])
