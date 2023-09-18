@@ -1,0 +1,12 @@
+[package]
+name = "ordnance_survey_layers"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.75"
+fs-err = "2.9.0"
+gdal = "0.16.0"
+geo = "0.26.0"
+geojson = "0.24.1"
+indicatif = "0.17.6"
