@@ -3,7 +3,7 @@ use anyhow::Result;
 pub fn speed_properties(
     input: &gdal::vector::Feature,
     output: &mut geojson::Feature,
-) -> Result<()> {
+) -> Result<bool> {
     let (worst_mph, worst_description) = highest_speed(input)?;
     let indicative_mph = input
         .field_as_integer_by_name("indicativespeedlimit_mph")?
@@ -12,7 +12,7 @@ pub fn speed_properties(
     output.set_property("indicative_mph", indicative_mph);
     output.set_property("worst_mph", worst_mph);
     output.set_property("worst_description", worst_description);
-    Ok(())
+    Ok(true)
 }
 
 fn highest_speed(feature: &gdal::vector::Feature) -> Result<(usize, String)> {
