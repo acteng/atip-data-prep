@@ -4,6 +4,7 @@ mod width;
 use std::io::BufWriter;
 
 use anyhow::Result;
+use clap::{Parser, ValueEnum};
 use fs_err::File;
 use gdal::vector::LayerAccess;
 use gdal::Dataset;
@@ -11,17 +12,35 @@ use geo::{Coord, MapCoordsInPlace};
 use geojson::FeatureWriter;
 use indicatif::{ProgressBar, ProgressStyle};
 
+#[derive(Parser)]
+struct Args {
+    /// The path to the appropriate gpkg file from OS DataHub
+    gpkg_path: String,
+
+    #[arg(long, value_enum)]
+    layer: Layer,
+}
+
+#[derive(Clone, ValueEnum)]
+enum Layer {
+    Width,
+    Speed,
+}
+
 fn main() -> Result<()> {
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() != 2 {
-        panic!("Pass in trn_rami_averageandindicativespeed.gpkg");
+    let args = Args::parse();
+    match args.layer {
+        Layer::Width => gpkg_to_geojson(
+            &args.gpkg_path,
+            "road_widths.geojson",
+            width::width_properties,
+        ),
+        Layer::Speed => gpkg_to_geojson(
+            &args.gpkg_path,
+            "road_speeds.geojson",
+            speed::speed_properties,
+        ),
     }
-
-    gpkg_to_geojson(&args[1], "road_speeds.geojson", speed::speed_properties)
-    //gpkg_to_geojson(&args[1], "road_widths.geojson", width::width_properties)
-
-    // time tippecanoe --drop-densest-as-needed --generate-ids -zg road_speeds.geojson -o road_speeds.pmtiles -l road_speeds
-    // time tippecanoe --drop-densest-as-needed --generate-ids -zg widths.geojson -o widths.pmtiles -l road_widths
 }
 
 fn gpkg_to_geojson<F: Fn(&gdal::vector::Feature, &mut geojson::Feature) -> Result<bool>>(
@@ -38,7 +57,6 @@ fn gpkg_to_geojson<F: Fn(&gdal::vector::Feature, &mut geojson::Feature) -> Resul
 
     let mut writer = FeatureWriter::from_writer(BufWriter::new(File::create(output_path)?));
 
-    let mut count = 0;
     for input_feature in layer.features() {
         progress.inc(1);
         let mut geo = input_feature.geometry().unwrap().to_geo()?;
@@ -49,14 +67,8 @@ fn gpkg_to_geojson<F: Fn(&gdal::vector::Feature, &mut geojson::Feature) -> Resul
         });
 
         let mut output_feature = geojson::Feature::from(geojson::Value::from(&geo));
-
         if extract_properties(&input_feature, &mut output_feature)? {
             writer.write_feature(&output_feature)?;
-        }
-        // TODO tmp
-        count += 1;
-        if count == 1000000 {
-            break;
         }
     }
     Ok(())
