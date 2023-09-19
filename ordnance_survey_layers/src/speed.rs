@@ -4,18 +4,18 @@ pub fn speed_properties(
     input: &gdal::vector::Feature,
     output: &mut geojson::Feature,
 ) -> Result<bool> {
-    let (worst_mph, worst_description) = highest_speed(input)?;
+    let (highest_mph, highest_description) = highest_speed(input)?;
     let indicative_mph = input
         .field_as_integer_by_name("indicativespeedlimit_mph")?
         .unwrap();
 
     output.set_property("indicative_mph", indicative_mph);
-    output.set_property("worst_mph", worst_mph);
-    output.set_property("worst_description", worst_description);
+    output.set_property("highest_mph", highest_mph);
+    output.set_property("highest_description", highest_description);
     Ok(true)
 }
 
-fn highest_speed(feature: &gdal::vector::Feature) -> Result<(usize, String)> {
+fn highest_speed(feature: &gdal::vector::Feature) -> Result<(usize, &'static str)> {
     let mut max_kph = None;
     let mut max_key = None;
     for time in [
@@ -24,12 +24,12 @@ fn highest_speed(feature: &gdal::vector::Feature) -> Result<(usize, String)> {
     ] {
         for direction in ["indirection", "againstdirection"] {
             let key = format!("averagespeed_{time}{direction}_kph");
-            // TODO Probably could use field indices
+            // TODO Field indices might be faster?
             if let Some(value) = feature.field_as_double_by_name(&key)? {
-                // TODO Some(0.0) means some other kind of error?!
+                // TODO value of 0.0 means unknown error?
                 if max_kph.map(|n| n < value).unwrap_or(true) {
                     max_kph = Some(value);
-                    max_key = Some(format!("{time} / {direction}"));
+                    max_key = Some(time);
                 }
             }
         }
