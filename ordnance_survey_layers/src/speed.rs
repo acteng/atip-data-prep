@@ -20,7 +20,7 @@ fn highest_speed(feature: &gdal::vector::Feature) -> Result<(usize, &'static str
     let mut max_key = None;
     for time in [
         "mf4to7", "mf7to9", "mf9to12", "mf12to14", "mf14to16", "mf16to19", "mf19to22", "mf22to4",
-        "ss4to7", "ss7to10", "ss14to19", "ss19to22", "ss22to4",
+        "ss4to7", "ss7to10", "ss10to14", "ss14to19", "ss19to22", "ss22to4",
     ] {
         for direction in ["indirection", "againstdirection"] {
             let key = format!("averagespeed_{time}{direction}_kph");
