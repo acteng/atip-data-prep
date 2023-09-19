@@ -1,4 +1,5 @@
 mod speed;
+mod width;
 
 use std::io::BufWriter;
 
@@ -16,10 +17,14 @@ fn main() -> Result<()> {
         panic!("Pass in trn_rami_averageandindicativespeed.gpkg");
     }
 
-    gpkg_to_geojson(&args[1], "speeds.geojson", speed::speed_properties)
+    gpkg_to_geojson(&args[1], "road_speeds.geojson", speed::speed_properties)
+    //gpkg_to_geojson(&args[1], "road_widths.geojson", width::width_properties)
+
+    // time tippecanoe --drop-densest-as-needed --generate-ids -zg road_speeds.geojson -o road_speeds.pmtiles -l road_speeds
+    // time tippecanoe --drop-densest-as-needed --generate-ids -zg widths.geojson -o widths.pmtiles -l road_widths
 }
 
-fn gpkg_to_geojson<F: Fn(&gdal::vector::Feature, &mut geojson::Feature) -> Result<()>>(
+fn gpkg_to_geojson<F: Fn(&gdal::vector::Feature, &mut geojson::Feature) -> Result<bool>>(
     input_path: &str,
     output_path: &str,
     extract_properties: F,
@@ -33,6 +38,7 @@ fn gpkg_to_geojson<F: Fn(&gdal::vector::Feature, &mut geojson::Feature) -> Resul
 
     let mut writer = FeatureWriter::from_writer(BufWriter::new(File::create(output_path)?));
 
+    let mut count = 0;
     for input_feature in layer.features() {
         progress.inc(1);
         let mut geo = input_feature.geometry().unwrap().to_geo()?;
@@ -44,8 +50,14 @@ fn gpkg_to_geojson<F: Fn(&gdal::vector::Feature, &mut geojson::Feature) -> Resul
 
         let mut output_feature = geojson::Feature::from(geojson::Value::from(&geo));
 
-        extract_properties(&input_feature, &mut output_feature)?;
-        writer.write_feature(&output_feature)?;
+        if extract_properties(&input_feature, &mut output_feature)? {
+            writer.write_feature(&output_feature)?;
+        }
+        // TODO tmp
+        count += 1;
+        if count == 1000000 {
+            break;
+        }
     }
     Ok(())
 }
