@@ -135,3 +135,13 @@ Also the Cloudfront settings have to be modified on the appropriate distribution
   - Configure CORS with default options
   - Add a custom ETag header with no value, and not overriding the origin
   - Set the distribution to use this policy
+
+## Manifest
+
+The `MANIFEST.txt` file records files currently hosted in the test GCS bucket. When someone uploads a file there, please update this file, so it's easier to check if the current state of the bucket diverges from a known state.
+
+To generate it, change the project ID as needed and run:
+
+```
+gsutil ls -rl gs://atip-test-2/** > MANIFEST.txt
+```
