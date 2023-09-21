@@ -6,6 +6,7 @@ layers must not be published anywhere public.
 
 You'll need to have [Rust](https://www.rust-lang.org/tools/install) and
 [tippecanoe](https://github.com/felt/tippecanoe) installed on your system.
+Some operating systems may need you to manually install gdal as well, for using Ubuntu in WSL I had to run `sudo apt-get install libgdal-dev`.
 
 You also need to manually download two datasets from OS. Log in to the [OS
 DataHub](https://osdatahub.os.uk). Use "OS Select+Build" to create a new recipe

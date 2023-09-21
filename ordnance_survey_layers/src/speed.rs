@@ -42,5 +42,5 @@ fn highest_speed(feature: &gdal::vector::Feature) -> Result<(usize, &'static str
 }
 
 fn kph_to_mph(x: f64) -> f64 {
-    x / 3.6
+    x / 1.609344
 }
