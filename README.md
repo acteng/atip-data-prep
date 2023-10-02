@@ -63,20 +63,6 @@ To update to a newer commit in the [route-snapper
 repo](https://github.com/dabreegster/route_snapper), run `git submodule update
 --remote`.
 
-## Route info
-
-ATIP also loads a binary osm2streets file per area, using it to answer things
-about routes.
-
-To regenerate them, follow the same procedure as above, running
-`./build_route_info.sh` instead of `build_route_snappers.sh`. You will need to
-[install Rust](https://www.rust-lang.org/tools/install).
-
-IMPORTANT! The `importer` crate's dependency on `osm2streets` must be kept in
-sync with the git version used by ATIP's [route info
-crate](https://github.com/acteng/atip/tree/map_model/route_info). Otherwise,
-the binary file format may be incompatible. Use `cargo update -p osm2streets`.
-
 ## Extra contextual layers
 
 ATIP can display extra contextual layers:
