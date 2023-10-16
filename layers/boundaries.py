@@ -110,6 +110,49 @@ def makeLocalAuthorityDistricts():
         filterFeatures=lambda f: f["properties"]["LAD23CD"][0] == "E",
     )
 
+def makeLocalAuthorityDistrictsForSketcher():
+    outputFilePath = "output/local_authority_districts_reprojected.geojson"
+
+    reprojectToWgs84(
+        # Manually downloaded and stored in git
+        "input/localAuthoritiesExtentOfRealm.geojson",
+        outputFilePath,
+    )
+
+    def fixProps(inputProps):
+        return {
+            "name": inputProps["LAD23NM"],
+            "level": "LAD",
+        }
+
+    # The final file is tiny; don't bother with pmtiles
+    cleanUpGeojson(
+        outputFilePath,
+        fixProps,
+        # Only keep England
+        filterFeatures=lambda f: f["properties"]["LAD23CD"][0] == "E",
+    )
+
+def makeTransportAuthoritiesForSketcher():
+    outputFilePath = "output/transport_authorities_reprojected.geojson"
+
+    reprojectToWgs84(
+        # Manually downloaded and stored in git
+        "input/transportAuthoritiesExtentOfRealm.geojson",
+        outputFilePath,
+    )
+
+    def fixProps(inputProps):
+        return {
+            "name": inputProps["transport_authority_name"],
+            "level": "TA",
+        }
+
+    # The final file is tiny; don't bother with pmtiles
+    cleanUpGeojson(
+        outputFilePath,
+        fixProps,
+    )
 
 def makeLocalPlanningAuthorities():
     tmp = "tmp_local_planning_authorities"

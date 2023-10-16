@@ -1,5 +1,7 @@
 *.swp
 target/
 layers/tmp_*
+layers/input
 layers/output
 __pycache__
+!layers/input/README.md
