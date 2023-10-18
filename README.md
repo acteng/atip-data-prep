@@ -45,6 +45,10 @@ run osmium in batches. Each osmium pass through the gigantic pbf file works on
 some number of output files, based on the batch size. 1 area at a time is slow,
 but too many at once will consume lots of RAM.
 
+## Boundary definitions for scheme sketcher
+
+Boundaries for the route sketcher first require you to get the output of [this repo](https://github.com/acteng/boundaries). Put the outputs (`lads.geojson`, and `transport_authorities.geojson`) into `layers/input/` and then run the `generate_layers.py` script with appropriate arguments (explained below). Then take the outputs from that (`x_reprojected.geojson` and `y_reprojeced.geojson`)and put them in `fix_boundaries/input/`. Finally you can run `npm run concat-and-reduce-fidelity` to produce the `authorities.geojson` file used by ATIP Scheme Sketcher (can be used by putting it in the `assets/` directory in ATIP repo), and updating route snapper apporpriately (below). You may also want to use a minifier because by default it won't be minified.
+
 ## Route snapper
 
 ATIP's route snapper tool loads a binary file per authority area.
@@ -97,7 +101,7 @@ is a single GeoJSON file if it's small enough, or
 To run this:
 
 1.  Get `england-latest.osm.pbf` from Geofabrik. The `split_uk_osm.sh` script above does this.
-2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes --crossings --cycle_parking --cycle_paths --wards --vehicle_counts --pct`
+2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes --crossings --cycle_parking --cycle_paths --wards --vehicle_counts --pct --local_authorities_for_sketcher --transport_authorities_for_sketcher`
 3.  Pick an arbitrary version number, and upload the files: `for x in output/*; do aws s3 cp --dry $x s3://atip.uk/layers/v1/; done`
 
 If you're rerunning the script for the same output, you may need to manually delete the output files from the previous run.

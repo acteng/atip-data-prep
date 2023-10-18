@@ -114,14 +114,14 @@ def makeLocalAuthorityDistrictsForSketcher():
     outputFilePath = "output/local_authority_districts_reprojected.geojson"
 
     reprojectToWgs84(
-        # Manually downloaded and stored in git
-        "input/localAuthoritiesExtentOfRealm.geojson",
+        # Manually acquired output from acteng/boundaries
+        "input/lads.geojson",
         outputFilePath,
     )
 
     def fixProps(inputProps):
         return {
-            "name": inputProps["LAD23NM"],
+            "name": inputProps["LAD22NM"],
             "level": "LAD",
         }
 
@@ -130,21 +130,21 @@ def makeLocalAuthorityDistrictsForSketcher():
         outputFilePath,
         fixProps,
         # Only keep England
-        filterFeatures=lambda f: f["properties"]["LAD23CD"][0] == "E",
+        filterFeatures=lambda f: f["properties"]["LAD22CD"][0] == "E",
     )
 
 def makeTransportAuthoritiesForSketcher():
     outputFilePath = "output/transport_authorities_reprojected.geojson"
 
     reprojectToWgs84(
-        # Manually downloaded and stored in git
-        "input/transportAuthoritiesExtentOfRealm.geojson",
+        # Manually acquired output from acteng/boundaries
+        "input/transport_authorities.geojson",
         outputFilePath,
     )
 
     def fixProps(inputProps):
         return {
-            "name": inputProps["transport_authority_name"],
+            "name": inputProps["atf4_authority_name"],
             "level": "TA",
         }
 

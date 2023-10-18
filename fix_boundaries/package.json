@@ -5,14 +5,14 @@
   "main": "index.js",
   "scripts": {
     "run": "npx node index.js",
-    "reduce-fidelity": "node reduce_boundary_fidelity.cjs",
-    "concat-authorities": "node concat_authorities.cjs"
+    "concat-and-reduce-fidelity": "node reduce_boundary_fidelity.js"
   },
   "author": "",
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
     "@turf/convex": "^6.5.0",
+    "csv-parser": "^3.0.0",
     "mapshaper": "^0.6.44"
   }
 }
