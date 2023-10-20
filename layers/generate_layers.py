@@ -24,6 +24,8 @@ def main():
     parser.add_argument("--wards", action="store_true")
     parser.add_argument("--combined_authorities", action="store_true")
     parser.add_argument("--local_authority_districts", action="store_true")
+    parser.add_argument("--local_authorities_for_sketcher", action="store_true")
+    parser.add_argument("--transport_authorities_for_sketcher", action="store_true")
     parser.add_argument("--local_planning_authorities", action="store_true")
     parser.add_argument(
         "--census_output_areas",
@@ -80,6 +82,14 @@ def main():
     if args.local_authority_districts:
         made_any = True
         boundaries.makeLocalAuthorityDistricts()
+
+    if args.local_authorities_for_sketcher:
+        made_any = True
+        boundaries.makeLocalAuthorityDistrictsForSketcher()
+
+    if args.transport_authorities_for_sketcher:
+        made_any = True
+        boundaries.makeTransportAuthoritiesForSketcher()
 
     if args.local_planning_authorities:
         made_any = True

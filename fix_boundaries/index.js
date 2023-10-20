@@ -1,16 +1,12 @@
-import convex from "@turf/convex";
-import * as fs from "fs";
+import mapshaper from 'mapshaper';
 
-let gj = JSON.parse(fs.readFileSync("../authorities.geojson"));
-for (let feature of gj.features) {
-  if (feature.geometry.type != "MultiPolygon") {
-    continue;
-  }
-  feature.geometry = convex(feature).geometry;
+const cmd = '-i input/transport_authorities_reprojected.geojson input/local_authority_districts_reprojected.geojson merge-files -o tmp/authorities.geojson'
 
-  // Convenient debugging
-  /*if (feature.properties.name == "Portsmouth") {
-    fs.writeFileSync("debug.geojson", JSON.stringify(feature));
-  }*/
-}
-fs.writeFileSync("../authorities.geojson", JSON.stringify(gj));
+mapshaper.runCommands(cmd, () => {
+    console.log('Concat finsihed')
+    const cmd = '-i tmp/authorities.geojson -simplify 1.5% -o output/authorities.geojson'
+    
+    mapshaper.runCommands(cmd, () => {
+        console.log("Local and Transport Authorities finished");
+    });
+});
