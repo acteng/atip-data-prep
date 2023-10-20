@@ -27,27 +27,35 @@ the future if needed.
   - Currently only Dustin has permission to push to the S3 bucket. This will
     transition to GCS in the future.
 
+## Creating authorities.geojson
+
+The Scheme Sketcher and route-snapper works in one area at a time. Those areas are defined by `authorities.geojson` in this repo and in [atip](https://github.com/acteng/atip). To generate this file:
+
+1.  Download the GeoJSON file from <https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-december-2022-boundaries-uk-bfe-2/explore> and rename the file to `layers/input/lads.geojson`
+2.  Download <https://github.com/acteng/boundaries/blob/main/transport_authorities.geojson> and rename the file to `layers/input/transport_authorities.geojson`
+3.  `cd layers; ./generate_layers.py --local_authorities_for_sketcher --transport_authorities_for_sketcher`
+4.  `mkdir -p ../fix_boundaries/input/; mv output/local_authority_districts_reprojected.geojson output/transport_authorities_reprojected.geojson ../fix_boundaries/input/`
+5.  `cd ../fix_boundaries; npm run run`
+6.  Copy `output/authorities.geojson` to the root of this repo and commit, and also copy to the atip repo in `assets/`. You'll probably need to run the steps below to regenerate route snapper files.
+
 ## Splitting huge OSM files
 
-Some pipelines in this repo need two files as input: an OSM XML file and a
+The route snapper pipeline needs two files as input: an OSM XML file and a
 GeoJSON file with a single polygon, representing the area clipped in that OSM
 file. For ATIP, we want to repeat this for every LAD and TA in the UK.
 
 To run this:
 
-1.  Make sure you have about 35GB of disk free
-2.  Manually adjust scripts if needed, based on your own computer's resources
-3.  Run `./split_uk_osm.sh`
+1.  Ensure `authorities.geojson` is up-to-date if needed, using the process above
+2.  Make sure you have about 35GB of disk free
+3.  Manually adjust scripts if needed, based on your own computer's resources
+4.  Run `./split_uk_osm.sh`
 
 This will download England-wide osm.pbf from Geofabrik, produce a bunch of
 GeoJSON files and Osmium extract configs (`geojson_to_osmium_extracts.py`), and
 run osmium in batches. Each osmium pass through the gigantic pbf file works on
 some number of output files, based on the batch size. 1 area at a time is slow,
 but too many at once will consume lots of RAM.
-
-## Boundary definitions for scheme sketcher
-
-Boundaries for the route sketcher first require you to get the output of [this repo](https://github.com/acteng/boundaries). Put the outputs (`lads.geojson`, and `transport_authorities.geojson`) into `layers/input/` and then run the `generate_layers.py` script with appropriate arguments (explained below). Then take the outputs from that (`x_reprojected.geojson` and `y_reprojeced.geojson`)and put them in `fix_boundaries/input/`. Finally you can run `npm run run` to produce the `authorities.geojson` file used by ATIP Scheme Sketcher (can be used by putting it in the `assets/` directory in ATIP repo), and updating route snapper apporpriately (below). You may also want to use a minifier because by default it won't be minified.
 
 ## Route snapper
 
