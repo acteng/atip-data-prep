@@ -31,7 +31,7 @@ the future if needed.
 
 The Scheme Sketcher and route-snapper works in one area at a time. Those areas are defined by `authorities.geojson` in this repo and in [atip](https://github.com/acteng/atip). To generate this file:
 
-1.  Download the GeoJSON file from <https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-december-2022-boundaries-uk-bfe-2/explore> and rename the file to `layers/input/lads.geojson`
+1.  Download the GeoJSON file from <https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-may-2023-boundaries-uk-bfe/explore> and rename the file to `layers/input/lads.geojson`
 2.  Download <https://github.com/acteng/boundaries/blob/main/transport_authorities.geojson> and rename the file to `layers/input/transport_authorities.geojson`
 3.  `cd layers; ./generate_layers.py --local_authorities_for_sketcher --transport_authorities_for_sketcher`
 4.  `mkdir -p ../fix_boundaries/input/; mv output/local_authority_districts_reprojected.geojson output/transport_authorities_reprojected.geojson ../fix_boundaries/input/`
