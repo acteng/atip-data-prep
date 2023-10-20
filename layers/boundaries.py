@@ -121,7 +121,7 @@ def makeLocalAuthorityDistrictsForSketcher():
 
     def fixProps(inputProps):
         return {
-            "name": inputProps["LAD22NM"],
+            "name": inputProps["LAD23NM"],
             "level": "LAD",
         }
 
@@ -129,7 +129,7 @@ def makeLocalAuthorityDistrictsForSketcher():
         outputFilePath,
         fixProps,
         # Only keep England
-        filterFeatures=lambda f: f["properties"]["LAD22CD"][0] == "E",
+        filterFeatures=lambda f: f["properties"]["LAD23CD"][0] == "E",
     )
 
 def makeTransportAuthoritiesForSketcher():
