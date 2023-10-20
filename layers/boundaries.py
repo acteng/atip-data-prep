@@ -125,7 +125,6 @@ def makeLocalAuthorityDistrictsForSketcher():
             "level": "LAD",
         }
 
-    # The final file is tiny; don't bother with pmtiles
     cleanUpGeojson(
         outputFilePath,
         fixProps,
@@ -148,7 +147,6 @@ def makeTransportAuthoritiesForSketcher():
             "level": "TA",
         }
 
-    # The final file is tiny; don't bother with pmtiles
     cleanUpGeojson(
         outputFilePath,
         fixProps,
