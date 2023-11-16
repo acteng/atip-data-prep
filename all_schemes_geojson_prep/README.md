@@ -1,2 +1,3 @@
 This takes a version of the all_schemes_data.geojson file which contains a list of scheme objects that contain information about schemes which have already bid for ATF funding.
 It converts these objects into objects that can contain either a BrowseScheme or a PipelineScheme object allowing multi-scheme geojson files to be used more generally across the app, and particularly in scheme Sketcher.
+You will need to download all_schemes_data.geojson from ATE sharepoint and put it in `data/input`

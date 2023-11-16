@@ -7,6 +7,7 @@ Object.keys(allSchemes.schemes).forEach((browseSchemeKey) => {
     const scheme = allSchemes.schemes[browseSchemeKey];
     const result = {
         scheme_name: browseSchemeKey,
+        scheme_reference: browseSchemeKey,
         browse: scheme
     }
     resultingSchemeDictionary[browseSchemeKey] = result;
