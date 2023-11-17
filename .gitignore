@@ -3,5 +3,6 @@ target/
 layers/tmp_*
 layers/input
 layers/output
+all_schemes_geojson_prep/data
 __pycache__
 !layers/input/README.md
