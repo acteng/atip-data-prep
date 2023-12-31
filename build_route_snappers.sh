@@ -14,9 +14,9 @@ mkdir -p route-snappers
 
 IFS=$'\n'
 for osm in uk_osm/out/*; do
-	geojson=$(basename $osm .osm).geojson
-	out=$(basename $osm .osm).bin
-	task=$(pueue add --print-task-id --escape $bin -i "$osm" -b "uk_osm/$geojson" -o "route-snappers/$out")
+	geojson=$(basename $osm .osm.pbf).geojson
+	out=$(basename $osm .osm.pbf).bin
+	task=$(pueue add --print-task-id --escape $bin --input "$osm" --boundary "uk_osm/$geojson" --output "route-snappers/$out")
 	pueue add --after $task --escape gzip "route-snappers/$out"
 done
 

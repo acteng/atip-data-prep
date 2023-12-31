@@ -13,11 +13,6 @@ def main():
         "input", help="Path to a GeoJSON file with a FeatureCollection", type=str
     )
     parser.add_argument(
-        "--name_key",
-        help="Use this property to name the output file for each GeoJSON feature",
-        type=str,
-    )
-    parser.add_argument(
         "--config_output",
         default="osmium_cfg_%d.json",
         help="Name of the osmium JSON config files to create, with '%d' as a parameter",
@@ -43,17 +38,25 @@ def main():
         num_batches = 0
 
         for feature in gj["features"]:
-            name = feature["properties"][args.name_key]
+            # The input contains both LADs and TAs. An area name might exist in
+            # both (like Portsmouth), so include the level in the namespace.
+            name = feature["properties"]["level"] + "_" + feature["properties"]["name"]
 
+            # TODO Fix upstream! All cases were checked right now and only using the first is OK.
+            if feature["geometry"]["type"] == "MultiPolygon":
+                print(
+                    f"{name} is a MultiPolygon. Arbitrarily using the first Polygon only.")
+                feature["geometry"]["type"] = "Polygon"
+                feature["geometry"]["coordinates"] = feature["geometry"]["coordinates"][0]
             if feature["geometry"]["type"] != "Polygon":
-                print(f"{name} isn't a Polygon. MultiPolygon boundaries will only use the first arbitrary Polygon")
+                raise Exception(f"{name} isn't a Polygon")
 
             with open(f"{name}.geojson", "w") as f:
                 f.write(json.dumps(feature))
             config["extracts"].append(
                 {
-                    "output": f"{name}.osm",
-                    "output_format": "osm,add_metadata=false",
+                    "output": f"{name}.osm.pbf",
+                    "output_format": "pbf,add_metadata=false",
                     "polygon": {"file_name": f"{name}.geojson", "file_type": "geojson"},
                 }
             )
