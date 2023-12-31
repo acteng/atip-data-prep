@@ -39,14 +39,14 @@ The Scheme Sketcher and route-snapper works in one area at a time. Those areas a
 
 ## Splitting huge OSM files
 
-The route snapper pipeline needs two files as input: an OSM XML file and a
+The route snapper pipeline needs two files as input: an OSM PBF file and a
 GeoJSON file with a single polygon, representing the area clipped in that OSM
 file. For ATIP, we want to repeat this for every LAD and TA in the UK.
 
 To run this:
 
 1.  Ensure `authorities.geojson` is up-to-date if needed, using the process above
-2.  Make sure you have about 35GB of disk free
+2.  Make sure you have about 3GB of disk free
 3.  Manually adjust scripts if needed, based on your own computer's resources
 4.  Run `./split_uk_osm.sh`
 
@@ -62,13 +62,12 @@ ATIP's route snapper tool loads a binary file per authority area.
 
 To regenerate them:
 
-1.  Make sure you have about 25GB of disk free
-2.  Set up the submodules in this repo: `git submodule init && git submodule update`
-3.  Complete the section above to split OSM files
-4.  Make sure the pueue daemon is started, and tasks cleared out. (`pueued -d; pueue status; pueue clean`)
-5.  Run `./build_route_snappers.sh`
-6.  Wait for all pueue commands to succeed (`pueue status`)
-7.  Manually upload to S3, following instructions in that script
+1.  Set up the submodules in this repo: `git submodule init && git submodule update`
+2.  Complete the section above to split OSM files
+3.  Make sure the pueue daemon is started, and tasks cleared out. (`pueued -d; pueue status; pueue clean`)
+4.  Run `./build_route_snappers.sh`
+5.  Wait for all pueue commands to succeed (`pueue status`)
+6.  Manually upload to S3, following instructions in that script
 
 To update to a newer commit in the [route-snapper
 repo](https://github.com/dabreegster/route_snapper), run `git submodule update
