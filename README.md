@@ -8,7 +8,6 @@ The sections below describe different portions of the repo. Files/directories no
   - The data comes from https://github.com/acteng/boundaries, and then
     `fix_boundaries` is used to turn MultiPolygons into a single Polygon with
     convex hull.
-- Ignore the `experimental` directory; nothing is actively used there
 
 ## Setup
 
