@@ -23,17 +23,23 @@ struct Args {
 
 #[derive(Clone, ValueEnum)]
 enum Layer {
-    Width,
+    RoadWidth,
+    PavementWidth,
     Speed,
 }
 
 fn main() -> Result<()> {
     let args = Args::parse();
     match args.layer {
-        Layer::Width => gpkg_to_geojson(
+        Layer::RoadWidth => gpkg_to_geojson(
             &args.gpkg_path,
             "road_widths.geojson",
-            width::width_properties,
+            width::road_width_properties,
+        ),
+        Layer::PavementWidth => gpkg_to_geojson(
+            &args.gpkg_path,
+            "pavement_widths.geojson",
+            width::pavement_width_properties,
         ),
         Layer::Speed => gpkg_to_geojson(
             &args.gpkg_path,
