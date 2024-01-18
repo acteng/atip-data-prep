@@ -6,3 +6,5 @@ layers/output
 all_schemes_geojson_prep/data
 __pycache__
 !layers/input/README.md
+stats19/input
+stats19/tmp
