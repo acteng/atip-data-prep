@@ -40,6 +40,7 @@ def main():
         type=str,
     )
     parser.add_argument("--cycle_paths", action="store_true")
+    parser.add_argument("--ncn", action="store_true")
     parser.add_argument("--vehicle_counts", action="store_true")
     parser.add_argument("--pct", action="store_true")
     # Inputs required for some outputs
@@ -128,6 +129,10 @@ def main():
     if args.cycle_paths:
         made_any = True
         cycle_paths.makeCyclePaths(args.osm_input)
+        
+    if args.ncn:
+        made_any = True
+        makeNationalCycleNetwork()
 
     if args.vehicle_counts:
         made_any = True
@@ -173,6 +178,34 @@ def makeMRN():
 
     convertGeoJsonToPmtiles(f"{tmp}/mrn.geojson", "output/mrn.pmtiles")
 
+def makeNationalCycleNetwork():
+    tmp = "tmp_ncn"
+    ensureEmptyTempDirectoryExists(tmp)
+
+    # Get the shapefile
+    run(
+        [
+            "wget",
+            "https://services5.arcgis.com/1ZHcUS1lwPTg4ms0/arcgis/rest/services/National_Cycle_Network_Public/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson",
+            "-O",
+            f"{tmp}/national_cycle_network_download.geojson",
+        ]
+    )
+
+    reprojectToWgs84(
+        f"{tmp}/national_cycle_network_download.geojson", f"{tmp}/national_cycle_network.geojson"
+    )
+
+    # def fixProps(inputProps):
+    #     outputProps = {}
+    #     name = feature["properties"].get("name1")
+    #     if name:
+    #         outputProps["name"] = name
+    #     return outputProps
+
+    # cleanUpGeojson(f"{tmp}/mrn.geojson", fixProps)
+
+    convertGeoJsonToPmtiles(f"{tmp}/national_cycle_network.geojson", "output/national_cycle_network.pmtiles")
 
 if __name__ == "__main__":
     main()
