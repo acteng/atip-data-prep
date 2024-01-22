@@ -6,6 +6,8 @@ use geojson::{Feature, Geometry, Value};
 use indicatif::{HumanCount, ProgressBar, ProgressStyle};
 use serde::Deserialize;
 
+// https://data.dft.gov.uk/road-accidents-safety-data/dft-road-casualty-statistics-road-safety-open-dataset-data-guide-2023.xlsx defines the categorical variables
+
 fn main() -> Result<()> {
     let collisions = read_input()?;
 
@@ -18,7 +20,7 @@ fn main() -> Result<()> {
             "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {human_pos}/{human_len} ({per_sec}, {eta})").unwrap());
     for (accident_index, collision) in collisions {
         progress.inc(1);
-        if collision.casualties.is_empty() {
+        if collision.severities.is_empty() {
             panic!("Unexpected: no casualties matched to accident_index = {accident_index}");
         }
 
@@ -26,10 +28,15 @@ fn main() -> Result<()> {
             collision.lon,
             collision.lat,
         ])));
+        f.set_property("accident_index", accident_index);
         f.set_property("year", collision.year);
-        f.set_property("num_casualties", collision.casualties.len());
-        // Just output the worst severity
-        f.set_property("severity", collision.casualties.into_iter().min().unwrap());
+        f.set_property("pedestrian", collision.pedestrian);
+        f.set_property("cyclist", collision.cyclist);
+        f.set_property("other", collision.other);
+        f.set_property("pedestrian_location", collision.pedestrian_location);
+        f.set_property("pedestrian_movement", collision.pedestrian_movement);
+        // Just output the worst severity. 1 = fatal, 2 = serious, 3 = slight
+        f.set_property("severity", collision.severities.into_iter().min().unwrap());
         writer.write_feature(&f)?;
     }
     progress.finish();
@@ -55,6 +62,12 @@ fn read_input() -> Result<HashMap<String, Collision>> {
     {
         progress.inc(1);
         let rec: CollisionRow = rec?;
+
+        // Only keep the most recent 5 years (and the dataset only covers up to 2022 right now)
+        if rec.accident_year < 2017 {
+            continue;
+        }
+
         if rec.location_easting_osgr == "NULL" || rec.location_northing_osgr == "NULL" {
             skipped += 1;
             continue;
@@ -72,13 +85,19 @@ fn read_input() -> Result<HashMap<String, Collision>> {
                 year: rec.accident_year,
                 lon,
                 lat,
-                casualties: Vec::new(),
+                severities: Vec::new(),
+                pedestrian: false,
+                cyclist: false,
+                other: false,
+                // 0 means "not a pedestrian", so it's a good default before we fill this out
+                pedestrian_movement: 0,
+                pedestrian_location: 0,
             },
         );
     }
     progress.finish();
     println!(
-        "Got {} collisions, and skipped {} invalid records",
+        "Got {} collisions, and skipped {} invalid (but recent) records",
         HumanCount(collisions.len() as u64),
         HumanCount(skipped as u64)
     );
@@ -95,7 +114,35 @@ fn read_input() -> Result<HashMap<String, Collision>> {
         let rec: CasualtyRow = rec?;
         match collisions.get_mut(&rec.accident_index) {
             Some(collision) => {
-                collision.casualties.push(rec.casualty_severity);
+                collision.severities.push(rec.casualty_severity);
+
+                if rec.casualty_type == 0 {
+                    collision.pedestrian = true;
+                } else if rec.casualty_type == 1 {
+                    collision.cyclist = true;
+                } else {
+                    // TODO These aren't all motor vehicles. What should we do with:
+                    // 16 = Horse rider
+                    // 22 = Mobility scooter rider
+                    collision.other = true;
+                }
+
+                // Skip useless values: 0 is "not a pedestrian", -1 is "data missing", 10 is
+                // "unknown or other"
+                if rec.pedestrian_location != 0
+                    && rec.pedestrian_location != -1
+                    && rec.pedestrian_location != 10
+                {
+                    collision.pedestrian_location = rec.pedestrian_location;
+                }
+                // Skip useless values: 0 is "not a pedestrian", -1 is "data missing", 9 is
+                // "unknown or other"
+                if rec.pedestrian_movement != 0
+                    && rec.pedestrian_movement != -1
+                    && rec.pedestrian_movement != 9
+                {
+                    collision.pedestrian_movement = rec.pedestrian_movement;
+                }
             }
             None => {
                 //println!("Skipping casualty with accident_index {accident_index}");
@@ -104,7 +151,10 @@ fn read_input() -> Result<HashMap<String, Collision>> {
         }
     }
     progress.finish();
-    println!("Skipped {} invalid casualty records", HumanCount(skipped as u64));
+    println!(
+        "Skipped {} casualty records that didn't match to a collision",
+        HumanCount(skipped as u64)
+    );
 
     Ok(collisions)
 }
@@ -114,8 +164,17 @@ struct Collision {
     year: usize,
     lon: f64,
     lat: f64,
-    // Per https://data.dft.gov.uk/road-accidents-safety-data/dft-road-casualty-statistics-road-safety-open-dataset-data-guide-2023.xlsx, 1 = fatal, 2 = serious, 3 = slight
-    casualties: Vec<usize>,
+
+    severities: Vec<usize>,
+    // At least one
+    pedestrian: bool,
+    cyclist: bool,
+    other: bool,
+
+    // If there are multple pedestrian casualties in one collision, these details come from one of
+    // them arbitrarily
+    pedestrian_movement: isize,
+    pedestrian_location: isize,
 }
 
 // These two are for parsing subsets of the CSV inputs
@@ -132,4 +191,7 @@ struct CollisionRow {
 struct CasualtyRow {
     accident_index: String,
     casualty_severity: usize,
+    casualty_type: isize,
+    pedestrian_location: isize,
+    pedestrian_movement: isize,
 }
