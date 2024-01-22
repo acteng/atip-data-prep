@@ -182,28 +182,24 @@ def makeNationalCycleNetwork():
     tmp = "tmp_ncn"
     ensureEmptyTempDirectoryExists(tmp)
 
-    # Get the shapefile
+    # Get the geojson from the link found at https://data-sustrans-uk.opendata.arcgis.com/
     run(
         [
             "wget",
-            "https://services5.arcgis.com/1ZHcUS1lwPTg4ms0/arcgis/rest/services/National_Cycle_Network_Public/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson",
+            "https://opendata.arcgis.com/api/v3/datasets/5defd254e78745bfb12d0456abc1bcf1_0/downloads/data?format=geojson&spatialRefId=4326&where=1%3D1",
             "-O",
-            f"{tmp}/national_cycle_network_download.geojson",
+            f"{tmp}/national_cycle_network.geojson",
         ]
     )
 
-    reprojectToWgs84(
-        f"{tmp}/national_cycle_network_download.geojson", f"{tmp}/national_cycle_network.geojson"
-    )
 
-    # def fixProps(inputProps):
-    #     outputProps = {}
-    #     name = feature["properties"].get("name1")
-    #     if name:
-    #         outputProps["name"] = name
-    #     return outputProps
+    def fixProps(inputProps):
+        propsToRemove = ["LinkNo", "Lighting",  "RoadClass", "SHAPE_Length", "GlobalID", "SegmentID"]
+        for prop in propsToRemove:
+            inputProps.pop(prop)
+        return inputProps
 
-    # cleanUpGeojson(f"{tmp}/mrn.geojson", fixProps)
+    cleanUpGeojson(f"{tmp}/national_cycle_network.geojson", fixProps)
 
     convertGeoJsonToPmtiles(f"{tmp}/national_cycle_network.geojson", "output/national_cycle_network.pmtiles")
 
