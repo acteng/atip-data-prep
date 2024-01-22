@@ -14,5 +14,11 @@ fi
 mkdir -p tmp
 time cargo run --release
 
-# TODO This is still generating tiles < 9 with a big size, but... no points?!
-time tippecanoe tmp/stats19.geojson --generate-ids -l stats19 -Z9 -zg --drop-densest-as-needed --extend-zooms-if-still-dropping -o stats19.pmtiles
+time tippecanoe tmp/stats19.geojson \
+	--force \
+	--generate-ids \
+	-l stats19 \
+	-zg \
+	--drop-densest-as-needed \
+	--extend-zooms-if-still-dropping \
+	-o stats19.pmtiles
