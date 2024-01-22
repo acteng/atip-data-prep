@@ -32,6 +32,7 @@ fn main() -> Result<()> {
         f.set_property("year", collision.year);
         f.set_property("pedestrian", collision.pedestrian);
         f.set_property("cyclist", collision.cyclist);
+        f.set_property("horse_rider", collision.horse_rider);
         f.set_property("other", collision.other);
         f.set_property("pedestrian_location", collision.pedestrian_location);
         f.set_property("pedestrian_movement", collision.pedestrian_movement);
@@ -88,6 +89,7 @@ fn read_input() -> Result<HashMap<String, Collision>> {
                 severities: Vec::new(),
                 pedestrian: false,
                 cyclist: false,
+                horse_rider: false,
                 other: false,
                 // 0 means "not a pedestrian", so it's a good default before we fill this out
                 pedestrian_movement: 0,
@@ -116,14 +118,15 @@ fn read_input() -> Result<HashMap<String, Collision>> {
             Some(collision) => {
                 collision.severities.push(rec.casualty_severity);
 
-                if rec.casualty_type == 0 {
+                if rec.casualty_type == 0 || rec.casualty_type == 22 {
+                    // Mobility scooter riders also count here
                     collision.pedestrian = true;
                 } else if rec.casualty_type == 1 {
                     collision.cyclist = true;
+                } else if rec.casualty_type == 16 {
+                    collision.horse_rider = true;
                 } else {
-                    // TODO These aren't all motor vehicles. What should we do with:
-                    // 16 = Horse rider
-                    // 22 = Mobility scooter rider
+                    // The rest all involve motor vehicle drivers/passengers
                     collision.other = true;
                 }
 
@@ -169,6 +172,7 @@ struct Collision {
     // At least one
     pedestrian: bool,
     cyclist: bool,
+    horse_rider: bool,
     other: bool,
 
     // If there are multple pedestrian casualties in one collision, these details come from one of
