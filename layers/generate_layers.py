@@ -40,6 +40,7 @@ def main():
         type=str,
     )
     parser.add_argument("--cycle_paths", action="store_true")
+    parser.add_argument("--ncn", action="store_true")
     parser.add_argument("--vehicle_counts", action="store_true")
     parser.add_argument("--pct", action="store_true")
     # Inputs required for some outputs
@@ -128,6 +129,10 @@ def main():
     if args.cycle_paths:
         made_any = True
         cycle_paths.makeCyclePaths(args.osm_input)
+        
+    if args.ncn:
+        made_any = True
+        makeNationalCycleNetwork()
 
     if args.vehicle_counts:
         made_any = True
@@ -173,6 +178,30 @@ def makeMRN():
 
     convertGeoJsonToPmtiles(f"{tmp}/mrn.geojson", "output/mrn.pmtiles")
 
+def makeNationalCycleNetwork():
+    tmp = "tmp_ncn"
+    ensureEmptyTempDirectoryExists(tmp)
+
+    # Get the geojson from the link found at https://data-sustrans-uk.opendata.arcgis.com/
+    run(
+        [
+            "wget",
+            "https://opendata.arcgis.com/api/v3/datasets/5defd254e78745bfb12d0456abc1bcf1_0/downloads/data?format=geojson&spatialRefId=4326&where=1%3D1",
+            "-O",
+            f"{tmp}/national_cycle_network.geojson",
+        ]
+    )
+
+
+    def fixProps(inputProps):
+        propsToRemove = ["LinkNo", "Lighting",  "RoadClass", "SHAPE_Length", "GlobalID", "SegmentID"]
+        for prop in propsToRemove:
+            inputProps.pop(prop)
+        return inputProps
+
+    cleanUpGeojson(f"{tmp}/national_cycle_network.geojson", fixProps)
+
+    convertGeoJsonToPmtiles(f"{tmp}/national_cycle_network.geojson", "output/national_cycle_network.pmtiles")
 
 if __name__ == "__main__":
     main()
