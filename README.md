@@ -139,5 +139,5 @@ The `MANIFEST.txt` file records files currently hosted in the test GCS bucket. W
 To generate it, change the project ID as needed and run:
 
 ```
-gsutil ls -rl gs://dft-rlg-atip-dev/** > MANIFEST.txt
+gsutil ls -rl gs://dft-rlg-atip-{env}/** > MANIFEST-{env}.txt
 ```
