@@ -9,12 +9,14 @@
     398861  2023-09-29T09:58:08Z  gs://dft-rlg-atip-dev/layers/v1/local_authority_districts.geojson
   17063108  2023-09-20T12:49:54Z  gs://dft-rlg-atip-dev/layers/v1/local_planning_authorities.pmtiles
    8939161  2023-09-29T09:49:25Z  gs://dft-rlg-atip-dev/layers/v1/mrn.pmtiles
+  18806510  2024-01-23T15:59:08Z  gs://dft-rlg-atip-dev/layers/v1/national_cycle_network.pmtiles
   21264435  2023-09-20T12:49:53Z  gs://dft-rlg-atip-dev/layers/v1/parliamentary_constituencies.pmtiles
  107852920  2023-09-20T12:50:10Z  gs://dft-rlg-atip-dev/layers/v1/pct_commute.pmtiles
   66994430  2023-09-20T12:50:05Z  gs://dft-rlg-atip-dev/layers/v1/pct_school.pmtiles
     397024  2023-09-29T09:58:29Z  gs://dft-rlg-atip-dev/layers/v1/railway_stations.geojson
   11569479  2023-09-29T09:50:26Z  gs://dft-rlg-atip-dev/layers/v1/schools.pmtiles
   14056148  2023-09-29T09:55:37Z  gs://dft-rlg-atip-dev/layers/v1/sports_spaces.pmtiles
+  23092043  2024-01-23T15:49:49Z  gs://dft-rlg-atip-dev/layers/v1/stats19.pmtiles
    1067418  2023-09-29T09:28:54Z  gs://dft-rlg-atip-dev/layers/v1/vehicle_counts.pmtiles
   30158538  2023-09-20T12:50:01Z  gs://dft-rlg-atip-dev/layers/v1/wards.pmtiles
        109  2023-09-29T11:29:31Z  gs://dft-rlg-atip-dev/private_layers/api_keys.json
@@ -22,4 +24,4 @@
     401960  2023-11-17T11:23:29Z  gs://dft-rlg-atip-dev/private_layers/v1/random_schemes.geojson
  337645834  2023-09-21T15:02:21Z  gs://dft-rlg-atip-dev/private_layers/v1/road_speeds.pmtiles
  251748424  2023-09-21T15:02:10Z  gs://dft-rlg-atip-dev/private_layers/v1/road_widths.pmtiles
-TOTAL: 24 objects, 1577025096 bytes (1.47 GiB)
+TOTAL: 26 objects, 1618923649 bytes (1.51 GiB)
