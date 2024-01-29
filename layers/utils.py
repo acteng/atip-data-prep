@@ -118,3 +118,18 @@ def trimPrecision(data):
         return round(data, 6)
     else:
         raise Exception(f"Unexpected data within coordinates: {data}")
+
+
+# Modifies a GeoJSON file in-place, removing any holes from polygons.
+def removePolygonHoles(path):
+    gj = {}
+    with open(path) as f:
+        gj = json.load(f)
+    for feature in gj["features"]:
+        if feature["geometry"]["type"] != "Polygon":
+            continue
+        if len(feature["geometry"]["coordinates"]) > 1:
+            print("Removing polygon holes from", feature["properties"])
+            del feature["geometry"]["coordinates"][1:]
+    with open(path, "w") as f:
+        f.write(json.dumps(gj))
