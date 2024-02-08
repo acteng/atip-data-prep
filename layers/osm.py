@@ -217,7 +217,40 @@ def makeCrossings(
         return outputProps
 
     cleanUpGeojson(tmpGeojsonFilepath, fixProps)
-    convertGeoJsonToPmtiles(
-        tmpGeojsonFilepath, outputFilepath, autoZoom=True
+    convertGeoJsonToPmtiles(tmpGeojsonFilepath, outputFilepath, autoZoom=True)
+
+
+def makeTrams(osm_input):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+
+    filename = "trams"
+    tmp = f"tmp_{filename}"
+    ensureEmptyTempDirectoryExists(tmp)
+
+    run(
+        [
+            "osmium",
+            "tags-filter",
+            osm_input,
+            # Manchester's trams are tagged as light_rail
+            "nwr/railway=tram,light_rail",
+            "-o",
+            f"{tmp}/extract.osm.pbf",
+        ]
+    )
+    convertPbfToGeoJson(
+        f"{tmp}/extract.osm.pbf",
+        f"{tmp}/{filename}.geojson",
+        "linestring",
+        includeOsmID=True,
     )
 
+    def fixProps(inputProps):
+        return {
+            "osm_id": inputProps["@id"],
+        }
+
+    cleanUpGeojson(f"{tmp}/{filename}.geojson", fixProps)
+
+    convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")

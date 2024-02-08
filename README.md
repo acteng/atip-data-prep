@@ -83,6 +83,7 @@ ATIP can display extra contextual layers:
   - Cycle parking
   - Existing cycle paths
   - Crossings
+  - Tram lines
 - the [Major Road Network](https://www.data.gov.uk/dataset/95f58bfa-13d6-4657-9d6f-020589498cfd/major-road-network)
 - Boundaries
   - Parliament constituency boundaries, from [OS Boundary-Line](https://www.ordnancesurvey.co.uk/products/boundary-line)
@@ -107,7 +108,7 @@ is a single GeoJSON file if it's small enough, or
 To run this:
 
 1.  Get `england-latest.osm.pbf` from Geofabrik. The `split_uk_osm.sh` script above does this.
-2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes --crossings --cycle_parking --cycle_paths --ncn --wards --vehicle_counts --pct --local_authorities_for_sketcher --transport_authorities_for_sketcher`
+2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --schools --hospitals --mrn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes --crossings --cycle_parking --cycle_paths --ncn --wards --vehicle_counts --pct --local_authorities_for_sketcher --transport_authorities_for_sketcher --trams`
 3.  Pick an arbitrary version number, and upload the files: `for x in output/*; do aws s3 cp --dry $x s3://atip.uk/layers/v1/; done`
 
 If you're rerunning the script for the same output, you may need to manually delete the output files from the previous run.
