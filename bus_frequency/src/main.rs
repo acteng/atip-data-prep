@@ -1,95 +1,46 @@
-use std::collections::BTreeMap;
-
 use anyhow::Result;
 use chrono::{Duration, NaiveTime};
 use fs_err::File;
 use geojson::{Feature, Geometry, Value};
-use serde::Deserialize;
+
+mod gtfs;
 
 fn main() -> Result<()> {
     let args = std::env::args().collect::<Vec<_>>();
-    if args.len() != 3 {
-        panic!("Call with the path to stops.txt and stop_times.txt");
+    if args.len() != 2 {
+        panic!("Call with the path to the unzipped GTFS directory");
     }
 
-    let mut stops: BTreeMap<String, Stop> = BTreeMap::new();
-    println!("Scraping stops");
-    for rec in csv::Reader::from_reader(File::open(&args[1])?).deserialize() {
-        let rec: StopRow = rec?;
-        stops.insert(
-            rec.stop_id,
-            Stop {
-                name: rec.stop_name,
-                lon: rec.stop_lon,
-                lat: rec.stop_lat,
-                times: Vec::new(),
-            },
-        );
-    }
-
-    println!("Scraping stop times");
-    let mut scraped = 0;
-    let mut skipped = 0;
-    for rec in csv::Reader::from_reader(File::open(&args[2])?).deserialize() {
-        let rec: StopTimeRow = rec?;
-        let Ok(arrival_time) = NaiveTime::parse_from_str(&rec.arrival_time, "%H:%M:%S") else {
-            // TODO Handle times > 24 hours, or just ignore, since that's very unlikely to be the
-            // peak
-            //println!("Weird arrival_time {}", rec.arrival_time);
-            skipped += 1;
-            continue;
-        };
-        stops
-            .get_mut(&rec.stop_id)
-            .unwrap()
-            .times
-            .push(arrival_time);
-        scraped += 1;
-    }
-    println!("Got {scraped} times, skipped {skipped}");
+    let stops = gtfs::get_stops(&args[1])?;
 
     println!("Finding peaks");
     let mut writer = geojson::FeatureWriter::from_writer(std::io::BufWriter::new(File::create(
         "stops.geojson",
     )?));
     for (stop_id, stop) in stops {
-        if stop.times.is_empty() {
-            continue;
-        }
+        // For each day, calculate the total stops that day and the peak
+        let mut max_total_stops = 0;
+        let mut max_peak = 0;
+        for times in stop.times_per_day {
+            if times.is_empty() {
+                continue;
+            }
 
-        let total_stops = stop.times.len();
-        let peak = sliding_window_peak(stop.times, Duration::hours(1));
+            let total_stops = times.len();
+            let peak = sliding_window_peak(times, Duration::hours(1));
+            max_total_stops = max_total_stops.max(total_stops);
+            max_peak = max_peak.max(peak);
+        }
 
         let mut f = Feature::from(Geometry::new(Value::Point(vec![stop.lon, stop.lat])));
         f.set_property("stop_id", stop_id);
         f.set_property("stop_name", stop.name);
-        f.set_property("total_stops", total_stops);
-        f.set_property("peak", peak);
+        f.set_property("total_stops", max_total_stops);
+        f.set_property("peak", max_peak);
         writer.write_feature(&f)?;
     }
 
     Ok(())
-}
-
-struct Stop {
-    name: String,
-    lon: f64,
-    lat: f64,
-    times: Vec<NaiveTime>,
-}
-
-#[derive(Deserialize)]
-struct StopTimeRow {
-    arrival_time: String,
-    stop_id: String,
-}
-
-#[derive(Deserialize)]
-struct StopRow {
-    stop_id: String,
-    stop_name: String,
-    stop_lon: f64,
-    stop_lat: f64,
 }
 
 // TODO Quasi off-by-ones
