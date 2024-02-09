@@ -15,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     # Possible outputs to generate
     parser.add_argument("--schools", action="store_true")
+    parser.add_argument("--higher_education", action="store_true")
     parser.add_argument("--hospitals", action="store_true")
     parser.add_argument("--mrn", action="store_true")
     parser.add_argument("--parliamentary_constituencies", action="store_true")
@@ -58,6 +59,13 @@ def main():
         # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
         # primary and secondary schools
         osm.generatePolygonLayer(args.osm_input, "amenity=school", "schools")
+
+    if args.higher_education:
+        made_any = True
+        # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
+        # primary and secondary schools
+        osm.generatePolygonLayer(args.osm_input, "amenity=college", "college")
+        osm.generatePolygonLayer(args.osm_input, "amenity=university", "university")
 
     if args.hospitals:
         made_any = True
