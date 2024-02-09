@@ -23,8 +23,8 @@ pub struct Stop {
     pub times_per_day: Vec<Vec<NaiveTime>>,
 }
 
-#[derive(Clone, Copy)]
-enum Day {
+#[derive(Clone, Copy, Debug)]
+pub enum Day {
     Monday = 0,
     Tuesday = 1,
     Wednesday = 2,
