@@ -18,24 +18,20 @@ fn main() -> Result<()> {
         "stops.geojson",
     )?));
     for (stop_id, stop) in stops {
-        // For each day, calculate the total stops that day and the peak
-        let mut max_total_stops = 0;
+        // For each day, calculate the total buses that day and during the peak hour
+        let mut max_total = 0;
         let mut max_peak = 0;
         for times in stop.times_per_day {
-            if times.is_empty() {
-                continue;
-            }
-
-            let total_stops = times.len();
+            let total = times.len();
             let peak = sliding_window_peak(times, Duration::hours(1));
-            max_total_stops = max_total_stops.max(total_stops);
+            max_total = max_total.max(total);
             max_peak = max_peak.max(peak);
         }
 
         let mut f = Feature::from(Geometry::new(Value::Point(vec![stop.lon, stop.lat])));
         f.set_property("stop_id", stop_id);
         f.set_property("stop_name", stop.name);
-        f.set_property("total_stops", max_total_stops);
+        f.set_property("total", max_total);
         f.set_property("peak", max_peak);
         writer.write_feature(&f)?;
     }
@@ -43,12 +39,15 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-// TODO Quasi off-by-ones
+/// Finds the interval of length `window_size` containing the most `times`, and returns that number
 fn sliding_window_peak(mut times: Vec<NaiveTime>, window_size: Duration) -> usize {
     times.sort();
 
-    for (idx, t) in times.iter().enumerate() {
-        //println!("- {idx}: {t}");
+    if times.is_empty() {
+        return 0;
+    }
+    if times.len() == 1 {
+        return 1;
     }
 
     let mut start_idx = 0;
@@ -68,4 +67,44 @@ fn sliding_window_peak(mut times: Vec<NaiveTime>, window_size: Duration) -> usiz
     }
 
     max_count
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sliding_window_peak() {
+        for (expected_peak, times) in vec![
+            // Degenerate cases
+            (0, vec![]),
+            (1, vec!["07:13:00"]),
+            (1, vec!["07:13:00", "09:05:00"]),
+            // Lined up on the hour, 7-8 being the peak
+            (
+                4,
+                vec![
+                    "05:00:00", "07:05:00", "07:10:00", "07:15:00", "07:20:00", "08:30:00",
+                    "08:45:00",
+                ],
+            ),
+            // 6:35 - 7:35 is the peak
+            (
+                4,
+                vec![
+                    "05:00:00", "06:35:00", "07:10:00", "07:15:00", "07:20:00", "08:30:00",
+                    "08:45:00",
+                ],
+            ),
+        ] {
+            let input: Vec<NaiveTime> = times
+                .into_iter()
+                .map(|t| NaiveTime::parse_from_str(t, "%H:%M:%S").unwrap())
+                .collect();
+            assert_eq!(
+                expected_peak,
+                sliding_window_peak(input, Duration::hours(1))
+            );
+        }
+    }
 }

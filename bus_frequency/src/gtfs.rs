@@ -5,6 +5,15 @@ use chrono::NaiveTime;
 use fs_err::File;
 use serde::Deserialize;
 
+// See https://gtfs.org/schedule/reference/. This groups all arrival_times per day and stop, with
+// some caveats:
+//
+// - Ignoring calendar_dates.txt, which lists days an extra service is run or is skipped
+// - Ignoring the start/end date ranges in calendar.txt
+// - Ignoring times after midnight (unlikely to be the peak hour)
+// - Ignoring frequencies.txt, which is used for only a few services in the UK GTFS
+// - Skipping some services that don't map to trips
+
 pub struct Stop {
     pub name: String,
     pub lon: f64,
