@@ -64,8 +64,8 @@ def main():
         made_any = True
         # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
         # primary and secondary schools
-        osm.generatePolygonLayer(args.osm_input, "amenity=college", "college")
-        osm.generatePolygonLayer(args.osm_input, "amenity=university", "university")
+        osm.generatePolygonLayer(args.osm_input, "amenity=college", "colleges")
+        osm.generatePolygonLayer(args.osm_input, "amenity=university", "universities")
 
     if args.hospitals:
         made_any = True
