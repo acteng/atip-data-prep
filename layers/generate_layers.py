@@ -14,7 +14,7 @@ import traffic
 def main():
     parser = argparse.ArgumentParser()
     # Possible outputs to generate
-    parser.add_argument("--schools", action="store_true")
+    parser.add_argument("--education", action="store_true")
     parser.add_argument("--hospitals", action="store_true")
     parser.add_argument("--mrn", action="store_true")
     parser.add_argument("--parliamentary_constituencies", action="store_true")
@@ -53,11 +53,9 @@ def main():
     made_any = False
     os.makedirs("output", exist_ok=True)
 
-    if args.schools:
+    if args.education:
         made_any = True
-        # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
-        # primary and secondary schools
-        osm.generatePolygonLayer(args.osm_input, "amenity=school", "schools")
+        osm.makeEducationLayer(args.osm_input)
 
     if args.hospitals:
         made_any = True

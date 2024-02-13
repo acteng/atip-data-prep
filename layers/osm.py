@@ -29,6 +29,48 @@ def generatePolygonLayer(osm_input, tagFilter, filename):
 
     convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
 
+def makeEducationLayer(osm_input):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+    filename = "education"
+    tagFilter = "amenity=school,college,university"
+
+    tmp = f"tmp_{filename}"
+    ensureEmptyTempDirectoryExists(tmp)
+
+    run(
+        [
+            "osmium",
+            "tags-filter",
+            osm_input,
+            f"nwr/{tagFilter}",
+            "-o",
+            f"{tmp}/extract.osm.pbf",
+        ]
+    )
+
+    convertPbfToGeoJson(
+        f"{tmp}/extract.osm.pbf", f"{tmp}/{filename}.geojson", "polygon"
+    )
+
+    def cleanUpFeature(inputProps):
+        outputProps = {}
+        name = inputProps.get("name")
+        type = inputProps.get("amenity")
+
+        if name:
+            outputProps["name"] = name
+
+        outputProps["type"] = type
+        return outputProps
+
+
+
+    cleanUpGeojson(f"{tmp}/{filename}.geojson", cleanUpFeature)
+
+    convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
+
+
 
 def onlyKeepName(inputProps):
     outputProps = {}
