@@ -1,10 +1,12 @@
   40802344  2023-11-30T14:32:46Z  gs://dft-rlg-atip-test/layers/v1/bus_routes.pmtiles
+  18290779  2024-02-09T11:26:09Z  gs://dft-rlg-atip-test/layers/v1/bus_stops.pmtiles
  142182196  2023-11-30T14:32:54Z  gs://dft-rlg-atip-test/layers/v1/census_output_areas.pmtiles
      31843  2023-11-30T14:32:54Z  gs://dft-rlg-atip-test/layers/v1/combined_authorities.geojson
   19241776  2023-11-30T14:32:55Z  gs://dft-rlg-atip-test/layers/v1/crossings.geojson
    4459232  2023-12-11T09:52:34Z  gs://dft-rlg-atip-test/layers/v1/crossings.pmtiles
     824134  2023-11-30T14:32:56Z  gs://dft-rlg-atip-test/layers/v1/cycle_parking.pmtiles
   53345192  2023-11-30T14:32:59Z  gs://dft-rlg-atip-test/layers/v1/cycle_paths.pmtiles
+  13389644  2024-02-13T09:58:14Z  gs://dft-rlg-atip-test/layers/v1/education.pmtiles
     897154  2023-11-30T14:33:00Z  gs://dft-rlg-atip-test/layers/v1/hospitals.pmtiles
   61015289  2023-11-30T14:33:05Z  gs://dft-rlg-atip-test/layers/v1/imd.pmtiles
     398861  2023-11-30T14:33:05Z  gs://dft-rlg-atip-test/layers/v1/local_authority_districts.geojson
@@ -15,9 +17,9 @@
  107852920  2023-11-30T14:33:16Z  gs://dft-rlg-atip-test/layers/v1/pct_commute.pmtiles
   66994430  2023-11-30T14:33:20Z  gs://dft-rlg-atip-test/layers/v1/pct_school.pmtiles
     397024  2023-11-30T14:33:20Z  gs://dft-rlg-atip-test/layers/v1/railway_stations.geojson
-  11569479  2023-11-30T14:33:21Z  gs://dft-rlg-atip-test/layers/v1/schools.pmtiles
   14056148  2023-11-30T14:33:23Z  gs://dft-rlg-atip-test/layers/v1/sports_spaces.pmtiles
   23092043  2024-01-23T15:49:36Z  gs://dft-rlg-atip-test/layers/v1/stats19.pmtiles
+    772110  2024-02-09T11:28:49Z  gs://dft-rlg-atip-test/layers/v1/trams.pmtiles
    1067418  2023-11-30T14:33:23Z  gs://dft-rlg-atip-test/layers/v1/vehicle_counts.pmtiles
   30158538  2023-11-30T14:33:25Z  gs://dft-rlg-atip-test/layers/v1/wards.pmtiles
        109  2024-01-30T13:45:52Z  gs://dft-rlg-atip-test/private_layers/api_keys.json
@@ -25,4 +27,4 @@
   26253474  2024-02-07T10:26:16Z  gs://dft-rlg-atip-test/private_layers/v1/random_schemes.geojson
  337645834  2023-11-30T14:29:47Z  gs://dft-rlg-atip-test/private_layers/v1/road_speeds.pmtiles
  251748424  2023-11-30T14:30:03Z  gs://dft-rlg-atip-test/private_layers/v1/road_widths.pmtiles
-TOTAL: 27 objects, 1664016939 bytes (1.55 GiB)
+TOTAL: 29 objects, 1684899993 bytes (1.57 GiB)

@@ -1,9 +1,11 @@
   40802344  2023-09-20T12:49:59Z  gs://dft-rlg-atip-dev/layers/v1/bus_routes.pmtiles
+  18290779  2024-02-09T11:26:23Z  gs://dft-rlg-atip-dev/layers/v1/bus_stops.pmtiles
  142182196  2023-09-20T12:50:14Z  gs://dft-rlg-atip-dev/layers/v1/census_output_areas.pmtiles
      31843  2023-09-29T09:57:11Z  gs://dft-rlg-atip-dev/layers/v1/combined_authorities.geojson
    4459232  2023-09-18T10:55:37Z  gs://dft-rlg-atip-dev/layers/v1/crossings.pmtiles
     824134  2023-09-29T09:57:34Z  gs://dft-rlg-atip-dev/layers/v1/cycle_parking.pmtiles
   53345192  2023-09-20T12:50:05Z  gs://dft-rlg-atip-dev/layers/v1/cycle_paths.pmtiles
+  13389644  2024-02-13T09:58:58Z  gs://dft-rlg-atip-dev/layers/v1/education.pmtiles
     897154  2023-09-29T09:58:38Z  gs://dft-rlg-atip-dev/layers/v1/hospitals.pmtiles
   61015289  2023-09-20T12:50:05Z  gs://dft-rlg-atip-dev/layers/v1/imd.pmtiles
     398861  2023-09-29T09:58:08Z  gs://dft-rlg-atip-dev/layers/v1/local_authority_districts.geojson
@@ -14,9 +16,9 @@
  107852920  2023-09-20T12:50:10Z  gs://dft-rlg-atip-dev/layers/v1/pct_commute.pmtiles
   66994430  2023-09-20T12:50:05Z  gs://dft-rlg-atip-dev/layers/v1/pct_school.pmtiles
     397024  2023-09-29T09:58:29Z  gs://dft-rlg-atip-dev/layers/v1/railway_stations.geojson
-  11569479  2023-09-29T09:50:26Z  gs://dft-rlg-atip-dev/layers/v1/schools.pmtiles
   14056148  2023-09-29T09:55:37Z  gs://dft-rlg-atip-dev/layers/v1/sports_spaces.pmtiles
   23092043  2024-01-23T15:49:49Z  gs://dft-rlg-atip-dev/layers/v1/stats19.pmtiles
+    772110  2024-02-09T11:28:33Z  gs://dft-rlg-atip-dev/layers/v1/trams.pmtiles
    1067418  2023-09-29T09:28:54Z  gs://dft-rlg-atip-dev/layers/v1/vehicle_counts.pmtiles
   30158538  2023-09-20T12:50:01Z  gs://dft-rlg-atip-dev/layers/v1/wards.pmtiles
        109  2023-09-29T11:29:31Z  gs://dft-rlg-atip-dev/private_layers/api_keys.json
@@ -24,4 +26,4 @@
     401960  2023-11-17T11:23:29Z  gs://dft-rlg-atip-dev/private_layers/v1/random_schemes.geojson
  337645834  2023-09-21T15:02:21Z  gs://dft-rlg-atip-dev/private_layers/v1/road_speeds.pmtiles
  251748424  2023-09-21T15:02:10Z  gs://dft-rlg-atip-dev/private_layers/v1/road_widths.pmtiles
-TOTAL: 26 objects, 1618923649 bytes (1.51 GiB)
+TOTAL: 28 objects, 1639806703 bytes (1.53 GiB)
