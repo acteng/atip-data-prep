@@ -55,8 +55,6 @@ def main():
 
     if args.education:
         made_any = True
-        # https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dschool indicates
-        # primary and secondary schools
         osm.makeEducationLayer(args.osm_input)
 
     if args.hospitals:

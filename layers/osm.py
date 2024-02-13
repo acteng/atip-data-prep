@@ -29,7 +29,6 @@ def generatePolygonLayer(osm_input, tagFilter, filename):
 
     convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
 
-# Extract polygons from OSM using a tag filter, and only keep a name attribute.
 def makeEducationLayer(osm_input):
     if not osm_input:
         raise Exception("You must specify --osm_input")
@@ -39,7 +38,6 @@ def makeEducationLayer(osm_input):
     tmp = f"tmp_{filename}"
     ensureEmptyTempDirectoryExists(tmp)
 
-    # TODO Do we need nwr? We don't want points further on
     run(
         [
             "osmium",
@@ -59,10 +57,11 @@ def makeEducationLayer(osm_input):
         outputProps = {}
         name = inputProps.get("name")
         type = inputProps.get("amenity")
+
         if name:
             outputProps["name"] = name
-        if type:
-            outputProps["type"] = type
+
+        outputProps["type"] = type
         return outputProps
 
 
