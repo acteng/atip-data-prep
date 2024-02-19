@@ -1,0 +1,14 @@
+[package]
+name = "gradient"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.79"
+elevation = { git = "https://github.com/dabreegster/elevation" }
+fs-err = "2.11.0"
+geo = { version = "0.27.0", default-features = false }
+geojson = "0.24.1"
+indicatif = { version = "0.17.8", features = ["rayon"] }
+osm-reader = { git = "https://github.com/a-b-street/osm-reader" }
+rayon = "1.8.1"

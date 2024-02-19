@@ -7,3 +7,5 @@ __pycache__
 !layers/input/README.md
 stats19/input
 stats19/tmp
+gradient/input
+gradient/tmp
