@@ -8,7 +8,7 @@ import boundaries
 import cycle_paths
 import osm
 import pct
-import traffic
+import vehicle_counts
 
 
 def main():
@@ -139,7 +139,7 @@ def main():
 
     if args.vehicle_counts:
         made_any = True
-        traffic.makeDftVehicleCounts()
+        vehicle_counts.makeDftVehicleCounts()
 
     if args.pct:
         made_any = True
