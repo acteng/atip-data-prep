@@ -20,11 +20,11 @@
   14056148  2023-09-29T09:55:37Z  gs://dft-rlg-atip-dev/layers/v1/sports_spaces.pmtiles
   23092043  2024-01-23T15:49:49Z  gs://dft-rlg-atip-dev/layers/v1/stats19.pmtiles
     772110  2024-02-09T11:28:33Z  gs://dft-rlg-atip-dev/layers/v1/trams.pmtiles
-   1067418  2023-09-29T09:28:54Z  gs://dft-rlg-atip-dev/layers/v1/vehicle_counts.pmtiles
+   1951810  2024-03-14T16:02:36Z  gs://dft-rlg-atip-dev/layers/v1/vehicle_counts.pmtiles
   30158538  2023-09-20T12:50:01Z  gs://dft-rlg-atip-dev/layers/v1/wards.pmtiles
        109  2023-09-29T11:29:31Z  gs://dft-rlg-atip-dev/private_layers/api_keys.json
  403909863  2024-01-15T16:16:15Z  gs://dft-rlg-atip-dev/private_layers/v1/pavement_widths.pmtiles
     401960  2023-11-17T11:23:29Z  gs://dft-rlg-atip-dev/private_layers/v1/random_schemes.geojson
  337645834  2023-09-21T15:02:21Z  gs://dft-rlg-atip-dev/private_layers/v1/road_speeds.pmtiles
  251748424  2023-09-21T15:02:10Z  gs://dft-rlg-atip-dev/private_layers/v1/road_widths.pmtiles
-TOTAL: 29 objects, 2141218889 bytes (1.99 GiB)
+TOTAL: 29 objects, 2142103281 bytes (1.99 GiB)
