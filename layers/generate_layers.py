@@ -172,7 +172,7 @@ def makeMRN():
 
     def fixProps(inputProps):
         outputProps = {}
-        name = feature["properties"].get("name1")
+        name = inputProps.get("name1")
         if name:
             outputProps["name"] = name
         return outputProps
