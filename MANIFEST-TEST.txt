@@ -25,7 +25,7 @@
   30158538  2023-11-30T14:33:25Z  gs://dft-rlg-atip-test/layers/v1/wards.pmtiles
        109  2024-01-30T13:45:52Z  gs://dft-rlg-atip-test/private_layers/api_keys.json
  403909863  2024-01-15T16:13:44Z  gs://dft-rlg-atip-test/private_layers/v1/pavement_widths.pmtiles
-  26916295  2024-03-25T10:56:56Z  gs://dft-rlg-atip-test/private_layers/v1/random_schemes.geojson
+  36027110  2024-04-02T15:27:22Z  gs://dft-rlg-atip-test/private_layers/v1/random_schemes.geojson
  337645834  2023-11-30T14:29:47Z  gs://dft-rlg-atip-test/private_layers/v1/road_speeds.pmtiles
  251748424  2023-11-30T14:30:03Z  gs://dft-rlg-atip-test/private_layers/v1/road_widths.pmtiles
-TOTAL: 30 objects, 2187859392 bytes (2.04 GiB)
+TOTAL: 30 objects, 2196970207 bytes (2.05 GiB)
