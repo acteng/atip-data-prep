@@ -18,6 +18,7 @@
  107852920  2023-11-30T14:33:16Z  gs://dft-rlg-atip-test/layers/v1/pct_commute.pmtiles
   66994430  2023-11-30T14:33:20Z  gs://dft-rlg-atip-test/layers/v1/pct_school.pmtiles
     397024  2023-11-30T14:33:20Z  gs://dft-rlg-atip-test/layers/v1/railway_stations.geojson
+ 209162107  2024-04-03T09:09:33Z  gs://dft-rlg-atip-test/layers/v1/road_noise.pmtiles
   14056148  2023-11-30T14:33:23Z  gs://dft-rlg-atip-test/layers/v1/sports_spaces.pmtiles
   23092043  2024-01-23T15:49:36Z  gs://dft-rlg-atip-test/layers/v1/stats19.pmtiles
     772110  2024-02-09T11:28:49Z  gs://dft-rlg-atip-test/layers/v1/trams.pmtiles
@@ -25,7 +26,7 @@
   30158538  2023-11-30T14:33:25Z  gs://dft-rlg-atip-test/layers/v1/wards.pmtiles
        109  2024-01-30T13:45:52Z  gs://dft-rlg-atip-test/private_layers/api_keys.json
  403909863  2024-01-15T16:13:44Z  gs://dft-rlg-atip-test/private_layers/v1/pavement_widths.pmtiles
-  36027110  2024-04-02T15:27:22Z  gs://dft-rlg-atip-test/private_layers/v1/random_schemes.geojson
+  30572930  2024-04-03T09:07:09Z  gs://dft-rlg-atip-test/private_layers/v1/random_schemes.geojson
  337645834  2023-11-30T14:29:47Z  gs://dft-rlg-atip-test/private_layers/v1/road_speeds.pmtiles
  251748424  2023-11-30T14:30:03Z  gs://dft-rlg-atip-test/private_layers/v1/road_widths.pmtiles
-TOTAL: 30 objects, 2196970207 bytes (2.05 GiB)
+TOTAL: 31 objects, 2400678134 bytes (2.24 GiB)
