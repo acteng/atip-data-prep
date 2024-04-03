@@ -92,7 +92,7 @@ def makeLocalAuthorityDistricts():
 
     reprojectToWgs84(
         # Manually downloaded and stored in git
-        "input/Local_Authority_Districts_May_2023_UK_BUC_V2_-7390714061867823479.geojson",
+        "input/Local_Authority_Districts_December_2023_Boundaries_UK_BUC_4615499699084237502.geojson",
         "output/local_authority_districts.geojson",
     )
 
