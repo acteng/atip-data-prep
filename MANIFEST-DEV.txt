@@ -9,7 +9,7 @@
  501412186  2024-02-22T13:35:32Z  gs://dft-rlg-atip-dev/layers/v1/gradient.pmtiles
     897154  2023-09-29T09:58:38Z  gs://dft-rlg-atip-dev/layers/v1/hospitals.pmtiles
   61015289  2023-09-20T12:50:05Z  gs://dft-rlg-atip-dev/layers/v1/imd.pmtiles
-    398861  2023-09-29T09:58:08Z  gs://dft-rlg-atip-dev/layers/v1/local_authority_districts.geojson
+    400778  2024-04-04T10:26:24Z  gs://dft-rlg-atip-dev/layers/v1/local_authority_districts.geojson
   17063108  2023-09-20T12:49:54Z  gs://dft-rlg-atip-dev/layers/v1/local_planning_authorities.pmtiles
    8939161  2023-09-29T09:49:25Z  gs://dft-rlg-atip-dev/layers/v1/mrn.pmtiles
   18806510  2024-01-23T15:59:08Z  gs://dft-rlg-atip-dev/layers/v1/national_cycle_network.pmtiles
@@ -19,6 +19,7 @@
     397024  2023-09-29T09:58:29Z  gs://dft-rlg-atip-dev/layers/v1/railway_stations.geojson
  209162107  2024-04-02T15:12:28Z  gs://dft-rlg-atip-dev/layers/v1/road_noise.pmtiles
   14056148  2023-09-29T09:55:37Z  gs://dft-rlg-atip-dev/layers/v1/sports_spaces.pmtiles
+   7662753  2024-04-04T10:31:44Z  gs://dft-rlg-atip-dev/layers/v1/srn.pmtiles
   23092043  2024-01-23T15:49:49Z  gs://dft-rlg-atip-dev/layers/v1/stats19.pmtiles
     772110  2024-02-09T11:28:33Z  gs://dft-rlg-atip-dev/layers/v1/trams.pmtiles
    1951810  2024-03-14T16:02:36Z  gs://dft-rlg-atip-dev/layers/v1/vehicle_counts.pmtiles
@@ -28,4 +29,4 @@
  403909863  2024-01-15T16:16:15Z  gs://dft-rlg-atip-dev/private_layers/v1/pavement_widths.pmtiles
  337645834  2023-09-21T15:02:21Z  gs://dft-rlg-atip-dev/private_layers/v1/road_speeds.pmtiles
  251748424  2023-09-21T15:02:10Z  gs://dft-rlg-atip-dev/private_layers/v1/road_widths.pmtiles
-TOTAL: 30 objects, 2350932905 bytes (2.19 GiB)
+TOTAL: 31 objects, 2358597575 bytes (2.2 GiB)
