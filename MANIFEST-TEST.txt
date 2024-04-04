@@ -10,7 +10,7 @@
  501412186  2024-02-22T12:51:24Z  gs://dft-rlg-atip-test/layers/v1/gradient.pmtiles
     897154  2023-11-30T14:33:00Z  gs://dft-rlg-atip-test/layers/v1/hospitals.pmtiles
   61015289  2023-11-30T14:33:05Z  gs://dft-rlg-atip-test/layers/v1/imd.pmtiles
-    400778  2024-04-04T10:25:50Z  gs://dft-rlg-atip-test/layers/v1/local_authority_districts.geojson
+    400778  2024-04-04T11:42:28Z  gs://dft-rlg-atip-test/layers/v1/local_authority_districts.geojson
   17063108  2023-11-30T14:33:07Z  gs://dft-rlg-atip-test/layers/v1/local_planning_authorities.pmtiles
    8939161  2023-11-30T14:33:08Z  gs://dft-rlg-atip-test/layers/v1/mrn.pmtiles
   18806510  2024-01-23T15:59:25Z  gs://dft-rlg-atip-test/layers/v1/national_cycle_network.pmtiles
@@ -26,8 +26,8 @@
    1951810  2024-03-14T16:02:14Z  gs://dft-rlg-atip-test/layers/v1/vehicle_counts.pmtiles
   30158538  2023-11-30T14:33:25Z  gs://dft-rlg-atip-test/layers/v1/wards.pmtiles
        109  2024-01-30T13:45:52Z  gs://dft-rlg-atip-test/private_layers/api_keys.json
-   7455582  2024-04-03T13:17:08Z  gs://dft-rlg-atip-test/private_layers/v1/all_schemes_output.geojson.gz
+   7543323  2024-04-04T11:43:36Z  gs://dft-rlg-atip-test/private_layers/v1/all_schemes_output.geojson.gz
  403909863  2024-01-15T16:13:44Z  gs://dft-rlg-atip-test/private_layers/v1/pavement_widths.pmtiles
  337645834  2023-11-30T14:29:47Z  gs://dft-rlg-atip-test/private_layers/v1/road_speeds.pmtiles
  251748424  2023-11-30T14:30:03Z  gs://dft-rlg-atip-test/private_layers/v1/road_widths.pmtiles
-TOTAL: 32 objects, 2385225456 bytes (2.22 GiB)
+TOTAL: 32 objects, 2385313197 bytes (2.22 GiB)
