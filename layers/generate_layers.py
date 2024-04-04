@@ -9,6 +9,7 @@ import cycle_paths
 import osm
 import pct
 import road_noise
+import srn
 import vehicle_counts
 
 
@@ -18,6 +19,7 @@ def main():
     parser.add_argument("--education", action="store_true")
     parser.add_argument("--hospitals", action="store_true")
     parser.add_argument("--mrn", action="store_true")
+    parser.add_argument("--srn", action="store_true")
     parser.add_argument("--parliamentary_constituencies", action="store_true")
     parser.add_argument("--railway_stations", action="store_true")
     parser.add_argument("--crossings", action="store_true")
@@ -68,6 +70,10 @@ def main():
     if args.mrn:
         made_any = True
         makeMRN()
+
+    if args.srn:
+        made_any = True
+        srn.makeSRN()
 
     if args.parliamentary_constituencies:
         made_any = True
