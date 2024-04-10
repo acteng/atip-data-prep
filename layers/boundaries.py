@@ -110,6 +110,7 @@ def makeLocalAuthorityDistricts():
         filterFeatures=lambda f: f["properties"]["LAD23CD"][0] == "E",
     )
 
+
 def makeLocalAuthorityDistrictsForSketcher():
     outputFilePath = "output/local_authority_districts_reprojected.geojson"
 
@@ -133,6 +134,7 @@ def makeLocalAuthorityDistrictsForSketcher():
     )
     removePolygonHoles(outputFilePath)
 
+
 def makeTransportAuthoritiesForSketcher():
     outputFilePath = "output/transport_authorities_reprojected.geojson"
 
@@ -153,6 +155,7 @@ def makeTransportAuthoritiesForSketcher():
         fixProps,
     )
     removePolygonHoles(outputFilePath)
+
 
 def makeLocalPlanningAuthorities():
     tmp = "tmp_local_planning_authorities"

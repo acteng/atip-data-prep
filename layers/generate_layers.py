@@ -3,8 +3,9 @@
 import argparse
 
 from utils import *
-import census
 import boundaries
+import census
+import crossings
 import cycle_paths
 import osm
 import pct
@@ -127,7 +128,7 @@ def main():
 
     if args.crossings:
         made_any = True
-        osm.makeCrossings(args.osm_input)
+        crossings.makeCrossings(args.osm_input)
 
     if args.trams:
         made_any = True
@@ -140,7 +141,7 @@ def main():
     if args.cycle_paths:
         made_any = True
         cycle_paths.makeCyclePaths(args.osm_input)
-        
+
     if args.ncn:
         made_any = True
         makeNationalCycleNetwork()
@@ -193,6 +194,7 @@ def makeMRN():
 
     convertGeoJsonToPmtiles(f"{tmp}/mrn.geojson", "output/mrn.pmtiles")
 
+
 def makeNationalCycleNetwork():
     tmp = "tmp_ncn"
     ensureEmptyTempDirectoryExists(tmp)
@@ -207,16 +209,25 @@ def makeNationalCycleNetwork():
         ]
     )
 
-
     def fixProps(inputProps):
-        propsToRemove = ["LinkNo", "Lighting",  "RoadClass", "SHAPE_Length", "GlobalID", "SegmentID"]
+        propsToRemove = [
+            "LinkNo",
+            "Lighting",
+            "RoadClass",
+            "SHAPE_Length",
+            "GlobalID",
+            "SegmentID",
+        ]
         for prop in propsToRemove:
             inputProps.pop(prop)
         return inputProps
 
     cleanUpGeojson(f"{tmp}/national_cycle_network.geojson", fixProps)
 
-    convertGeoJsonToPmtiles(f"{tmp}/national_cycle_network.geojson", "output/national_cycle_network.pmtiles")
+    convertGeoJsonToPmtiles(
+        f"{tmp}/national_cycle_network.geojson", "output/national_cycle_network.pmtiles"
+    )
+
 
 if __name__ == "__main__":
     main()

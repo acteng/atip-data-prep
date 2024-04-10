@@ -29,6 +29,7 @@ def generatePolygonLayer(osm_input, tagFilter, filename):
 
     convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
 
+
 def makeEducationLayer(osm_input):
     if not osm_input:
         raise Exception("You must specify --osm_input")
@@ -64,12 +65,9 @@ def makeEducationLayer(osm_input):
         outputProps["type"] = type
         return outputProps
 
-
-
     cleanUpGeojson(f"{tmp}/{filename}.geojson", cleanUpFeature)
 
     convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
-
 
 
 def onlyKeepName(inputProps):
@@ -222,44 +220,6 @@ def roadHasBusLane(tags):
     # or any other users.
 
     return False
-
-
-def makeCrossings(
-    osm_input,
-):
-    if not osm_input:
-        raise Exception("You must specify --osm_input")
-
-    filename = "crossings"
-    tmp = f"tmp_{filename}"
-    ensureEmptyTempDirectoryExists(tmp)
-    osmFilePath = f"{tmp}/extract.osm.pbf"
-    run(
-        [
-            "osmium",
-            "tags-filter",
-            osm_input,
-            "n/crossing",
-            "-o",
-            osmFilePath,
-        ]
-    )
-    tmpGeojsonFilepath = f"{tmp}/{filename}.geojson"
-    outputFilepath = f"output/{filename}.pmtiles"
-    convertPbfToGeoJson(osmFilePath, tmpGeojsonFilepath, "point", includeOsmID=True)
-
-    def fixProps(inputProps):
-        outputProps = {}
-        try:
-            outputProps["osm_id"] = inputProps["@id"]
-            outputProps["crossing"] = inputProps["crossing"]
-        except:
-            # Ignore parsing errors and missing values
-            pass
-        return outputProps
-
-    cleanUpGeojson(tmpGeojsonFilepath, fixProps)
-    convertGeoJsonToPmtiles(tmpGeojsonFilepath, outputFilepath, autoZoom=True)
 
 
 def makeTrams(osm_input):
