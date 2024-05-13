@@ -1,5 +1,6 @@
+mod pavement_width;
+mod road_width;
 mod speed;
-mod width;
 
 use std::io::BufWriter;
 
@@ -34,13 +35,9 @@ fn main() -> Result<()> {
         Layer::RoadWidth => gpkg_to_geojson(
             &args.gpkg_path,
             "road_widths.geojson",
-            width::road_width_properties,
+            road_width::road_width_properties,
         ),
-        Layer::PavementWidth => gpkg_to_geojson(
-            &args.gpkg_path,
-            "pavement_widths.geojson",
-            width::pavement_width_properties,
-        ),
+        Layer::PavementWidth => pavement_width::process(&args.gpkg_path, "pavement_widths.geojson"),
         Layer::Speed => gpkg_to_geojson(
             &args.gpkg_path,
             "road_speeds.geojson",
