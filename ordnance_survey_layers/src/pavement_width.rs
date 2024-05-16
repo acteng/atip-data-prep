@@ -5,12 +5,13 @@ use anyhow::Result;
 use fs_err::File;
 use gdal::vector::LayerAccess;
 use gdal::Dataset;
-use geo::{Coord, Geometry, MapCoordsInPlace};
+use geo::{Coord, Geometry, HaversineBearing, MapCoordsInPlace};
 use geojson::FeatureWriter;
 use indicatif::{ProgressBar, ProgressStyle};
 
 struct Road {
     geometry: Geometry,
+    angle: isize,
     left: Option<(f64, f64)>,
     right: Option<(f64, f64)>,
 }
@@ -58,9 +59,21 @@ pub fn process(input_path: &str, output_path: &str) -> Result<()> {
                 x: trim_f64(x),
                 y: trim_f64(y),
             });
+            let angle = if let Geometry::LineString(ls) = &geometry {
+                let bearing = ls
+                    .points()
+                    .next()
+                    .unwrap()
+                    .haversine_bearing(ls.points().last().unwrap())
+                    .round() as isize;
+                (bearing + 360) % 360
+            } else {
+                panic!("Not a LineString");
+            };
 
             Road {
                 geometry,
+                angle,
                 left: None,
                 right: None,
             }
@@ -81,6 +94,7 @@ pub fn process(input_path: &str, output_path: &str) -> Result<()> {
     for road in roads.into_values() {
         progress.inc(1);
         let mut output_feature = geojson::Feature::from(geojson::Value::from(&road.geometry));
+        output_feature.set_property("angle", road.angle);
         if let Some((average, minimum)) = road.left {
             output_feature.set_property("left_average", average);
             output_feature.set_property("left_minimum", minimum);
