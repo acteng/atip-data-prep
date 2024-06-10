@@ -34,6 +34,7 @@ async function main() {
     delete obj["Latitude & Longitude"];
     delete obj["Google Maps"];
     delete obj["Cumul. Type"];
+    delete obj["Proposed ID"];
 
     gj.features.push({
       type: "Feature",
