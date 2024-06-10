@@ -1,0 +1,20 @@
+{
+  "name": "dalog",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "convert": "npx ts-node convert.ts",
+    "fmt": "npx prettier --write *.ts"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/geojson": "^7946.0.14",
+    "prettier": "^3.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "read-excel-file": "^5.8.1"
+  }
+}
