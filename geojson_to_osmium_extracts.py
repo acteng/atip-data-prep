@@ -42,15 +42,6 @@ def main():
             # both (like Portsmouth), so include the level in the namespace.
             name = feature["properties"]["level"] + "_" + feature["properties"]["name"]
 
-            # TODO Fix upstream! All cases were checked right now and only using the first is OK.
-            if feature["geometry"]["type"] == "MultiPolygon":
-                print(
-                    f"{name} is a MultiPolygon. Arbitrarily using the first Polygon only.")
-                feature["geometry"]["type"] = "Polygon"
-                feature["geometry"]["coordinates"] = feature["geometry"]["coordinates"][0]
-            if feature["geometry"]["type"] != "Polygon":
-                raise Exception(f"{name} isn't a Polygon")
-
             with open(f"{name}.geojson", "w") as f:
                 f.write(json.dumps(feature))
             config["extracts"].append(
