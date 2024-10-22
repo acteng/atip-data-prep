@@ -1,3 +1,4 @@
+import shutil
 from utils import *
 
 
@@ -70,16 +71,16 @@ def makeWards():
 
 
 def makeCombinedAuthorities():
-    reprojectToWgs84(
+    shutil.copyfile(
         # Manually downloaded and stored in git
-        "input/Combined_Authorities_December_2022_EN_BUC_1154653457304546671.geojson",
+        "input/Combined_Authorities_May_2023_Boundaries_EN_BUC_529823327652397380.geojson",
         "output/combined_authorities.geojson",
     )
 
     def fixProps(inputProps):
         return {
-            "CAUTH22CD": inputProps["CAUTH22CD"],
-            "name": inputProps["CAUTH22NM"],
+            "CAUTH24CD": inputProps["CAUTH24CD"],
+            "name": inputProps["CAUTH24NM"],
         }
 
     # The final file is tiny; don't bother with pmtiles
@@ -90,16 +91,16 @@ def makeLocalAuthorityDistricts():
     tmp = "tmp_local_authority_districts"
     ensureEmptyTempDirectoryExists(tmp)
 
-    reprojectToWgs84(
+    shutil.copyfile(
         # Manually downloaded and stored in git
-        "input/Local_Authority_Districts_December_2023_Boundaries_UK_BUC_4615499699084237502.geojson",
+        "input/Local_Authority_Districts_May_2024_Boundaries_UK_BUC_6795818826918236547.geojson",
         "output/local_authority_districts.geojson",
     )
 
     def fixProps(inputProps):
         return {
-            "LAD23CD": inputProps["LAD23CD"],
-            "name": inputProps["LAD23NM"],
+            "LAD24CD": inputProps["LAD24CD"],
+            "name": inputProps["LAD24NM"],
         }
 
     # The final file is tiny; don't bother with pmtiles
@@ -107,8 +108,9 @@ def makeLocalAuthorityDistricts():
         "output/local_authority_districts.geojson",
         fixProps,
         # Only keep England
-        filterFeatures=lambda f: f["properties"]["LAD23CD"][0] == "E",
+        filterFeatures=lambda f: f["properties"]["LAD24CD"][0] == "E",
     )
+
 
 def makeLocalAuthorityDistrictsForSketcher():
     outputFilePath = "output/local_authority_districts_reprojected.geojson"
@@ -133,6 +135,7 @@ def makeLocalAuthorityDistrictsForSketcher():
     )
     removePolygonHoles(outputFilePath)
 
+
 def makeTransportAuthoritiesForSketcher():
     outputFilePath = "output/transport_authorities_reprojected.geojson"
 
@@ -153,6 +156,7 @@ def makeTransportAuthoritiesForSketcher():
         fixProps,
     )
     removePolygonHoles(outputFilePath)
+
 
 def makeLocalPlanningAuthorities():
     tmp = "tmp_local_planning_authorities"
