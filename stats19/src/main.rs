@@ -64,7 +64,7 @@ fn read_input() -> Result<HashMap<String, Collision>> {
         progress.inc(1);
         let rec: CollisionRow = rec?;
 
-        // Only keep the most recent 5 years (and the dataset only covers up to 2022 right now)
+        // Only keep the most recent 6 years (and the dataset only covers up to 2023 right now)
         if rec.accident_year < 2017 {
             continue;
         }
