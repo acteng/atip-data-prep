@@ -8,6 +8,7 @@ import boundaries
 import cycle_paths
 import osm
 import pct
+import rights_of_way
 import road_noise
 import srn
 import vehicle_counts
@@ -48,6 +49,7 @@ def main():
     parser.add_argument("--vehicle_counts", action="store_true")
     parser.add_argument("--pct", action="store_true")
     parser.add_argument("--road_noise", action="store_true")
+    parser.add_argument("--rights_of_way", action="store_true")
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -156,6 +158,10 @@ def main():
     if args.road_noise:
         made_any = True
         road_noise.makeRoadNoise()
+
+    if args.rights_of_way:
+        made_any = True
+        rights_of_way.makeRoW()
 
     if not made_any:
         print(

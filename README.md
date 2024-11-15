@@ -101,6 +101,7 @@ ATIP can display extra contextual layers:
 - Traffic counts from [DfT](https://roadtraffic.dft.gov.uk/downloads)
 - 2011 [Propensity to Cycle Tool route network data](https://github.com/npct/pct-outputs-national)
 - Road noise from [DEFRA](https://environment.data.gov.uk/dataset/b9c6bf30-a02d-4378-94a0-2982de1bef86)
+- Public rights of way from [rowmaps](https://www.rowmaps.com)
 
 These layers are England-wide, rather than being split into a file per area,
 because they're being used on the country-wide scheme browse page. Each layer
@@ -110,7 +111,7 @@ is a single GeoJSON file if it's small enough, or
 To run this:
 
 1.  Get `england-latest.osm.pbf` from Geofabrik. The `split_uk_osm.sh` script above does this.
-2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --education --hospitals --mrn --srn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes --crossings --cycle_parking --cycle_paths --ncn --wards --vehicle_counts --pct --local_authorities_for_sketcher --transport_authorities_for_sketcher --trams --road_noise`
+2.  Run `cd layers; ./generate_layers.py --osm_input=../england-latest.osm.pbf --education --hospitals --mrn --srn --parliamentary_constituencies --combined_authorities --local_authority_districts --local_planning_authorities --sports_spaces --railway_stations --bus_routes --crossings --cycle_parking --cycle_paths --ncn --wards --vehicle_counts --pct --local_authorities_for_sketcher --transport_authorities_for_sketcher --trams --road_noise --rights_of_way`
 3.  Pick an arbitrary version number, and upload the files: `for x in output/*; do aws s3 cp --dry $x s3://atip.uk/layers/v1/; done`
 
 If you're rerunning the script for the same output, you may need to manually delete the output files from the previous run.
