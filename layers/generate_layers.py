@@ -50,6 +50,11 @@ def main():
     parser.add_argument("--pct", action="store_true")
     parser.add_argument("--road_noise", action="store_true")
     parser.add_argument("--rights_of_way", action="store_true")
+    parser.add_argument(
+        "--rural_urban_classification",
+        help="Path to the manually downloaded Output_Areas_Dec_2011_Boundaries_EW_BGC_2022_7812884375712211689.geojson",
+        type=str,
+    )
     # Inputs required for some outputs
     parser.add_argument(
         "-i", "--osm_input", help="Path to england-latest.osm.pbf file", type=str
@@ -142,7 +147,7 @@ def main():
     if args.cycle_paths:
         made_any = True
         cycle_paths.makeCyclePaths(args.osm_input)
-        
+
     if args.ncn:
         made_any = True
         makeNationalCycleNetwork()
@@ -162,6 +167,10 @@ def main():
     if args.rights_of_way:
         made_any = True
         rights_of_way.makeRoW()
+
+    if args.rural_urban_classification:
+        made_any = True
+        census.makeRUC(args.rural_urban_classification)
 
     if not made_any:
         print(
@@ -199,6 +208,7 @@ def makeMRN():
 
     convertGeoJsonToPmtiles(f"{tmp}/mrn.geojson", "output/mrn.pmtiles")
 
+
 def makeNationalCycleNetwork():
     tmp = "tmp_ncn"
     ensureEmptyTempDirectoryExists(tmp)
@@ -213,16 +223,25 @@ def makeNationalCycleNetwork():
         ]
     )
 
-
     def fixProps(inputProps):
-        propsToRemove = ["LinkNo", "Lighting",  "RoadClass", "SHAPE_Length", "GlobalID", "SegmentID"]
+        propsToRemove = [
+            "LinkNo",
+            "Lighting",
+            "RoadClass",
+            "SHAPE_Length",
+            "GlobalID",
+            "SegmentID",
+        ]
         for prop in propsToRemove:
             inputProps.pop(prop)
         return inputProps
 
     cleanUpGeojson(f"{tmp}/national_cycle_network.geojson", fixProps)
 
-    convertGeoJsonToPmtiles(f"{tmp}/national_cycle_network.geojson", "output/national_cycle_network.pmtiles")
+    convertGeoJsonToPmtiles(
+        f"{tmp}/national_cycle_network.geojson", "output/national_cycle_network.pmtiles"
+    )
+
 
 if __name__ == "__main__":
     main()
