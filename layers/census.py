@@ -98,3 +98,39 @@ def makeIMD(path):
     # data against 2011 LSOAs, so we're not combining it with anything else.
     cleanUpGeojson(path, fixProps)
     convertGeoJsonToPmtiles(path, f"output/imd.pmtiles")
+
+
+# You have to manually download the GeoJSON file from https://geoportal.statistics.gov.uk/datasets/8df53342abe043ab89534214206617ae_0/explore ("Output Areas (December 2011) Boundaries EW BGC (V2)") and pass in the path here (until we can automate this)
+def makeRUC(path):
+    tmp = "tmp_ruc"
+    ensureEmptyTempDirectoryExists(tmp)
+
+    # From https://www.arcgis.com/sharing/rest/content/items/9f3ab554c6ad46dabe38ef0134b238fb/data, "Rural Urban Classification (2011) of Output Areas in EW"
+    run(
+        [
+            "wget",
+            "https://www.arcgis.com/sharing/rest/content/items/53360acabd1e4567bc4b8d35081b36ff/data",
+            "-O",
+            f"{tmp}/ruc.zip",
+        ]
+    )
+    run(["unzip", f"{tmp}/ruc.zip", "-d", tmp])
+
+    lookup = {}
+    with open(f"{tmp}/RUC11_OA11_EW.csv") as f:
+        for row in csv.DictReader(f):
+            lookup[row["OA11CD"]] = row["RUC11"]
+
+    def fixProps(inputProps):
+        key = inputProps["OA11CD"]
+        return {
+            "OA11CD": key,
+            "RUC11": lookup[key],
+        }
+
+    # Don't overwrite the raw input; make a copy
+    gj = f"{tmp}/rural_urban_classification.geojson"
+    run(["cp", path, gj])
+    cleanUpGeojson(gj, fixProps)
+
+    convertGeoJsonToPmtiles(gj, "output/rural_urban_classification.pmtiles")

@@ -102,6 +102,7 @@ ATIP can display extra contextual layers:
 - 2011 [Propensity to Cycle Tool route network data](https://github.com/npct/pct-outputs-national)
 - Road noise from [DEFRA](https://environment.data.gov.uk/dataset/b9c6bf30-a02d-4378-94a0-2982de1bef86)
 - Public rights of way from [rowmaps](https://www.rowmaps.com)
+- 2011 rural urban classification data from [ONS](https://www.arcgis.com/sharing/rest/content/items/9f3ab554c6ad46dabe38ef0134b238fb/data)
 
 These layers are England-wide, rather than being split into a file per area,
 because they're being used on the country-wide scheme browse page. Each layer
@@ -118,7 +119,7 @@ If you're rerunning the script for the same output, you may need to manually del
 
 You can debug a PMTiles file using <https://protomaps.github.io/PMTiles>.
 
-There's a manual step required to generate `--census_output_areas` and `--imd`. See the comment in the code.
+There's a manual step required to generate `--census_output_areas`, `--imd`, and `--rural_urban_classification`. See the comment in the code.
 
 For `--cycle_paths`, you'll need about 20GB of RAM, until we switch to a streaming JSON parser.
 
