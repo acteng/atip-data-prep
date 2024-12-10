@@ -19,6 +19,7 @@
  107852920  2024-10-15T12:55:31Z  gs://dft-rlg-schemes-gis-dev/layers/v1/pct_commute.pmtiles
   66994430  2024-10-15T12:55:16Z  gs://dft-rlg-schemes-gis-dev/layers/v1/pct_school.pmtiles
     397024  2024-10-15T12:54:38Z  gs://dft-rlg-schemes-gis-dev/layers/v1/railway_stations.geojson
+ 123554644  2024-12-10T10:51:00Z  gs://dft-rlg-schemes-gis-dev/layers/v1/rural_urban_classification.pmtiles
   14056148  2024-10-15T12:54:52Z  gs://dft-rlg-schemes-gis-dev/layers/v1/sports_spaces.pmtiles
   23092043  2024-10-15T12:54:59Z  gs://dft-rlg-schemes-gis-dev/layers/v1/stats19.pmtiles
     772110  2024-10-15T12:54:38Z  gs://dft-rlg-schemes-gis-dev/layers/v1/trams.pmtiles
@@ -416,4 +417,4 @@
    1200551  2024-10-23T10:02:33Z  gs://dft-rlg-schemes-gis-dev/route-snappers/v3/TA_Wokingham.bin.gz
    4885825  2024-10-23T10:02:35Z  gs://dft-rlg-schemes-gis-dev/route-snappers/v3/TA_Worcestershire.bin.gz
    1382995  2024-10-23T10:02:35Z  gs://dft-rlg-schemes-gis-dev/route-snappers/v3/TA_York.bin.gz
-TOTAL: 418 objects, 1423384400 bytes (1.33 GiB)
+TOTAL: 419 objects, 1546939044 bytes (1.44 GiB)

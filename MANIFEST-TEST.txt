@@ -14,14 +14,16 @@
   17063108  2023-11-30T14:33:07Z  gs://dft-rlg-atip-test/layers/v1/local_planning_authorities.pmtiles
    8939161  2023-11-30T14:33:08Z  gs://dft-rlg-atip-test/layers/v1/mrn.pmtiles
   18806510  2024-01-23T15:59:25Z  gs://dft-rlg-atip-test/layers/v1/national_cycle_network.pmtiles
-  21264435  2023-11-30T14:33:09Z  gs://dft-rlg-atip-test/layers/v1/parliamentary_constituencies.pmtiles
+  22641273  2024-10-29T09:58:12Z  gs://dft-rlg-atip-test/layers/v1/parliamentary_constituencies.pmtiles
  107852920  2023-11-30T14:33:16Z  gs://dft-rlg-atip-test/layers/v1/pct_commute.pmtiles
   66994430  2023-11-30T14:33:20Z  gs://dft-rlg-atip-test/layers/v1/pct_school.pmtiles
     398477  2024-10-21T13:36:53Z  gs://dft-rlg-atip-test/layers/v1/railway_stations.geojson
+  40709038  2024-11-18T10:37:27Z  gs://dft-rlg-atip-test/layers/v1/rights_of_way.pmtiles
  209162107  2024-04-03T09:09:33Z  gs://dft-rlg-atip-test/layers/v1/road_noise.pmtiles
+ 123554644  2024-12-10T10:49:13Z  gs://dft-rlg-atip-test/layers/v1/rural_urban_classification.pmtiles
   15325943  2024-10-21T13:37:01Z  gs://dft-rlg-atip-test/layers/v1/sports_spaces.pmtiles
    7662753  2024-04-04T10:31:19Z  gs://dft-rlg-atip-test/layers/v1/srn.pmtiles
-  23092043  2024-01-23T15:49:36Z  gs://dft-rlg-atip-test/layers/v1/stats19.pmtiles
+  26457962  2024-10-23T13:10:11Z  gs://dft-rlg-atip-test/layers/v1/stats19.pmtiles
     818056  2024-10-21T13:36:59Z  gs://dft-rlg-atip-test/layers/v1/trams.pmtiles
    1951810  2024-03-14T16:02:14Z  gs://dft-rlg-atip-test/layers/v1/vehicle_counts.pmtiles
   30158538  2023-11-30T14:33:25Z  gs://dft-rlg-atip-test/layers/v1/wards.pmtiles
@@ -31,4 +33,4 @@
     113574  2024-08-30T15:22:15Z  gs://dft-rlg-atip-test/private_layers/v1/problems.geojson.gz
  337645834  2023-11-30T14:29:47Z  gs://dft-rlg-atip-test/private_layers/v1/road_speeds.pmtiles
  273568736  2024-05-15T14:06:25Z  gs://dft-rlg-atip-test/private_layers/v1/road_widths.pmtiles
-TOTAL: 33 objects, 2226938489 bytes (2.07 GiB)
+TOTAL: 35 objects, 2395944928 bytes (2.23 GiB)
