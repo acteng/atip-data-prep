@@ -87,23 +87,17 @@ fn main() -> Result<()> {
 #[derive(Serialize)]
 enum Crossing {
     Zebra,
-    // zebra + parallel cycleway, but NOT toucan
     Parallel,
-    // press button, signalized. midblock or not?
     Pelican,
-    // like pelican, but the display is on the far side
     Puffin,
-    // both, but shared space. signalized always or not?
     Toucan,
-    // signalized, for horses too
     Pegasus,
     Uncontrolled,
 }
 
 fn classify(tags: &Tags) -> Option<Crossing> {
-    // Easy cases first!
+    // See https://wiki.openstreetmap.org/wiki/Key:crossing_ref#United_Kingdom
     if let Some(x) = tags.get("crossing_ref") {
-        // https://wiki.openstreetmap.org/wiki/Key:crossing_ref#United_Kingdom
         return match x.as_str() {
             "zebra" => Some(Crossing::Zebra),
             "tiger" => Some(Crossing::Parallel),
@@ -117,7 +111,8 @@ fn classify(tags: &Tags) -> Option<Crossing> {
     }
 
     if tags.is("crossing", "unmarked") {
-        // Careful with the OSM terminology here, see the wiki
+        // Careful with the OSM terminology here, see
+        // https://wiki.openstreetmap.org/wiki/Tag:crossing%3Dunmarked
         return Some(Crossing::Uncontrolled);
     }
 
