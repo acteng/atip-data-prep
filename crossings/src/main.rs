@@ -45,7 +45,9 @@ fn main() -> Result<()> {
             let linestring = LineString(node_ids.iter().map(|n| nodes[n].pt).collect());
 
             // Only keep interesting ways
-            if tags.is_any_key(vec!["highway", "footway", "cycleway"], "crossing") {
+            if tags.is_any_key(vec!["highway", "footway", "cycleway"], "crossing")
+                || tags.is("footway", "traffic_island")
+            {
                 ways.push(Way {
                     id,
                     linestring,
