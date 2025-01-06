@@ -17,7 +17,6 @@ struct Node {
 
 struct Way {
     id: WayID,
-    node_ids: Vec<NodeID>,
     linestring: LineString,
     tags: Tags,
 }
@@ -49,7 +48,6 @@ fn main() -> Result<()> {
             if tags.is_any_key(vec!["highway", "footway", "cycleway"], "crossing") {
                 ways.push(Way {
                     id,
-                    node_ids,
                     linestring,
                     tags,
                 });
@@ -72,7 +70,6 @@ fn main() -> Result<()> {
         if !node
             .tags
             .is_any_key(vec!["highway", "footway", "cycleway"], "crossing")
-            && !node.tags.is("highway", "traffic_signals")
         {
             continue;
         }
@@ -99,9 +96,6 @@ enum Crossing {
     // signalized, for horses too
     Pegasus,
     Uncontrolled,
-
-    // TODO pedex? sparrow?
-    UnknownSignalized,
 }
 
 fn classify(tags: &Tags) -> Option<Crossing> {
@@ -127,10 +121,6 @@ fn classify(tags: &Tags) -> Option<Crossing> {
 
     if tags.is("crossing", "zebra") {
         return Some(Crossing::Zebra);
-    }
-
-    if tags.is("crossing", "traffic_signals") {
-        return Some(Crossing::UnknownSignalized);
     }
 
     None
