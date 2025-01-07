@@ -101,6 +101,7 @@ fn classify(tags: &Tags) -> Option<Crossing> {
         return match x.as_str() {
             "zebra" => Some(Crossing::Zebra),
             "tiger" => Some(Crossing::Parallel),
+            "parallel" => Some(Crossing::Parallel),
             "pelican" => Some(Crossing::Pelican),
             "puffin" => Some(Crossing::Puffin),
             "toucan" => Some(Crossing::Toucan),
