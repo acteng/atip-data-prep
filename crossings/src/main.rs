@@ -93,6 +93,7 @@ enum Crossing {
     Toucan,
     Pegasus,
     Uncontrolled,
+    Signalised,
 }
 
 fn classify(tags: &Tags) -> Option<Crossing> {
@@ -100,12 +101,12 @@ fn classify(tags: &Tags) -> Option<Crossing> {
     if let Some(x) = tags.get("crossing_ref") {
         return match x.as_str() {
             "zebra" => Some(Crossing::Zebra),
-            "tiger" => Some(Crossing::Parallel),
-            "parallel" => Some(Crossing::Parallel),
+            "tiger" | "parallel" => Some(Crossing::Parallel),
             "pelican" => Some(Crossing::Pelican),
             "puffin" => Some(Crossing::Puffin),
             "toucan" => Some(Crossing::Toucan),
             "pegasus" => Some(Crossing::Pegasus),
+            "traffic_signals" => Some(Crossing::Signalised),
             // TODO What're these?
             _ => None,
         };
