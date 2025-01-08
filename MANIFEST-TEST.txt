@@ -3,7 +3,7 @@
  142182196  2023-11-30T14:32:54Z  gs://dft-rlg-atip-test/layers/v1/census_output_areas.pmtiles
      42786  2024-10-23T09:15:19Z  gs://dft-rlg-atip-test/layers/v1/combined_authorities.geojson
   19241776  2023-11-30T14:32:55Z  gs://dft-rlg-atip-test/layers/v1/crossings.geojson
-   5519420  2024-10-21T13:36:46Z  gs://dft-rlg-atip-test/layers/v1/crossings.pmtiles
+  27611390  2025-01-08T15:53:38Z  gs://dft-rlg-atip-test/layers/v1/crossings.pmtiles
     885344  2024-10-21T13:36:47Z  gs://dft-rlg-atip-test/layers/v1/cycle_parking.pmtiles
   57171078  2024-10-21T13:37:02Z  gs://dft-rlg-atip-test/layers/v1/cycle_paths.pmtiles
   13500613  2024-10-21T13:36:43Z  gs://dft-rlg-atip-test/layers/v1/education.pmtiles
@@ -33,4 +33,4 @@
     113574  2024-08-30T15:22:15Z  gs://dft-rlg-atip-test/private_layers/v1/problems.geojson.gz
  337645834  2023-11-30T14:29:47Z  gs://dft-rlg-atip-test/private_layers/v1/road_speeds.pmtiles
  273568736  2024-05-15T14:06:25Z  gs://dft-rlg-atip-test/private_layers/v1/road_widths.pmtiles
-TOTAL: 35 objects, 2395944928 bytes (2.23 GiB)
+TOTAL: 35 objects, 2418036898 bytes (2.25 GiB)
