@@ -106,20 +106,20 @@ fn classify(tags: &Tags) -> Option<Crossing> {
             "puffin" => Some(Crossing::Puffin),
             "toucan" => Some(Crossing::Toucan),
             "pegasus" => Some(Crossing::Pegasus),
-            "traffic_signals" => Some(Crossing::Signalised),
             // TODO What're these?
             _ => None,
         };
     }
 
-    if tags.is("crossing", "unmarked") {
-        // Careful with the OSM terminology here, see
-        // https://wiki.openstreetmap.org/wiki/Tag:crossing%3Dunmarked
-        return Some(Crossing::Uncontrolled);
-    }
-
-    if tags.is("crossing", "zebra") {
-        return Some(Crossing::Zebra);
+    if let Some(x) = tags.get("crossing") {
+        return match x.as_str() {
+            // Careful with the OSM terminology here, see
+            // https://wiki.openstreetmap.org/wiki/Tag:crossing%3Dunmarked
+            "unmarked" => Some(Crossing::Uncontrolled),
+            "zebra" => Some(Crossing::Zebra),
+            "traffic_signals" => Some(Crossing::Signalised),
+            _ => None,
+        };
     }
 
     None
