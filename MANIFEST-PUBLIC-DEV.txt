@@ -9,6 +9,7 @@
     824134  2024-10-15T12:54:38Z  gs://dft-rlg-schemes-gis-dev/layers/v1/cycle_parking.pmtiles
   53345192  2024-10-15T12:55:16Z  gs://dft-rlg-schemes-gis-dev/layers/v1/cycle_paths.pmtiles
   13389644  2024-10-15T12:54:54Z  gs://dft-rlg-schemes-gis-dev/layers/v1/education.pmtiles
+ 501412186  2025-01-30T10:44:41Z  gs://dft-rlg-schemes-gis-dev/layers/v1/gradient.pmtiles
     897154  2024-10-15T12:54:39Z  gs://dft-rlg-schemes-gis-dev/layers/v1/hospitals.pmtiles
   61015289  2024-10-15T12:55:10Z  gs://dft-rlg-schemes-gis-dev/layers/v1/imd.pmtiles
     398861  2024-10-15T12:54:38Z  gs://dft-rlg-schemes-gis-dev/layers/v1/local_authority_districts.geojson
@@ -19,8 +20,11 @@
  107852920  2024-10-15T12:55:31Z  gs://dft-rlg-schemes-gis-dev/layers/v1/pct_commute.pmtiles
   66994430  2024-10-15T12:55:16Z  gs://dft-rlg-schemes-gis-dev/layers/v1/pct_school.pmtiles
     397024  2024-10-15T12:54:38Z  gs://dft-rlg-schemes-gis-dev/layers/v1/railway_stations.geojson
+  40709038  2025-01-30T10:42:32Z  gs://dft-rlg-schemes-gis-dev/layers/v1/rights_of_way.pmtiles
+ 209162107  2025-01-30T16:18:09Z  gs://dft-rlg-schemes-gis-dev/layers/v1/road_noise.pmtiles
  123554644  2024-12-10T10:51:00Z  gs://dft-rlg-schemes-gis-dev/layers/v1/rural_urban_classification.pmtiles
   14056148  2024-10-15T12:54:52Z  gs://dft-rlg-schemes-gis-dev/layers/v1/sports_spaces.pmtiles
+   7662753  2025-01-30T16:17:38Z  gs://dft-rlg-schemes-gis-dev/layers/v1/srn.pmtiles
   23092043  2024-10-15T12:54:59Z  gs://dft-rlg-schemes-gis-dev/layers/v1/stats19.pmtiles
     772110  2024-10-15T12:54:38Z  gs://dft-rlg-schemes-gis-dev/layers/v1/trams.pmtiles
     693973  2024-10-15T12:54:38Z  gs://dft-rlg-schemes-gis-dev/layers/v1/universities.pmtiles
@@ -417,4 +421,4 @@
    1200551  2024-10-23T10:02:33Z  gs://dft-rlg-schemes-gis-dev/route-snappers/v3/TA_Wokingham.bin.gz
    4885825  2024-10-23T10:02:35Z  gs://dft-rlg-schemes-gis-dev/route-snappers/v3/TA_Worcestershire.bin.gz
    1382995  2024-10-23T10:02:35Z  gs://dft-rlg-schemes-gis-dev/route-snappers/v3/TA_York.bin.gz
-TOTAL: 419 objects, 1570091202 bytes (1.46 GiB)
+TOTAL: 423 objects, 2329037286 bytes (2.17 GiB)
