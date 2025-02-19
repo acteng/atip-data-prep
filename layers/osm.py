@@ -141,6 +141,42 @@ def makeBusRoutes(osm_input):
     convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
 
 
+def makeCycleRoutes(osm_input):
+    if not osm_input:
+        raise Exception("You must specify --osm_input")
+
+    filename = "cycle_routes"
+    tmp = f"tmp_{filename}"
+    ensureEmptyTempDirectoryExists(tmp)
+
+    # Cycle routes are represented as relations. Note many routes cross the same
+    # way, but osmium only outputs the way once when we export to GeoJSON
+    run(
+        [
+            "osmium",
+            "tags-filter",
+            osm_input,
+            "r/route=bicycle",
+            "-o",
+            f"{tmp}/extract.osm.pbf",
+        ]
+    )
+    # The relations also include wayfinding markers as points. Only keep
+    # LineStrings, representing roads.
+    convertPbfToGeoJson(
+        f"{tmp}/extract.osm.pbf", f"{tmp}/{filename}.geojson", "linestring"
+    )
+
+    # TODO Ideally we'd plumb through the OSM relation ID and glue each way
+    # into one linestring per relation, but osmium doesn't support this
+    def fixProps(inputProps):
+        return {}
+
+    cleanUpGeojson(f"{tmp}/{filename}.geojson", fixProps)
+
+    convertGeoJsonToPmtiles(f"{tmp}/{filename}.geojson", f"output/{filename}.pmtiles")
+
+
 def makeCycleParking(osm_input):
     if not osm_input:
         raise Exception("You must specify --osm_input")
