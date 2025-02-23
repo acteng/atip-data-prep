@@ -9,6 +9,10 @@ use serde::Deserialize;
 // https://data.dft.gov.uk/road-accidents-safety-data/dft-road-casualty-statistics-road-safety-open-dataset-data-guide-2023.xlsx defines the categorical variables
 
 fn main() -> Result<()> {
+    let args: Vec<_> = std::env::args().collect();
+    let only_pedestrians_and_cyclists =
+        args.len() == 2 && args[1] == "--only_pedestrians_and_cyclists";
+
     let collisions = read_input()?;
 
     // Write a GeoJSON with one point per collision
@@ -24,6 +28,10 @@ fn main() -> Result<()> {
             panic!("Unexpected: no casualties matched to accident_index = {accident_index}");
         }
 
+        if only_pedestrians_and_cyclists && !collision.pedestrian && !collision.cyclist {
+            continue;
+        }
+
         let mut f = Feature::from(Geometry::new(Value::Point(vec![
             collision.lon,
             collision.lat,
@@ -32,8 +40,10 @@ fn main() -> Result<()> {
         f.set_property("year", collision.year);
         f.set_property("pedestrian", collision.pedestrian);
         f.set_property("cyclist", collision.cyclist);
-        f.set_property("horse_rider", collision.horse_rider);
-        f.set_property("other", collision.other);
+        if !only_pedestrians_and_cyclists {
+            f.set_property("horse_rider", collision.horse_rider);
+            f.set_property("other", collision.other);
+        }
         f.set_property("pedestrian_location", collision.pedestrian_location);
         f.set_property("pedestrian_movement", collision.pedestrian_movement);
         // Just output the worst severity. 1 = fatal, 2 = serious, 3 = slight
