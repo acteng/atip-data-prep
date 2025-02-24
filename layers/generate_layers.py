@@ -37,7 +37,6 @@ def main():
         type=str,
     )
     parser.add_argument("--bus_routes", action="store_true")
-    parser.add_argument("--cycle_routes", action="store_true")
     parser.add_argument("--cycle_parking", action="store_true")
     parser.add_argument(
         "--imd",
@@ -127,10 +126,6 @@ def main():
     if args.bus_routes:
         made_any = True
         osm.makeBusRoutes(args.osm_input)
-
-    if args.cycle_routes:
-        made_any = True
-        osm.makeCycleRoutes(args.osm_input)
 
     if args.cycle_parking:
         made_any = True
