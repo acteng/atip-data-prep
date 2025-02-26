@@ -8,7 +8,7 @@
   27611390  2025-01-08T15:54:41Z  gs://dft-rlg-schemes-gis-test/layers/v1/crossings.pmtiles
     885344  2024-11-25T10:17:26Z  gs://dft-rlg-schemes-gis-test/layers/v1/cycle_parking.pmtiles
   57171078  2024-11-25T10:18:25Z  gs://dft-rlg-schemes-gis-test/layers/v1/cycle_paths.pmtiles
-  26654009  2025-02-20T13:23:24Z  gs://dft-rlg-schemes-gis-test/layers/v1/cycle_routes.pmtiles
+   4538465  2025-02-26T11:06:01Z  gs://dft-rlg-schemes-gis-test/layers/v1/cycle_routes.pmtiles
   13500613  2024-11-25T10:18:38Z  gs://dft-rlg-schemes-gis-test/layers/v1/education.pmtiles
  501412186  2024-11-25T10:24:02Z  gs://dft-rlg-schemes-gis-test/layers/v1/gradient.pmtiles
     909247  2024-11-25T10:18:55Z  gs://dft-rlg-schemes-gis-test/layers/v1/hospitals.pmtiles
@@ -421,4 +421,4 @@
    1200551  2024-11-25T10:38:05Z  gs://dft-rlg-schemes-gis-test/route-snappers/v3/TA_Wokingham.bin.gz
    4885825  2024-11-25T10:38:10Z  gs://dft-rlg-schemes-gis-test/route-snappers/v3/TA_Worcestershire.bin.gz
    1382995  2024-11-25T10:38:08Z  gs://dft-rlg-schemes-gis-test/route-snappers/v3/TA_York.bin.gz
-TOTAL: 423 objects, 2367391560 bytes (2.2 GiB)
+TOTAL: 423 objects, 2345276016 bytes (2.18 GiB)
