@@ -23,7 +23,7 @@ async function main() {
     }
 
     let ll = obj["Latitude & Longitude"];
-    if (ll == 0) {
+    if (ll == 0 || ll == null || ll == undefined) {
       // TODO Only one case
       console.warn(`No coordinates, skipping entry`);
       console.warn(obj);
