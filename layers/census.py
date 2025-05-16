@@ -82,10 +82,10 @@ def summarizeCarAvailability(row):
     }
 
 
-# You have to manually download the GeoJSON file from https://data-communities.opendata.arcgis.com/datasets/communities::indices-of-multiple-deprivation-imd-2019-1/explore and pass in the path here (until we can automate this)
+# You have to manually download the GeoJSON file from https://communitiesopendata-communities.hub.arcgis.com/datasets/d473e9ad137240b6aa47c9e3f4bdd674_0/explore?location=52.724275%2C-2.327771%2C6.97 and pass in the path here (until we can automate this)
 def makeIMD(path):
     def fixProps(inputProps):
-        # See https://data-communities.opendata.arcgis.com/datasets/communities::indices-of-multiple-deprivation-imd-2019-1/about
+        # See https://communitiesopendata-communities.hub.arcgis.com/datasets/d473e9ad137240b6aa47c9e3f4bdd674_0/explore?location=52.724275%2C-2.327771%2C6.97/about
         outputProps = {
             "LSOA11CD": inputProps["lsoa11cd"],
             "score": round(inputProps["IMDScore"], 1),
