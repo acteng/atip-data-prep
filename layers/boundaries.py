@@ -147,7 +147,7 @@ def makeTransportAuthoritiesForSketcher():
 
     def fixProps(inputProps):
         return {
-            "name": inputProps["atf4_authority_name"],
+            "name": inputProps["local_authority_names"],
             "level": "TA",
         }
 

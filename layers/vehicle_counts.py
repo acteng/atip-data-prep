@@ -23,9 +23,9 @@ def makeDftVehicleCounts():
     with open(f"{tmp}/dft_traffic_counts_aadf.csv") as f:
         for row in csv.DictReader(f):
             # Only keep England
-            if row["Region_ons_code"][0] != "E":
+            if row["region_ons_code"][0] != "E":
                 continue
-            rows_per_count_point[row["Count_point_id"]].append(row)
+            rows_per_count_point[row["count_point_id"]].append(row)
 
     gj = {
         "type": "FeatureCollection",
@@ -33,10 +33,10 @@ def makeDftVehicleCounts():
     }
     for (count_point, rows) in rows_per_count_point.items():
         # Find the latest year per count point
-        latest = max(rows, key=lambda row: int(row["Year"]))
-        location = latest["Road_name"]
-        if latest["Start_junction_road_name"]:
-            location += f" from {latest['Start_junction_road_name']} to {latest['End_junction_road_name']}"
+        latest = max(rows, key=lambda row: int(row["year"]))
+        location = latest["road_name"]
+        if latest["start_junction_road_name"]:
+            location += f" from {latest['start_junction_road_name']} to {latest['end_junction_road_name']}"
 
         gj["features"].append(
             {
@@ -44,17 +44,17 @@ def makeDftVehicleCounts():
                 "geometry": {
                     "type": "Point",
                     "coordinates": [
-                        float(latest["Longitude"]),
-                        float(latest["Latitude"]),
+                        float(latest["longitude"]),
+                        float(latest["latitude"]),
                     ],
                 },
                 "properties": {
-                    "count_point": latest["Count_point_id"],
+                    "count_point": latest["count_point_id"],
                     "location": location,
-                    "method": latest["Estimation_method_detailed"],
-                    "motor_vehicles": int(latest["All_motor_vehicles"]),
-                    "pedal_cycles": int(latest["Pedal_cycles"]),
-                    "year": int(latest["Year"]),
+                    "method": latest["estimation_method_detailed"],
+                    "motor_vehicles": int(latest["all_motor_vehicles"]),
+                    "pedal_cycles": int(latest["pedal_cycles"]),
+                    "year": int(latest["year"]),
                 },
             }
         )
