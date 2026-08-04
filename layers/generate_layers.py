@@ -12,6 +12,7 @@ import rights_of_way
 import road_noise
 import srn
 import vehicle_counts
+import shutil
 
 
 def main():
@@ -61,6 +62,8 @@ def main():
     args = parser.parse_args()
 
     made_any = False
+    shutil.rmtree("prev_output/output")
+    shutil.move("output", "prev_output")
     os.makedirs("output", exist_ok=True)
 
     if args.education:

@@ -3,7 +3,7 @@
 set -e
 
 if [ ! -f england-latest.osm.pbf ]; then
-	wget http://download.geofabrik.de/europe/great-britain/england-latest.osm.pbf
+	wget http://download.geofabrik.de/europe/united-kingdom/england-latest.osm.pbf
 fi
 
 mkdir uk_osm

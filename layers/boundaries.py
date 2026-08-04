@@ -130,8 +130,6 @@ def makeLocalAuthorityDistrictsForSketcher():
     cleanUpGeojson(
         outputFilePath,
         fixProps,
-        # Only keep England
-        filterFeatures=lambda f: f["properties"]["LAD23CD"][0] == "E",
     )
     removePolygonHoles(outputFilePath)
 
@@ -147,7 +145,7 @@ def makeTransportAuthoritiesForSketcher():
 
     def fixProps(inputProps):
         return {
-            "name": inputProps["atf4_authority_name"],
+            "name": inputProps["local_authority_names"],
             "level": "TA",
         }
 
