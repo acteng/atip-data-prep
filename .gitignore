@@ -1,6 +1,11 @@
 *.swp
 target/
+*.osm.pbf
 
+dalog/*.xlsx
+
+layers/input/lads.geojson
+layers/input/transport_authorities.geojson
 layers/tmp_*
 layers/output
 layers/rowmaps
