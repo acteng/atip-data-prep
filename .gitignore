@@ -8,6 +8,7 @@ layers/input/lads.geojson
 layers/input/transport_authorities.geojson
 layers/tmp_*
 layers/output
+layers/prev_output
 layers/rowmaps
 !layers/input/README.md
 
